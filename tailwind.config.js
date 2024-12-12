@@ -72,6 +72,20 @@ module.exports = {
           950: "#1F0B00"
         }
 
+      },
+      fontFamily: {
+        montserrat: ["Montserrat", "sans-serif"]
+      },
+      fontSize: {
+        'h1': "61px",
+        'h2': "49px",
+        'h3': "39px",
+        'h4': "31px",
+        'h5': "25px",
+        "title": "20px",
+        "title2": "16px",
+        "body": "13px",
+        "caption": "10px"
       }
     },
   },
