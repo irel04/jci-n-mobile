@@ -1,5 +1,6 @@
 import { Image, Text, View } from "react-native"
 import pupLogo from "@/assets/images/pup-logo.png"
+import Form from "@/app/auth/Form"
 
 const Main = () => {
 	return (
@@ -8,6 +9,7 @@ const Main = () => {
 				<Image source={pupLogo}/>
 				<Text className="text-h3 font-bold text-brand-700 mt-24">Welcome Back</Text>
 				<Text className="text-body mt-4">It's nice to see you again Kups! Please enter your details</Text>
+				<Form/>
 			</View>
 		</View>
 	)
