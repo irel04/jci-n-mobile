@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
-  content: ["./app/**/*.{js,jsx,ts,tsx}"],
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
@@ -70,8 +70,25 @@ module.exports = {
           800: "#702700",
           900: "#381400",
           950: "#1F0B00"
+        },
+        "white": {
+          500: "#FFFFFF"
         }
 
+      },
+      fontFamily: {
+        sans: ["Montserrat-Regular"]
+      },
+      fontSize: {
+        'h1': "61px",
+        'h2': "49px",
+        'h3': "39px",
+        'h4': "31px",
+        'h5': "25px",
+        "title": "20px",
+        "title2": "16px",
+        "body": "13px",
+        "caption": "10px"
       }
     },
   },
