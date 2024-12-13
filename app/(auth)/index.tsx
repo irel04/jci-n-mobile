@@ -9,7 +9,7 @@ const Main = () => {
 	return (
 		<View className="flex flex-col h-screen">
 			<KeyboardAvoidingView className="flex-col justify-center items-center " behavior={Platform.OS === "ios" ? "padding" : "height"}>
-				<View className="flex-auto flex-col justify-center items-center h-96 w-full">
+				<View className="flex-auto flex-col justify-center items-center h- w-full">
 					<Image source={require("@/assets/images/pup-logo.png")} className="flex-none" />
 					<Text className="text-h3 font-bold text-brand-700 mt-32">Welcome Back</Text>
 					<Text className="text-body">It's nice to see you again Kups! Please enter your details</Text>
@@ -26,11 +26,16 @@ const Main = () => {
 				</View>
 			</KeyboardAvoidingView>
 			{/* Button */}
-			<View className="border-red-500 border-2 justify-center items-center flex-auto h-1/6">
+			<View className="justify-center items-center flex-auto h-1/6 gap-5 px-5">
 				<CustomButton onPress={() => Alert.alert("You Licked Me")} title="Continue">
 					<AntDesign name="arrowright" size={16} color="white" />
 				</CustomButton>
-				
+				<Pressable>
+					<Text className="underline text-body">Forgot Password</Text>
+				</Pressable>
+			</View>
+			<View className="justify-center items-center flex-auto h-1/6 gap-5 px-5">
+				<Text className="text-caption text-neutral-500 text-center">This is a mobile application developed for a research project titled "Enhancing Garbage Management: A Mobile-Integrated, Solar-Powered Intelligent Waste Collection System."</Text>
 			</View>
 		</View>
 	)
