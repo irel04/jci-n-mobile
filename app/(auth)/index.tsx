@@ -5,9 +5,15 @@ import Feather from '@expo/vector-icons/Feather';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from "expo-router";
+import { useState } from "react";
 
 const Main = () => {
 	
+	const [value, setValue] = useState({
+		email: "kianirel56@gmail.com",
+		password: "pogiako123"
+	})
+
 	const router = useRouter()
 
 	const handlePressContinue = async () => {
@@ -25,10 +31,10 @@ const Main = () => {
 
 				{/* Form */}
 				<View className="flex-auto flex-col gap-7 w-full items-center justify-center h-72" >
-					<Input onChange={() => console.log("Hello")} placeholder="Email" id="email">
+					<Input onChangeText={(email) => setValue({...value, email})} placeholder="Email" id="email" value={value.email}>
 						<FontAwesome name="user-o" size={13} color="#757576" />
 					</Input>
-					<Input onChange={() => console.log("Hello")} placeholder="Password" id="password">
+					<Input onChangeText={(password) => setValue({...value, password})} placeholder="Password" id="password" value={value.password}>
 						<Feather size={13} name="lock" color="#757576"/>
 					</Input>
 				</View>

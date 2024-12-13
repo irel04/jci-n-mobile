@@ -5,16 +5,17 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 
 interface InputProps {
-	onChange: VoidFunction ,
+	onChangeText: (text: string) => void,
 	placeholder: string,
 	children?: ReactNode,
-	id: string
+	id: string,
+	value: string
 }
 
-const Input = ({ children, onChange, placeholder, id }: InputProps) => {
+const Input = ({ children, onChangeText, placeholder, id, value }: InputProps) => {
 	return (
 		<View className="w-72 flex px-5 bg-neutral-100 rounded-2xl flex-row items-center justify-between">
-			<TextInput placeholder={placeholder} onChangeText={onChange} id={id} className="w-5/6 text-body" maxLength={25}/>
+			<TextInput placeholder={placeholder} onChangeText={onChangeText} id={id} className="w-5/6 text-body" maxLength={25} value={value}/>
 			{/* Pass the icon as */}
 			{children}
 		</View>
