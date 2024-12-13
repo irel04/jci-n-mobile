@@ -2,6 +2,8 @@ import pupLogo from "@/assets/images/pup-logo.png"
 import Input from "@/components/ui/Input"
 import { Image, Text, View } from "react-native"
 
+
+
 const Main = () => {
 	return (
 		<View className="flex flex-col mt-10 px-5">
@@ -12,8 +14,8 @@ const Main = () => {
 				
 				{/* Form */}
 				<View className="mt-36 flex flex-col gap-7">
-					<Input onChange={() => console.log("Hello")} placeholder="Email"/>
-					<Input onChange={() => console.log("Hello")} placeholder="Password"/>
+					<Input onChange={() => console.log("Hello")} placeholder="Email" id="email"/>
+					<Input onChange={() => console.log("Hello")} placeholder="Password" id="password"/>
 				</View>
 			</View>
 		</View>
