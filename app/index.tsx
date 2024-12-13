@@ -1,14 +1,18 @@
-import { NavigationContainer } from "@react-navigation/native"
-import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import AuthScreen from "@/app/auth/index"
+import AuthScreen from "@/app/(auth)/index"
 
 
+import { View } from "react-native"
 import "../global.css"
+import { useFonts } from "expo-font"
 
 
 const App = () => {
-	
-	return <AuthScreen/>
+
+	return (
+		<View className="bg-white-500 h-screen text-base">
+			<AuthScreen />
+		</View>
+	)
 }
 
 export default App
