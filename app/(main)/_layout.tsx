@@ -10,7 +10,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 const MainLayout = () => {
 	
 	return (
-		<Tabs screenOptions={{ headerShown: false, headerTintColor: "#0E46A3", animation:'fade', tabBarStyle: {
+		<Tabs screenOptions={{ headerShown: false, headerTintColor: "#0E46A3", tabBarStyle: {
 			backgroundColor: "#E3E3E3",
 			paddingTop: 6
 		}}}>
