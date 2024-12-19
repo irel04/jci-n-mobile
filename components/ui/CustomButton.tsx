@@ -14,7 +14,8 @@ interface ButtonProps {
 	onPress: VoidFunction,
 	children?: ReactNode,
 	title: string,
-	styleType: StyleType
+	styleType: StyleType,
+	width?: string
 
 }
 
@@ -23,16 +24,15 @@ const BUTTONSTYLE = {
 	BRAND_SECONDARY: "border-blue-500 border-[1px] text-blue-900",
 	BRAND_DISABLED: "bg-blue-200 text-white-500",
 	DESTRUCTIVE_PRIMARY: "bg-red-400 text-white-500",
-	DESTRUCTIVE_SECONDARY: "border-red-400 text-white-500 border-[1px]",
+	DESTRUCTIVE_SECONDARY: "border-red-800 text-red-700 border-[1px]",
 	DESTRUCTIVE_DISABLED: "bg-red-200 text-white-500",
 }
 
-const CustomButton = ({ children, onPress, title, styleType }: ButtonProps) => {
+const CustomButton = ({ children, onPress, styleType, width="w-[143px]" }: ButtonProps) => {
 	const [] = useState(BUTTONSTYLE.BRAND_PRIMARY)
 
 	return (
-		<Pressable className={`flex flex-row  w-[123px] h-[43px] rounded-2xl justify-evenly items-center px-5 ${BUTTONSTYLE[styleType]}`} onPress={onPress} >
-			<Text className={`${BUTTONSTYLE[styleType]}`}>{title}</Text>
+		<Pressable className={`flex flex-row h-[43px] rounded-2xl gap-2 justify-center items-center px-5 ${BUTTONSTYLE[styleType]} ${width}`} onPress={onPress} >
 			{children}
 		</Pressable>
 	)
