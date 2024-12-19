@@ -7,7 +7,7 @@ export default function SolarPower() {
         <View className='flex-col justify-between mt-5 rounded-xl items-center'>
             <Image source={require('@/assets/images/trashbin.png')} className='w-[67.93px] h-[100px] items-center mb-5' />
 
-            <View className='flex-coljustify-between p-3 rounded-xl bg-brand-700 items-left gap-2 w-full'>
+            <View className='flex-col justify-between p-3 rounded-xl bg-brand-700 items-left gap-2 w-full'>
                 <Text className='text-title2 text-white-500 font-sans font-bold'>Solar Power</Text>
 
                 <View className='flex-row gap-[5px] items-center'>

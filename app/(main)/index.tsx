@@ -1,26 +1,46 @@
-import { View, Text, Image } from 'react-native'
-import React from 'react'
-import Weather from '@/components/home/Weather'
+import { View, Text, Image, ScrollView } from 'react-native';
+import React from 'react';
+import Weather from '@/components/home/Weather';
 import SolarPower from '@/components/home/SolarPower';
 import TrashBinLevel from '@/components/home/TrashBinLevel';
 
 const Main = () => {
-  const firstname = "Jonas Brian"; // Define the firstname variable
+	const firstname = "Jonas Brian";
 
+	return (
+		<View className="flex-1 bg-white">
+			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }}>
+				<View>
+					<Text className="text-left text-h5 font-[700] pb-5">Welcome, {firstname}!</Text>
+				</View>
 
-  return (
-	<View className="p-4">
-		<Text className='text-left text-h5 font-[700] pb-5'>Welcome, {firstname}!</Text>
-		
-		<Weather />
+				<Weather />
 
-		<View>
-			<SolarPower />
+				<View className="flex-row gap-[5%] mt-5">
+					<View className="w-[30%]">
+						<SolarPower />
+					</View>
+					
+					<View className="flex-col justify-between p-3 rounded-xl bg-brand-700 items-left gap-2 w-[65%]">
+						<Text className="text-white-500">Placeholder</Text>
+					</View>
+				</View>
+
+				<View>
+					<TrashBinLevel />
+				</View>
+
+				<View className="mt-5">
+					<View className="flex-col justify-between border-2 rounded-xl border-brand-700 items-left gap-2 w-full">
+						<Image
+							source={{ uri: 'https://via.placeholder.com/250' }}
+							className="w-full h-[250px] rounded-lg"
+						/>
+					</View>
+				</View>
+			</ScrollView>
 		</View>
+	);
+};
 
-		<TrashBinLevel />
-	</View>
-  )
-}
-
-export default Main
+export default Main;
