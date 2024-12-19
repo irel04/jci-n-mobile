@@ -22,7 +22,7 @@ const ProfileDetails = ({ data }: ProfileProps) => {
 				<View className="flex flex-row items-center gap-1">
 					<Fontisto name="email" size={16} color="#919192" className="flex-none" />
 					<Text className="text-gray-500 flex-1 text-body">Email</Text>
-					<Text className="text-gray-500 text-body">{data.email}</Text>
+					<Text className="text-gray-500 text-body"> {data.email}</Text>
 				</View>
 				<View className="flex flex-row items-center gap-1">
 					<Ionicons name="phone-portrait-outline" size={16} color="#919192" className="flex-none" />
