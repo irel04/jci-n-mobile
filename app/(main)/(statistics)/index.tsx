@@ -3,6 +3,8 @@ import { View, Text, ScrollView } from 'react-native';
 import Overflow from '@/components/statistics/Overflow';
 import BinUsage from '@/components/statistics/BinUsage';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import PickupFrequency from '@/components/statistics/PickupFrequency';
+import CollectionFrequency from '@/components/statistics/CollectionFrequency';
 
 const Statistics = () => {
 	return (
@@ -24,6 +26,12 @@ const Statistics = () => {
 					</View>
 					<View className="my-4">
 						<Overflow />
+					</View>
+					<View className="my-4">
+						<PickupFrequency />
+					</View>
+					<View className="my-4">
+						<CollectionFrequency />
 					</View>
 				</View>
 			</ScrollView>
