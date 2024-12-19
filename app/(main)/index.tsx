@@ -3,6 +3,7 @@ import React from 'react';
 import Weather from '@/components/home/Weather';
 import SolarPower from '@/components/home/SolarPower';
 import TrashBinLevel from '@/components/home/TrashBinLevel';
+import OverflowEvents from '@/components/home/OverflowEvents';
 
 const Main = () => {
 	const firstname = "Jonas Brian";
@@ -22,7 +23,7 @@ const Main = () => {
 					</View>
 					
 					<View className="flex-col justify-between p-3 rounded-xl bg-brand-700 items-left gap-2 w-[65%]">
-						<Text className="text-white-500">Placeholder</Text>
+						<OverflowEvents />
 					</View>
 				</View>
 
