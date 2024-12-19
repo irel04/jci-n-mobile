@@ -1,6 +1,7 @@
 import { Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import React from 'react'
 import NotificationCard from '@/components/notifications/NotificationCard'
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function NotificationTab() {
     // Notifications data moved here
@@ -30,7 +31,10 @@ export default function NotificationTab() {
     return (
         <View className="p-5">
             <View className="flex-row justify-between pb-4 items-end relative">
-                <Text className="text-left text-h5 font-bold">Notifications</Text>
+                <View className='flex-row justify-between items-center gap-3'>
+                    <Text className="text-left text-h5 font-bold">Notifications</Text>
+                    <Ionicons name="notifications-outline" size={24} color="black" />
+                </View>
                 <TouchableOpacity>
                     <Text className="text-body font-[400] text-brand-500">Mark all as read</Text>
                 </TouchableOpacity>
