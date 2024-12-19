@@ -42,6 +42,7 @@ const Main = () => {
 			{/* Button */}
 			<View className="justify-center items-center flex-auto h-1/6 gap-5 px-5">
 				<CustomButton onPress={handlePressContinue} title="Continue" styleType={StyleType.BRAND_PRIMARY}>
+					<Text className="text-white-500">Continue</Text>
 					<AntDesign name="arrowright" size={16} color="white" />
 				</CustomButton>
 				<Pressable>

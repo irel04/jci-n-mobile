@@ -16,7 +16,7 @@ interface ProfileProps {
 
 const ProfileDetails = ({ data }: ProfileProps) => {
 	return (
-		<View className="border-blue-500 border-2 flex flex-1 gap-4">
+		<View className="flex flex-1 gap-4">
 			<Text className="text-brand-900 font-bold text-title2">Information</Text>
 			<View className="flex flex-col gap-5 p-5 border-neutral-300 border-[1px] rounded-lg ">
 				<View className="flex flex-row items-center gap-1">
