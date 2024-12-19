@@ -40,7 +40,7 @@ const ProfileTab = () => {
 			{/* Logout Button */}
 			<View className="flex flex-none items-center">
 				<CustomButton onPress={handlePressLogout} title="Logout" styleType={StyleType.DESTRUCTIVE_SECONDARY} width="w-3/4">
-					<Text className="text-red-700 ">Logout</Text>
+					<Text className="text-red-700 ">Signout</Text>
 					<MaterialIcons name="logout" size={16} color="#7B0F0F" />
 				</CustomButton>
 			</View>
