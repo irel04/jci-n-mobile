@@ -1,5 +1,5 @@
 import Input from "@/components/ui/Input"
-import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TouchableWithoutFeedback, View } from "react-native"
+import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
@@ -12,8 +12,10 @@ const Main = () => {
 	
 	const [value, setValue] = useState({
 		email: "jonas@gmail.com",
-		password: "admin123"
+		password: "pogiako123"
 	})
+
+	const [isPasswordHidden, setIsPasswordHidden] = useState(true)
 
 	const router = useRouter()
 
@@ -35,8 +37,10 @@ const Main = () => {
 					<Input onChangeText={(email) => setValue({...value, email})} placeholder="Email" id="email" value={value.email}>
 						<FontAwesome name="user-o" size={13} color="#757576" />
 					</Input>
-					<Input onChangeText={(password) => setValue({...value, password})} placeholder="Password" id="password" value={value.password}>
-						<Feather size={13} name="lock" color="#757576"/>
+					<Input onChangeText={(password) => setValue({...value, password})} secureTextEntry={isPasswordHidden} placeholder="Password" id="password" value={value.password}>
+						<TouchableOpacity onPress={() => setIsPasswordHidden(!isPasswordHidden)}>
+							<Feather size={13} name={isPasswordHidden ? 'eye-off' : 'eye'} color="#757576" />
+						</TouchableOpacity>
 					</Input>
 				</View>
 			</KeyboardAvoidingView>
