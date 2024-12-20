@@ -6,12 +6,13 @@ import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import React from "react";
 
 const Main = () => {
 	
 	const [value, setValue] = useState({
-		email: "kianirel56@gmail.com",
-		password: "pogiako123"
+		email: "jonas@gmail.com",
+		password: "admin123"
 	})
 
 	const router = useRouter()
@@ -26,7 +27,7 @@ const Main = () => {
 				<View className="flex-auto flex-col justify-center items-center w-full">
 					<Image source={require("@/assets/images/pup-logo.png")} className="flex-none" />
 					<Text className="text-h3 font-bold text-brand-700 mt-32">Welcome Back</Text>
-					<Text className="text-body">It's nice to see you again Kups! Please enter your details</Text>
+					<Text className="text-body">It's nice to see you again! Please enter your details</Text>
 				</View>
 
 				{/* Form */}
