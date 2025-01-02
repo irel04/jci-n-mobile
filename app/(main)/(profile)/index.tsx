@@ -19,7 +19,7 @@ const ProfileTab = () => {
 	}
 
 	const handlePressLogout = () => {
-		router.push("/(auth)")
+		router.push("/sign-in")
 	}
 
 	return (
