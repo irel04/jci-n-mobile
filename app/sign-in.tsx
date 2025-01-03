@@ -4,7 +4,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import React from "react";
 import { useSession } from "@/contexts/auth";
@@ -33,7 +33,7 @@ const Signin = () => {
 	}
 
 	if(session){
-		router.push("/(main)")
+		return <Redirect href="/(main)" />
 	}
 
 	return (
