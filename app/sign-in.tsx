@@ -22,7 +22,7 @@ const Signin = () => {
 
 
 	// Use the `signIn` function from the `useSession` hook to sign in the user. This provides the session context that will be used to check if the user is authenticated.
-	const { signIn } = useSession()
+	const { signIn, session } = useSession()
 
 	const handlePressContinue = async () => {
 		signIn()
@@ -30,6 +30,10 @@ const Signin = () => {
 		setTimeout(() => {
 			router.push("/(main)")
 		}, 1000)
+	}
+
+	if(session){
+		router.push("/(main)")
 	}
 
 	return (
