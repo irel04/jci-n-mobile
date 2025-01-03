@@ -7,6 +7,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import React from "react";
+import { useSession } from "@/contexts/auth";
 
 const Signin = () => {
 
@@ -19,8 +20,16 @@ const Signin = () => {
 
 	const router = useRouter()
 
+
+	// Use the `signIn` function from the `useSession` hook to sign in the user. This provides the session context that will be used to check if the user is authenticated.
+	const { signIn } = useSession()
+
 	const handlePressContinue = async () => {
-		router.push("/(main)")
+		signIn()
+
+		setTimeout(() => {
+			router.push("/(main)")
+		}, 1000)
 	}
 
 	return (
