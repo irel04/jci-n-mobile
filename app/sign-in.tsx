@@ -5,31 +5,30 @@ import Feather from '@expo/vector-icons/Feather';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Redirect, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { useSession } from "@/contexts/auth";
+import { supabase } from "@/utils/supabase";
 
 const Signin = () => {
 
 	const [value, setValue] = useState({
 		email: "jonas@gmail.com",
-		password: "pogiako123"
+		password: ""
 	})
 
 	const [isPasswordHidden, setIsPasswordHidden] = useState(true)
-
-	const router = useRouter()
+	const [isLoading, setIsLoading] = useState(false)
 
 
 	// Use the `signIn` function from the `useSession` hook to sign in the user. This provides the session context that will be used to check if the user is authenticated.
 	const { signIn, session } = useSession()
 
-	const handlePressContinue = async () => {
-		signIn()
 
-		setTimeout(() => {
-			router.push("/(main)")
-		}, 1000)
+	const handlePressContinue = async () => {
+		setIsLoading(true)
+		await signIn(value)
+		setIsLoading(false)
 	}
 
 	if(session){
@@ -61,8 +60,8 @@ const Signin = () => {
 				{/* Button */}
 				<View className="justify-center items-center flex-auto h-1/6 gap-5 px-5">
 					<CustomButton onPress={handlePressContinue} title="Continue" styleType={StyleType.BRAND_PRIMARY}>
-						<Text className="text-white-500">Continue</Text>
-						<AntDesign name="arrowright" size={16} color="white" />
+						<Text className="text-white-500">{isLoading ? "Please wait..." : "Continue"} </Text>
+						{!isLoading && <AntDesign name="arrowright" size={16} color="white" />}
 					</CustomButton>
 					<Pressable>
 						<Text className="underline text-body">Forgot Password</Text>
