@@ -7,6 +7,7 @@ import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from "expo-router";
 import Feather from '@expo/vector-icons/Feather';
+import { useSession } from "@/contexts/auth";
 
 const ProfileTab = () => {
 
@@ -18,8 +19,17 @@ const ProfileTab = () => {
 		address: "Muslim Compound",
 	}
 
+
+	const { signOut, session } = useSession()
 	const handlePressLogout = () => {
-		router.push("/(auth)")
+
+		signOut()
+
+		setTimeout(() => {
+			if (!session) {
+				router.push("/sign-in")
+			}
+		}, 1000)
 	}
 
 	return (
