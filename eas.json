@@ -9,11 +9,23 @@
       "distribution": "internal"
     },
     "preview": {
-      "channel": "staging",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
       "distribution": "internal"
     },
     "production": {
-      "channel": "staging",
+      "channel": "production",
       "autoIncrement": true
     }
   },
