@@ -7,7 +7,7 @@ import { SessionProvider } from "@/contexts/auth"
 
 const AppLayout = () => {
   return (
-
+ 
     <SessionProvider>
       <Stack screenOptions={{ headerShown: false }} />
     </SessionProvider>
