@@ -48,6 +48,7 @@ const Routes = () => {
 
 						if (!userAuth) return;
 
+						// This ensures the level of accuracy before updating the location
 						if(newLocation.coords.accuracy > 2.5) return 
 
 						const { data, error } = await supabase
