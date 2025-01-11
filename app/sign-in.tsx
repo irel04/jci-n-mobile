@@ -46,7 +46,7 @@ const Signin = () => {
 					</View>
 
 					{/* Form */}
-					<View className="flex-auto flex-col gap-7 w-full items-center justify-center h-72" >
+					<View className="flex-auto flex-col gap-5 w-full items-center justify-center h-72" >
 						<Input onChangeText={(email) => setValue({ ...value, email })} placeholder="Email" id="email" value={value.email}>
 							<FontAwesome name="user-o" size={13} color="#757576" />
 						</Input>
