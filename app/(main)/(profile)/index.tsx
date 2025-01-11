@@ -24,7 +24,7 @@ const ProfileTab = () => {
 	const handlePressLogout = () => {
 
 		signOut()
-
+			
 		setTimeout(() => {
 			if (!session) {
 				router.push("/sign-in")

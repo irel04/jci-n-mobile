@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import mapStyleSheet from './Style';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-
 
 const INITIAL_REGION = {
   latitude: 14.5895,
@@ -11,46 +10,48 @@ const INITIAL_REGION = {
   longitudeDelta: 0.0421,
 };
 
-const INITIAL_MARKER_POS = {
-  latitude: 14.5895,
-  longitude: 121.0152,
-  title: 'BIN-A',
-};
+interface MarkerCoordinate {
+  latitude: number;
+  longitude: number;
+  title: string;
+}
 
-const GoogleMaps = () => {
-  const mapRef = useRef(null);
-  const markerRef = useRef(null);
+interface GoogleMapsInterface {
+  markerCoordinates: MarkerCoordinate[];
+}
 
-  const focusMap = () => {
-    const STA_MESA = {
-      latitude: 14.5895,
-      longitude: 121.0152,
-      latitudeDelta: 0.0012,
-      longitudeDelta: 0.0012,
-    };
-
-    mapRef.current?.animateToRegion(STA_MESA, 1000); // 1000 ms for smooth animation
-  };
-
-  const focusMarker = () => {
-    const LNGLAT = {
-      latitude: 14.5895,
-      longitude: 121.0152,
-    };
-
-    if (markerRef.current) {
-      markerRef.current.animateMarkerToCoordinate(LNGLAT, 1000); // Smooth marker movement
-    }
-	
-  };
+const GoogleMaps = ({ markerCoordinates }: GoogleMapsInterface) => {
+  const mapRef = useRef<MapView>(null);
 
   useEffect(() => {
-    focusMap();
-  }, []);
+    if (markerCoordinates.length > 0 && mapRef.current) {
+      const coordinates = markerCoordinates.map((coord) => ({
+        latitude: coord.latitude,
+        longitude: coord.longitude,
+      }));
+
+      mapRef.current.fitToCoordinates(coordinates, {
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        animated: true,
+      });
+    }
+  }, [markerCoordinates]);
 
   return (
-    <MapView style={mapStyleSheet.map} initialRegion={INITIAL_REGION} ref={mapRef} provider={PROVIDER_GOOGLE}>
-      <Marker coordinate={INITIAL_MARKER_POS} ref={markerRef} />
+    <MapView
+      ref={mapRef}
+      style={mapStyleSheet.map}
+      initialRegion={INITIAL_REGION}
+      provider={PROVIDER_GOOGLE}
+    >
+      {markerCoordinates.map((coord, index) => {
+        const { title, ...position } = coord;
+        return <Marker coordinate={position} key={index} title={title} >
+			<View style={{ backgroundColor: "red", padding: 10 }}>
+				<Text>SF</Text>
+			</View>
+		</Marker>;
+      })}
     </MapView>
   );
 };

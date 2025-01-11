@@ -50,6 +50,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
             if (error) throw error;
 
             const { data } = await supabase.auth.getSession();
+            
             setSession(JSON.stringify(data));
 
             setTimeout(() => {
