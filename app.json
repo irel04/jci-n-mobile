@@ -41,7 +41,8 @@
             "./assets/fonts/Montserrat-Regular.ttf"
           ]
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
