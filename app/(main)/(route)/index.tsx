@@ -13,9 +13,13 @@ const Routes = () => {
 
 	const [positions, setPositions] = useState([])
 	const [toggle, setToggle] = useState(false)
+
+	
 	
 
 	useEffect(() => {
+		let locationWatcher: Location.LocationSubscription; // Declare the location watcher variable
+
 		const requestPermissionsAndTrackLocation = async () => {
 			// Request permissions
 			let { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
@@ -31,34 +35,53 @@ const Routes = () => {
 			}
 
 			// Watch location updates
-			await Location.watchPositionAsync(
+			locationWatcher = await Location.watchPositionAsync(
 				{
 					accuracy: Location.Accuracy.High,
 					timeInterval: 5000,
-					distanceInterval: 1,
+					distanceInterval: 5,
 				},
 				async (newLocation) => {
 					// Update supabase location
 					try {
+						const { data: userAuth } = await supabase.auth.getUser();
 
-						const { data: userAuth } = await supabase.auth.getUser()
+						if (!userAuth) return;
 
-						const { data, error } = await supabase.from("users_details").update({ lng: newLocation.coords.longitude, lat: newLocation.coords.latitude }).eq("auth_id", userAuth.user.id).select()
+						if(newLocation.coords.accuracy > 2.5) return 
 
-						if(error) throw error
+						const { data, error } = await supabase
+							.from('users_details')
+							.update({
+								lng: newLocation.coords.longitude,
+								lat: newLocation.coords.latitude,
+							})
+							.eq('auth_id', userAuth.user.id)
+							.select();
 
-						console.log(data)
-						console.log("User location updated", newLocation.coords)
-						console.log("User id", userAuth.user.id)
+						if (error) throw error;
+
+						console.log(data);
+						console.log('User location updated', newLocation.coords);
+						console.log('User id', userAuth.user.id);
 					} catch (error) {
-						console.error(error)
+						console.error(error);
 					}
 				}
 			);
 		};
 
 		requestPermissionsAndTrackLocation();
-	}, []);
+
+		// Cleanup function
+		return () => {
+			if (locationWatcher) {
+				locationWatcher.remove(); // Stop the location watcher
+				console.log('Location watcher stopped');
+			}
+		};
+	}, []); // Add dependencies if needed
+	
 
 	// Trigger fetch user location
 	useEffect(() => {
@@ -66,6 +89,8 @@ const Routes = () => {
 		const fetchBinLocation = async () => {
 			try {
 				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat)`)
+
+				
 
 				if (error) {
 					throw error
@@ -94,6 +119,9 @@ const Routes = () => {
 			try {
 
 				const { data: userAuth } = await supabase.auth.getUser()
+
+
+				if(!userAuth) return
 
 
 				const { data, error } = await supabase.from("users_details").select("lat, lng, first_name").eq("auth_id", userAuth.user.id)
