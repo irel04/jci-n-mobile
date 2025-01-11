@@ -7,31 +7,12 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSession } from "@/contexts/auth";
-import * as Location from "expo-location"
 
 const MainLayout = () => {
 
 	const { isLoading, session } = useSession()
-	// const [userLocation, setUserLocation] = useState(null)
 
-	// useEffect(() => {
-	// 	const requestLocationPermission = async () => {
-	// 		let { status } = await Location.requestForegroundPermissionsAsync();
-	// 		if (status !== 'granted') {
-	// 			console.log('Permission to access location was denied');
-	// 			return;
-	// 		}
 
-	// 		let location = await Location.getCurrentPositionAsync({});
-	// 		setUserLocation(location);
-	// 	};
-
-	// 	requestLocationPermission();
-	// }, []);
-
-	// useEffect(() => {
-	// 	console.log(userLocation)
-	// }, [userLocation])
 
 
 	// You can keep the splash screen open, or render a loading screen like we do here.
