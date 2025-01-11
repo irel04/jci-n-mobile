@@ -50,7 +50,7 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow Thesis app to use your location."
+          "isAndroidBackgroundLocationEnabled": "Allow Thesis app to use your location."
         }
       ]
     ],
