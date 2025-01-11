@@ -92,7 +92,7 @@ const Routes = () => {
 	return (
 		// <OnDevelopment/>
 		<View className="flex w-screen h-full border-2 border-red-500">
-			{positions.length !== 0 && <GoogleMaps markerCoordinates={positions}/>}
+			{positions.length > 0 && <GoogleMaps markerCoordinates={positions}/>}
 		</View>
 	)
 }

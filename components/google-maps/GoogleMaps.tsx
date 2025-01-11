@@ -14,6 +14,7 @@ interface MarkerCoordinate {
   latitude: number;
   longitude: number;
   title: string;
+  type: string
 }
 
 interface GoogleMapsInterface {
@@ -35,7 +36,7 @@ const GoogleMaps = ({ markerCoordinates }: GoogleMapsInterface) => {
         animated: true,
       });
     }
-  }, [markerCoordinates]);
+  }, [markerCoordinates, mapRef]);
 
   return (
     <MapView
@@ -45,12 +46,8 @@ const GoogleMaps = ({ markerCoordinates }: GoogleMapsInterface) => {
       provider={PROVIDER_GOOGLE}
     >
       {markerCoordinates.map((coord, index) => {
-        const { title, ...position } = coord;
-        return <Marker coordinate={position} key={index} title={title} >
-			<View style={{ backgroundColor: "red", padding: 10 }}>
-				<Text>SF</Text>
-			</View>
-		</Marker>;
+        const { type, title, ...position } = coord;
+        return <Marker coordinate={position} key={index} title={title} titleVisibility="visible" />
       })}
     </MapView>
   );

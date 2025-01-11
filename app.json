@@ -46,6 +46,12 @@
             "./assets/fonts/Montserrat-Regular.ttf"
           ]
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Thesis app to use your location."
+        }
       ]
     ],
     "experiments": {
