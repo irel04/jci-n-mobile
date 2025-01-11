@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +16,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kianirel.dev.thesismobile"
+      "package": "com.kianirel.dev.thesismobile",
+      "config": {
+        "googleMaps": {
+          "apiKey": "API_KEY_HERE"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -41,8 +46,7 @@
             "./assets/fonts/Montserrat-Regular.ttf"
           ]
         }
-      ],
-      "expo-secure-store"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
