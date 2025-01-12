@@ -20,38 +20,39 @@ interface MarkerCoordinate {
 
 interface GoogleMapsInterface {
   markerCoordinates: MarkerCoordinate[];
-  movingMarkerCoords: MarkerCoordinate
+  movingMarkerCoords: MarkerCoordinate,
+  showPolyLine?: boolean
 }
 
-const GoogleMaps = ({ markerCoordinates, movingMarkerCoords }: GoogleMapsInterface) => {
+const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showPolyLine}: GoogleMapsInterface) => {
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef(null)
 
-  const [userCoords, setUserCoords] = useState({...movingMarkerCoords})
+  const [userCoords, setUserCoords] = useState({ ...movingMarkerCoords })
 
-  
-    // This susbcribes to changes happen on the user location
-    useEffect(() => {
-  
-      const channels = supabase.channel('custom-update-channel')
-        .on(
-          'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'users_details' },
-          (payload) => {
-            const { lng: longitude, lat: latitude, first_name } = payload.new
 
-            const newCoords = {longitude, latitude, title: first_name}
-  
-            setUserCoords(newCoords)
-            mapRef.current?.fitToCoordinates([newCoords, ...markerCoordinates], {
-              edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-              animated: true,
-            })
-          }
-        )
-        .subscribe()
+  // This susbcribes to changes happen on the user location
+  useEffect(() => {
 
-    }, [])
+    const channels = supabase.channel('custom-update-channel')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'users_details' },
+        (payload) => {
+          const { lng: longitude, lat: latitude, first_name } = payload.new
+
+          const newCoords = { longitude, latitude, title: first_name }
+
+          setUserCoords(newCoords)
+          mapRef.current?.fitToCoordinates([newCoords, ...markerCoordinates], {
+            edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+            animated: true,
+          })
+        }
+      )
+      .subscribe()
+
+  }, [])
 
 
   return (
@@ -61,33 +62,35 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords }: GoogleMapsInterfa
       initialRegion={INITIAL_REGION}
       provider={PROVIDER_GOOGLE}
       onMapReady={() => {
-      if (markerCoordinates.length > 0 && mapRef.current) {
-        const coordinates = markerCoordinates.map((coord) => ({
-        latitude: coord.latitude,
-        longitude: coord.longitude,
-        }));
+        if (markerCoordinates.length > 0 && mapRef.current) {
+          const coordinates = markerCoordinates.map((coord) => ({
+            latitude: coord.latitude,
+            longitude: coord.longitude,
+          }));
 
-        mapRef.current.fitToCoordinates([userCoords, ...coordinates], {
-        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-        animated: true,
-        });
-      }
+          mapRef.current.fitToCoordinates([userCoords, ...coordinates], {
+            edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+            animated: true,
+          });
+        }
       }}
     >
 
+      {/* {showPolyLine && <Polyline coordinates={[userCoords, ...markerCoordinates]} strokeWidth={5} strokeColor="red"/>} */}
+
       {markerCoordinates.map((coord, index) => {
-      const { type, title, ...position } = coord;
-      return <Marker coordinate={position} key={index} title={title} titleVisibility="visible"/>
+        const { type, title, ...position } = coord;
+        return <Marker coordinate={position} key={index} title={title} titleVisibility="visible" />
       })}
 
       <Marker coordinate={userCoords} ref={markerRef}>
-      <View style={{ alignItems: 'center' }}>
-        <Image
-        source={require("@/assets/images/jb-profile.png")}
-        style={{ width: 40, height: 40, borderRadius: 20 }}
-        />
-        <Text className="text-brand-700">{userCoords.title}</Text>
-      </View>
+        <View style={{ alignItems: 'center'}}>
+          <Image
+            source={require("@/assets/images/employee-icon.png")}
+            style={{ width: 40, height: 40, borderRadius: 20, borderColor: "#0E46A3", borderWidth: 2}}
+          />
+          <Text className="text-sm text-blue-500 font-semibold">{userCoords.title + " (You)"} </Text>
+        </View>
       </Marker>
     </MapView>
   );

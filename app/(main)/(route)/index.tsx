@@ -8,8 +8,16 @@ import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
 import * as Location from "expo-location"
 
+interface RouteComponent {
+	showPolyline?: boolean
+}
 
-const Routes = () => {
+interface UpdateLocation {
+	latitude: number,
+	longitude: number
+}
+
+const Routes = ({ showPolyline=true }: RouteComponent) => {
 
 	const [positions, setPositions] = useState([])
 	const [userPos, setUserPos] = useState(null)
@@ -19,6 +27,29 @@ const Routes = () => {
 	useEffect(() => {
 		let locationWatcher: Location.LocationSubscription; // Declare the location watcher variable
 
+		const updateSupabaseLocation = async (lastLocation: UpdateLocation) => {
+			try {
+				const { data: userAuth } = await supabase.auth.getUser();
+
+				if (!userAuth) return;
+
+				const { data, error } = await supabase
+					.from('users_details')
+					.update({
+						lng: lastLocation.longitude,
+						lat: lastLocation.latitude,
+					})
+					.eq('auth_id', userAuth.user.id)
+					.select();
+
+				if (error) throw error;
+				;
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		
 		const requestPermissionsAndTrackLocation = async () => {
 			// Request permissions
 			let { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
@@ -33,42 +64,42 @@ const Routes = () => {
 				return;
 			}
 
-			// Watch location updates
+			let lastValidLocation = null;
+
 			locationWatcher = await Location.watchPositionAsync(
 				{
-					accuracy: Location.Accuracy.High,
+					accuracy: Location.Accuracy.BestForNavigation,
 					timeInterval: 5000,
 					distanceInterval: 5,
 				},
 				async (newLocation) => {
-					// Update supabase location
-					try {
-						const { data: userAuth } = await supabase.auth.getUser();
+					const { accuracy, latitude, longitude } = newLocation.coords;
 
-						if (!userAuth) return;
+					// Reject updates with poor accuracy
+					if (accuracy > 10) return;
 
-						// This ensures the level of accuracy before updating the location
-						if(newLocation.coords.accuracy > 2.5) return 
+					// Smooth the location updates using weighted averaging
+					if (lastValidLocation) {
+						const weight = accuracy / (accuracy + lastValidLocation.accuracy);
+						const smoothedLatitude = weight * latitude + (1 - weight) * lastValidLocation.latitude;
+						const smoothedLongitude = weight * longitude + (1 - weight) * lastValidLocation.longitude;
 
-						const { data, error } = await supabase
-							.from('users_details')
-							.update({
-								lng: newLocation.coords.longitude,
-								lat: newLocation.coords.latitude,
-							})
-							.eq('auth_id', userAuth.user.id)
-							.select();
-
-						if (error) throw error;
-
-						console.log(data);
-						console.log('User location updated', newLocation.coords);
-						console.log('User id', userAuth.user.id);
-					} catch (error) {
-						console.error(error);
+						lastValidLocation = {
+							latitude: smoothedLatitude,
+							longitude: smoothedLongitude,
+							accuracy: (accuracy + lastValidLocation.accuracy) / 2,
+						};
+					} else {
+						lastValidLocation = newLocation.coords;
 					}
+
+					console.log('Smoothed Location:', lastValidLocation);
+
+					// Proceed with updating Supabase
+					await updateSupabaseLocation(lastValidLocation);
 				}
 			);
+
 		};
 
 		requestPermissionsAndTrackLocation();
@@ -152,7 +183,7 @@ const Routes = () => {
 	return (
 		// <OnDevelopment/>
 		<View className="flex-auto flex w-full h-full">
-			{positions.length > 0 && userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} />}
+			{positions.length > 0 && userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showPolyLine={showPolyline }/>}
 		</View>
 	)
 }
