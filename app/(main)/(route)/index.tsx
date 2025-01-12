@@ -12,8 +12,7 @@ import * as Location from "expo-location"
 const Routes = () => {
 
 	const [positions, setPositions] = useState([])
-	const [toggle, setToggle] = useState(false)
-
+	const [userPos, setUserPos] = useState(null)
 	
 	
 
@@ -75,12 +74,12 @@ const Routes = () => {
 		requestPermissionsAndTrackLocation();
 
 		// Cleanup function
-		return () => {
-			if (locationWatcher) {
-				locationWatcher.remove(); // Stop the location watcher
-				console.log('Location watcher stopped');
-			}
-		};
+		// return () => {
+		// 	if (locationWatcher) {
+		// 		locationWatcher.remove(); // Stop the location watcher
+		// 		console.log('Location watcher stopped');
+		// 	}
+		// };
 	}, []); // Add dependencies if needed
 	
 
@@ -132,13 +131,12 @@ const Routes = () => {
 					throw error
 				}
 
-				setPositions((pos: any) => [...pos, {
+				setUserPos({
 					longitude: data[0].lng,
 					latitude: data[0].lat,
 					title: data[0].first_name,
 					type: "user"
-				}])
-
+				})
 
 
 			} catch (error) {
@@ -148,28 +146,13 @@ const Routes = () => {
 
 		fetchUserLocation()
 		fetchBinLocation()
-	}, [toggle])
-
-	// This susbcribes to changes happen on the user location
-	useEffect(() => {
-
-		const channels = supabase.channel('custom-update-channel')
-			.on(
-				'postgres_changes',
-				{ event: 'UPDATE', schema: 'public', table: 'users_details' },
-				(payload) => {
-					const { lng: longitude, lat: latitude, first_name } = payload.new
-
-					setToggle(!toggle)
-				}
-			)
-			.subscribe()
 	}, [])
+
 
 	return (
 		// <OnDevelopment/>
-		<View className="flex w-screen h-full border-2 border-red-500">
-			{positions.length > 0 && <GoogleMaps markerCoordinates={positions} />}
+		<View className="flex-auto flex w-screen h-full border-2 border-red-500">
+			{positions.length > 0 && userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} />}
 		</View>
 	)
 }
