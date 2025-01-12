@@ -28,7 +28,7 @@ export default function NotificationCard({ notifications }: NotificationCardAttr
         const displayedNotifications = showAll ? notifications : notifications.slice(0, 10)
 
         return displayedNotifications.map((notification: NotificationObj, index: number) => (
-            <View key={index} className="flex-row items-center mt-2 py-2">
+            <View key={index} className="flex-row items-center py-2">
                 <Image
                     source={require("@/assets/images/pup-logo.png")}
                     className="w-14 h-14 rounded-full mr-4"
@@ -49,8 +49,8 @@ export default function NotificationCard({ notifications }: NotificationCardAttr
     return (
         <View className="p-4 mb-10">
             {/* Today's Notifications */}
-            <View className="relative mb-5">
-                <View className="flex-row justify-between items-center">
+            <View className="relative mb-5 bg">
+                <View className="flex-row justify-between items-center mb-4">
                     <Text className="text-lg font-bold">Earlier</Text>
                 </View>
                 {renderNotifications(notifications, showAllToday)}
