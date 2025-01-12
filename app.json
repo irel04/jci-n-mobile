@@ -4,10 +4,10 @@
     "slug": "thesis-mobile",
     "version": "0.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/pup-logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +16,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kianirel.dev.thesismobile"
+      "package": "com.kianirel.dev.thesismobile",
+      "config": {
+        "googleMaps": {
+          "apiKey": "API_KEY_HERE"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -40,6 +45,12 @@
           "fonts": [
             "./assets/fonts/Montserrat-Regular.ttf"
           ]
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": "Allow Thesis app to use your location."
         }
       ]
     ],

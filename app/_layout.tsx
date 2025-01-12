@@ -5,9 +5,12 @@ import { Stack } from "expo-router"
 import "../global.css"
 import { SessionProvider } from "@/contexts/auth"
 
-const AppLayout = () => {
-  return (
 
+const AppLayout = () => {
+  
+
+  return (
+ 
     <SessionProvider>
       <Stack screenOptions={{ headerShown: false }} />
     </SessionProvider>

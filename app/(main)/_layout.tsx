@@ -1,5 +1,5 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { Redirect, Tabs } from "expo-router"
 import Entypo from '@expo/vector-icons/Entypo';
 import Octicons from '@expo/vector-icons/Octicons';
@@ -11,6 +11,9 @@ import { useSession } from "@/contexts/auth";
 const MainLayout = () => {
 
 	const { isLoading, session } = useSession()
+
+
+
 
 	// You can keep the splash screen open, or render a loading screen like we do here.
 	if (isLoading) {
