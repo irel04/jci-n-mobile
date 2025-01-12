@@ -151,7 +151,7 @@ const Routes = () => {
 
 	return (
 		// <OnDevelopment/>
-		<View className="flex-auto flex w-screen h-full border-2 border-red-500">
+		<View className="flex-auto flex w-full h-full">
 			{positions.length > 0 && userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} />}
 		</View>
 	)
