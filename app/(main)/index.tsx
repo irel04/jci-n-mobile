@@ -32,7 +32,7 @@ const Main = () => {
 					<TrashBinLevel />
 				</View>
 
-				<View className="flex h-52 mt-5 border-brand-700 border-2 rounded-xl p-2">
+				<View className="flex h-52 mt-5 border-brand-700 border-2 rounded-xl p-1">
 					<Route showPolyline={false}/>
 				</View>
 			</ScrollView>

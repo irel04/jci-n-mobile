@@ -3,6 +3,7 @@ import { Alert, Image, Text, View } from 'react-native';
 import mapStyleSheet from './Style';
 import MapView, { AnimatedRegion, Marker, MarkerAnimated, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { supabase } from "@/utils/supabase";
+import MapViewDirections from "react-native-maps-directions"
 
 const INITIAL_REGION = {
   latitude: 14.5895,
@@ -45,7 +46,7 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showPolyLine}: Goog
 
           setUserCoords(newCoords)
           mapRef.current?.fitToCoordinates([newCoords, ...markerCoordinates], {
-            edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+            edgePadding: { top: 20, right: 20, bottom: 20, left: 20 },
             animated: true,
           })
         }
@@ -69,7 +70,7 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showPolyLine}: Goog
           }));
 
           mapRef.current.fitToCoordinates([userCoords, ...coordinates], {
-            edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+            edgePadding: { top: 20, right: 20, bottom: 20, left: 20 },
             animated: true,
           });
         }
@@ -78,18 +79,20 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showPolyLine}: Goog
 
       {/* {showPolyLine && <Polyline coordinates={[userCoords, ...markerCoordinates]} strokeWidth={5} strokeColor="red"/>} */}
 
+      {/* {showPolyLine &&  <MapViewDirections origin={userCoords} destination={markerCoordinates[0]} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="red" strokeWidth={5} precision="high"/>} */}
+
       {markerCoordinates.map((coord, index) => {
         const { type, title, ...position } = coord;
         return <Marker coordinate={position} key={index} title={title} titleVisibility="visible" />
       })}
 
-      <Marker coordinate={userCoords} ref={markerRef}>
+      <Marker coordinate={userCoords} ref={markerRef} title={userCoords.title}>
         <View style={{ alignItems: 'center'}}>
           <Image
             source={require("@/assets/images/employee-icon.png")}
             style={{ width: 40, height: 40, borderRadius: 20, borderColor: "#0E46A3", borderWidth: 2}}
           />
-          <Text className="text-sm text-blue-500 font-semibold">{userCoords.title + " (You)"} </Text>
+          {/* <Text className="text-sm text-blue-500 font-semibold">{userCoords.title + " (You)"} </Text> */}
         </View>
       </Marker>
     </MapView>

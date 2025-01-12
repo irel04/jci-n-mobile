@@ -31,7 +31,7 @@ const Routes = ({ showPolyline=true }: RouteComponent) => {
 			try {
 				const { data: userAuth } = await supabase.auth.getUser();
 
-				if (!userAuth) return;
+				if (!userAuth.user) return;
 
 				const { data, error } = await supabase
 					.from('users_details')
@@ -43,13 +43,13 @@ const Routes = ({ showPolyline=true }: RouteComponent) => {
 					.select();
 
 				if (error) throw error;
-				;
+				
 			} catch (error) {
 				console.error(error);
 			}
 		}
 
-		
+
 		const requestPermissionsAndTrackLocation = async () => {
 			// Request permissions
 			let { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
@@ -119,7 +119,16 @@ const Routes = ({ showPolyline=true }: RouteComponent) => {
 		// This fetches the bin location
 		const fetchBinLocation = async () => {
 			try {
-				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat)`)
+
+				const { data: userAuth } = await supabase.auth.getUser()
+
+
+				if(!userAuth) return
+
+				const { data: user } = await supabase.from("users_details").select("id").eq("auth_id", userAuth.user.id)
+
+
+				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat)`).eq("nearest_user_id", user[0].id)
 
 				
 
@@ -183,7 +192,7 @@ const Routes = ({ showPolyline=true }: RouteComponent) => {
 	return (
 		// <OnDevelopment/>
 		<View className="flex-auto flex w-full h-full">
-			{positions.length > 0 && userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showPolyLine={showPolyline }/>}
+			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showPolyLine={showPolyline }/>}
 		</View>
 	)
 }
