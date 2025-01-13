@@ -128,7 +128,7 @@ const Routes = ({ showPolyline=true }: RouteComponent) => {
 				const { data: user } = await supabase.from("users_details").select("id").eq("auth_id", userAuth.user.id)
 
 
-				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat)`).eq("nearest_user_id", user[0].id)
+				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat)`)
 
 				
 
