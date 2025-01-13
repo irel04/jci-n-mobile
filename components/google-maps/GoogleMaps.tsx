@@ -4,6 +4,7 @@ import mapStyleSheet from './Style';
 import MapView, { AnimatedRegion, Marker, MarkerAnimated, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { supabase } from "@/utils/supabase";
 import MapViewDirections from "react-native-maps-directions"
+import { router, useFocusEffect, useGlobalSearchParams, useLocalSearchParams, useRouter } from "expo-router";
 
 const INITIAL_REGION = {
   latitude: 14.598820,
@@ -27,7 +28,7 @@ interface GoogleMapsInterface {
   selectedBin: string
 }
 
-const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selectedBin}: GoogleMapsInterface) => {
+const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selectedBin }: GoogleMapsInterface) => {
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef(null)
 
@@ -46,7 +47,7 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
           const newUserCoords = { longitude, latitude, title: first_name, id }
           const newCoordinates = [
             ...markerCoordinates.map(bin => {
-              const {longitude, latitude} = bin
+              const { longitude, latitude } = bin
               return {
                 latitude,
                 longitude
@@ -54,7 +55,7 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
             }),
             newUserCoords
           ];
-      
+
 
           setUserCoords(newUserCoords)
           mapRef.current?.fitToCoordinates(newCoordinates, {
@@ -67,6 +68,14 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
 
   }, [])
 
+  // This is when it came from route that passes bin id
+  const { id: bin_id } = useGlobalSearchParams()
+
+  useEffect(() => {
+    if (bin_id) {
+      
+    }
+  }, [bin_id])
 
   return (
     <MapView
@@ -92,7 +101,7 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
       {/* {showRoute && <Polyline coordinates={[userCoords, ...markerCoordinates]} strokeWidth={5} strokeColor="red"/>} */}
 
       {/* Ensure showroute and selected bin is true and has value respectively before triggerring polyline for direction */}
-      {showRoute && selectedBin && <MapViewDirections origin={userCoords} destination={markerCoordinates.filter(bin => bin.id === selectedBin)[0]} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="#0E46A3" strokeWidth={8} precision="high"/>}
+      {showRoute && selectedBin && <MapViewDirections origin={userCoords} destination={markerCoordinates.filter(bin => bin.id === selectedBin)[0]} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="#0E46A3" strokeWidth={8} precision="high" />}
 
       {markerCoordinates.map((coord, index) => {
         const { type, title, ...position } = coord;
@@ -100,10 +109,10 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
       })}
 
       <Marker coordinate={userCoords} ref={markerRef} title={userCoords.title}>
-        <View style={{ alignItems: 'center'}}>
+        <View style={{ alignItems: 'center' }}>
           <Image
             source={require("@/assets/images/employee-icon.png")}
-            style={{ width: 40, height: 40, borderRadius: 20, borderColor: "#0E46A3", borderWidth: 2}}
+            style={{ width: 40, height: 40, borderRadius: 20, borderColor: "#0E46A3", borderWidth: 2 }}
           />
           {/* <Text className="text-sm text-blue-500 font-semibold">{userCoords.title + " (You)"} </Text> */}
         </View>

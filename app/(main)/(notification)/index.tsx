@@ -16,7 +16,7 @@ export default function NotificationTab() {
 
             const { data: user } = await supabase.from("users_details").select("id").eq("auth_id", userAuth.user.id)
 
-            const { data: notifications } = await supabase.from("notifications").select(`notification_type, bins(color, set), created_at`).eq("nearest_user_id", user[0].id).order('created_at', { ascending: false });
+            const { data: notifications } = await supabase.from("notifications").select(`notification_type, bins(color, set, id), created_at, is_read, id`).eq("nearest_user_id", user[0].id).order('created_at', { ascending: false });
 
             setUpComingNotifications(notifications)
 
@@ -33,7 +33,7 @@ export default function NotificationTab() {
 
     // Update Realtime using subscribe
     useEffect(() => {
-        const channels = supabase.channel('custom-insert-channel')
+        const channels = supabase.channel('custom-insert-update-channel')
             .on(
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'notifications' },
@@ -41,13 +41,24 @@ export default function NotificationTab() {
                     fetchNotifications()
                 }
             )
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'notifications' },
+                (payload) => {
+                    fetchNotifications()
+                }
+            )
             .subscribe()
+
+        return () => {
+            channels.unsubscribe()
+        }
     }, [])
 
 
     return (
-        <View className="p-5">
-            <View className="flex-row justify-between pb-4 items-end relative">
+        <>
+            <View className="flex-row justify-between p-5 items-end relative">
                 <View className='flex-row justify-between items-center gap-3'>
                     <Text className="text-left text-h5 font-bold">Notifications</Text>
                     <Ionicons name="notifications-outline" size={24} color="black" />
@@ -62,6 +73,6 @@ export default function NotificationTab() {
                     <NotificationCard notifications={upComingNotifications} />
                 </View>
             </ScrollView>
-        </View>
+        </>
     )
 }
