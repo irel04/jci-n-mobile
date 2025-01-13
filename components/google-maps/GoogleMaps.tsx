@@ -72,9 +72,9 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
   const { id: bin_id } = useGlobalSearchParams()
 
   useEffect(() => {
-    if (bin_id) {
+    // if (bin_id) {
       
-    }
+    // }
   }, [bin_id])
 
   return (

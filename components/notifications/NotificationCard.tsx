@@ -35,7 +35,7 @@ export default function NotificationCard({ notifications }: NotificationCardAttr
             if(error) throw error
 
             
-            router.push("/(main)/(route)")
+            router.push("/(main)/(statistics)")
             router.setParams({ id })
             
 
