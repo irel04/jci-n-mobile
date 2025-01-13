@@ -1,5 +1,5 @@
 
-import { View, Text, Alert } from 'react-native'
+import { View, Text, Alert, Modal } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import OnDevelopment from "@/components/OnDevelopment";
@@ -8,6 +8,8 @@ import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
 import * as Location from "expo-location"
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
+import CustomModal from "@/components/ui/Modal";
+import SelectBinToRouteModal from "@/components/route/SelectBinToRouteModal";
 
 interface RouteComponent {
 	showButton?: boolean
@@ -200,6 +202,16 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 				</CustomButton>
 			</View>}
 			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showRoute={showRoute}/>}
+
+			{/* Modal */}
+			<CustomModal isVisible={showRoute}>
+				<View className="bg-white-500 p-5 rounded-lg shadow-lg flex justify-center items-center">
+					<SelectBinToRouteModal/>
+					<CustomButton styleType={StyleType.DESTRUCTIVE_SECONDARY} width="w-36" onPress={() => setShowRoute(!showRoute)}>
+						<Text>Cancel</Text>
+					</CustomButton>
+				</View>
+			</CustomModal>
 		</View>
 	)
 }
