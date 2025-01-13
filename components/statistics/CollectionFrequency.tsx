@@ -4,38 +4,22 @@ import { LineChart } from "react-native-chart-kit";
 
 const screenWidth = Dimensions.get("window").width;
 
-const CollectionFrequency = () => {
+const CollectionFrequency = ({ datasets }) => {
   return (
     <View className="flex-row items-center justify-center">
       <View className="w-full bg-brand-700 rounded-lg p-4">
         <Text className="text-white-500 text-title2 font-bold font-sans">Collection Frequency</Text>
         <Text className="text-white-500 text-caption mb-4 font-sans">
-          This tracks the efficient collection over the week
+        This tracks the efficient collection over the week
         </Text>
 
         <LineChart
           data={{
             labels: ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"],
-            datasets: [
-              {
-                data: [100, 250, 300, 500, 150, 320, 400], // Bin A data
-                color: () => `rgba(133, 176, 245, 1)`, 
-                strokeWidth: 3,
-              },
-              {
-                data: [300, 450, 150, 300, 300, 450, 200], // Bin B data
-                color: () => `rgba(72, 136, 239, 1)`, 
-                strokeWidth: 3,
-              },
-              {
-                data: [50, 150, 300, 250, 350, 100, 450], // Bin C data
-                color: () => `rgba(19, 98, 255, 1)`, 
-                strokeWidth: 3,
-              },
-            ],
+            datasets,
           }}
-          width={screenWidth - 60} 
-          height={220}  
+          width={screenWidth - 60}
+          height={220}
           withDots={false}
           withShadow={false}
           chartConfig={{
@@ -46,21 +30,18 @@ const CollectionFrequency = () => {
             strokeWidth: 2,
           }}
         />
-
+        
         {/* Legends */}
         <View className="flex-row justify-center mt-2">
-          <View className="flex-row items-center mx-2">
-            <View className="w-[24px] h-[10px] bg-brand-100 mr-1" />
-            <Text className="text-white-500 text-caption">Bin A</Text>
-          </View>
-          <View className="flex-row items-center mx-2">
-            <View className="w-[24px] h-[10px] bg-brand-200 mr-1" />
-            <Text className="text-white-500 text-caption">Bin B</Text>
-          </View>
-          <View className="flex-row items-center mx-2">
-            <View className="w-[24px] h-[10px] bg-brand-300 mr-1" />
-            <Text className="text-white-500 text-caption">Bin C</Text>
-          </View>
+          {datasets.map((bin, index) => (
+            <View key={index} className="flex-row items-center mx-2">
+              <View
+                className="w-[24px] h-[10px] mr-1"
+                style={{ backgroundColor: bin.color() }}
+              />
+              <Text className="text-white-500 text-caption">{bin.label}</Text>
+            </View>
+          ))}
         </View>
       </View>
     </View>
@@ -68,3 +49,4 @@ const CollectionFrequency = () => {
 };
 
 export default CollectionFrequency;
+
