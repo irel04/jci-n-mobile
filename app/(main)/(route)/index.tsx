@@ -1,6 +1,6 @@
 
 import { View, Text, Alert, Modal } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import OnDevelopment from "@/components/OnDevelopment";
 import GoogleMaps from "@/components/google-maps/GoogleMaps";
@@ -26,8 +26,12 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 	const [userPos, setUserPos] = useState(null)
 
 	const [showRoute, setShowRoute] = useState(false)
-	
+	const [showChoseModal, setShowChoseModal] = useState(false)
+	const pickerRef = useRef(null)
 
+	const [selectedBinId, setSelectedBinId] = useState(null)
+
+	// side effect for prompting user about permission on location sharing and navigation
 	useEffect(() => {
 		let locationWatcher: Location.LocationSubscription; // Declare the location watcher variable
 
@@ -115,7 +119,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 		// 		console.log('Location watcher stopped');
 		// 	}
 		// };
-	}, []); // Add dependencies if needed
+	}, []); 
 	
 
 	// Trigger fetch user location
@@ -132,7 +136,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 				const { data: user } = await supabase.from("users_details").select("id").eq("auth_id", userAuth.user.id)
 
 
-				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat)`)
+				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat), color, id`)
 
 				
 
@@ -143,7 +147,9 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 
 				const flattenData = data.map(bin => {
 					return {
+						id: bin.id,
 						title: bin.set,
+						bin_color: bin.color,
 						longitude: bin.location[0].lng,
 						latitude: bin.location[0].lat,
 						type: "bin"
@@ -151,7 +157,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 				})
 
 
-				setPositions((pos: any) => [...pos, ...flattenData])
+				setPositions(flattenData)
 
 
 			} catch (error) {
@@ -192,24 +198,50 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 		fetchBinLocation()
 	}, [])
 
+	// This function is for recording changes via the dropdowns -- it feeds the record for handlecontinue
+	function handleSelectBin(binId: any){
+		setSelectedBinId(binId)
+	}
+
+	// Function for showing the actual polyline/route on the maps 
+	function handleContinueOnRoute(){
+		setShowRoute(true)
+		setShowChoseModal(!showChoseModal)
+	}
+
+	// This is for the show route button where it is parameter for the choose modal 
+	function handleOnPressShowRoute (){
+		if(!showRoute){
+			setShowChoseModal(!showChoseModal)
+		} else {
+			setShowRoute(!showRoute)
+		}
+
+	}
+
 
 	return (
 		// <OnDevelopment/>
 		<View className="flex-auto flex w-full h-full relative">
 			{showButton && <View className="absolute right-5 top-5 z-10">
-				<CustomButton styleType={StyleType.BRAND_PRIMARY} width="w-32" onPress={() => setShowRoute(!showRoute)}>
+				<CustomButton styleType={StyleType.BRAND_PRIMARY} width="w-32" onPress={handleOnPressShowRoute}>
 					<Text className="text-white-500 text-sm">{showRoute ? "Hide Route" : "Show Route"}</Text>
 				</CustomButton>
 			</View>}
-			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showRoute={showRoute}/>}
+			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showRoute={showRoute} selectedBin={selectedBinId}/>}
 
 			{/* Modal */}
-			<CustomModal isVisible={showRoute}>
-				<View className="bg-white-500 p-5 rounded-lg shadow-lg flex justify-center items-center">
-					<SelectBinToRouteModal/>
-					<CustomButton styleType={StyleType.DESTRUCTIVE_SECONDARY} width="w-36" onPress={() => setShowRoute(!showRoute)}>
-						<Text>Cancel</Text>
-					</CustomButton>
+			<CustomModal isVisible={showChoseModal}>
+				<View className="bg-white-500 p-5 rounded-lg shadow-lg flex justify-center items-center w-3/4 gap-10">
+					<SelectBinToRouteModal bins={positions} ref={pickerRef} handleSelectValue={handleSelectBin}/>
+					<View className="gap-2">
+						<CustomButton styleType={StyleType.BRAND_PRIMARY} width="w-36" onPress={handleContinueOnRoute}>
+							<Text className="text-white-500">Continue</Text>
+						</CustomButton>
+						<CustomButton styleType={StyleType.DESTRUCTIVE_SECONDARY} width="w-36" onPress={() => setShowChoseModal(!showChoseModal)}>
+							<Text>Cancel</Text>
+						</CustomButton>
+					</View>
 				</View>
 			</CustomModal>
 		</View>

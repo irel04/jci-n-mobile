@@ -16,21 +16,22 @@ interface MarkerCoordinate {
   latitude: number;
   longitude: number;
   title?: string;
-  type?: string
+  type?: string,
+  id: string
 }
 
 interface GoogleMapsInterface {
   markerCoordinates: MarkerCoordinate[];
   movingMarkerCoords: MarkerCoordinate,
-  showRoute?: boolean
+  showRoute?: boolean,
+  selectedBin: string
 }
 
-const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute}: GoogleMapsInterface) => {
+const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selectedBin}: GoogleMapsInterface) => {
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef(null)
 
   const [userCoords, setUserCoords] = useState({ ...movingMarkerCoords })
-  const [destination, setDestination] = useState(null)
 
   // This susbcribes to changes happen on the user location
   useEffect(() => {
@@ -40,9 +41,9 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute}: GoogleM
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'users_details' },
         (payload) => {
-          const { lng: longitude, lat: latitude, first_name } = payload.new
+          const { lng: longitude, lat: latitude, first_name, id } = payload.new
 
-          const newUserCoords = { longitude, latitude, title: first_name }
+          const newUserCoords = { longitude, latitude, title: first_name, id }
           const newCoordinates = [
             ...markerCoordinates.map(bin => {
               const {longitude, latitude} = bin
@@ -90,7 +91,8 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute}: GoogleM
 
       {/* {showRoute && <Polyline coordinates={[userCoords, ...markerCoordinates]} strokeWidth={5} strokeColor="red"/>} */}
 
-      {showRoute && destination && <MapViewDirections origin={userCoords} destination={destination} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="red" strokeWidth={5} precision="high"/>}
+      {/* Ensure showroute and selected bin is true and has value respectively before triggerring polyline for direction */}
+      {showRoute && selectedBin && <MapViewDirections origin={userCoords} destination={markerCoordinates.filter(bin => bin.id === selectedBin)[0]} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="#0E46A3" strokeWidth={8} precision="high"/>}
 
       {markerCoordinates.map((coord, index) => {
         const { type, title, ...position } = coord;
