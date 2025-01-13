@@ -33,7 +33,7 @@ const Main = () => {
 				</View>
 
 				<View className="flex h-52 mt-5 border-brand-700 border-2 rounded-xl p-1">
-					<Route showPolyline={false}/>
+					<Route showButton={false}/>
 				</View>
 			</ScrollView>
 		</View>

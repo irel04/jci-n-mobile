@@ -7,21 +7,23 @@ import GoogleMaps from "@/components/google-maps/GoogleMaps";
 import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
 import * as Location from "expo-location"
+import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 
 interface RouteComponent {
-	showPolyline?: boolean
+	showButton?: boolean
 }
 
 interface UpdateLocation {
 	latitude: number,
-	longitude: number
+	longitude: number,
 }
 
-const Routes = ({ showPolyline=true }: RouteComponent) => {
+const Routes = ({ showButton = true }: RouteComponent) => {
 
 	const [positions, setPositions] = useState([])
 	const [userPos, setUserPos] = useState(null)
-	
+
+	const [showRoute, setShowRoute] = useState(false)
 	
 
 	useEffect(() => {
@@ -191,8 +193,13 @@ const Routes = ({ showPolyline=true }: RouteComponent) => {
 
 	return (
 		// <OnDevelopment/>
-		<View className="flex-auto flex w-full h-full">
-			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showPolyLine={showPolyline }/>}
+		<View className="flex-auto flex w-full h-full relative">
+			{showButton && <View className="absolute right-5 top-5 z-10">
+				<CustomButton styleType={StyleType.BRAND_PRIMARY} width="w-32" onPress={() => setShowRoute(!showRoute)}>
+					<Text className="text-white-500 text-sm">{showRoute ? "Hide Route" : "Show Route"}</Text>
+				</CustomButton>
+			</View>}
+			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showRoute={showRoute}/>}
 		</View>
 	)
 }

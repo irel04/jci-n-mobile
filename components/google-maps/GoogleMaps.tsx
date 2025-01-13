@@ -6,10 +6,10 @@ import { supabase } from "@/utils/supabase";
 import MapViewDirections from "react-native-maps-directions"
 
 const INITIAL_REGION = {
-  latitude: 14.5895,
-  longitude: 121.0152,
-  latitudeDelta: 0.0922,
-  longitudeDelta: 0.0421,
+  latitude: 14.598820,
+  longitude: 121.007996,
+  latitudeDelta: 0.00822,
+  longitudeDelta: 0.00821,
 };
 
 interface MarkerCoordinate {
@@ -22,15 +22,15 @@ interface MarkerCoordinate {
 interface GoogleMapsInterface {
   markerCoordinates: MarkerCoordinate[];
   movingMarkerCoords: MarkerCoordinate,
-  showPolyLine?: boolean
+  showRoute?: boolean
 }
 
-const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showPolyLine}: GoogleMapsInterface) => {
+const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute}: GoogleMapsInterface) => {
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef(null)
 
   const [userCoords, setUserCoords] = useState({ ...movingMarkerCoords })
-
+  const [destination, setDestination] = useState(null)
 
   // This susbcribes to changes happen on the user location
   useEffect(() => {
@@ -42,11 +42,22 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showPolyLine}: Goog
         (payload) => {
           const { lng: longitude, lat: latitude, first_name } = payload.new
 
-          const newCoords = { longitude, latitude, title: first_name }
+          const newUserCoords = { longitude, latitude, title: first_name }
+          const newCoordinates = [
+            ...markerCoordinates.map(bin => {
+              const {longitude, latitude} = bin
+              return {
+                latitude,
+                longitude
+              }
+            }),
+            newUserCoords
+          ];
+      
 
-          setUserCoords(newCoords)
-          mapRef.current?.fitToCoordinates([newCoords, ...markerCoordinates], {
-            edgePadding: { top: 20, right: 20, bottom: 20, left: 20 },
+          setUserCoords(newUserCoords)
+          mapRef.current?.fitToCoordinates(newCoordinates, {
+            edgePadding: { top: 5, right: 5, bottom: 5, left: 5 },
             animated: true,
           })
         }
@@ -69,7 +80,7 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showPolyLine}: Goog
             longitude: coord.longitude,
           }));
 
-          mapRef.current.fitToCoordinates([userCoords, ...coordinates], {
+          mapRef.current.fitToCoordinates([...coordinates, userCoords], {
             edgePadding: { top: 20, right: 20, bottom: 20, left: 20 },
             animated: true,
           });
@@ -77,9 +88,9 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showPolyLine}: Goog
       }}
     >
 
-      {/* {showPolyLine && <Polyline coordinates={[userCoords, ...markerCoordinates]} strokeWidth={5} strokeColor="red"/>} */}
+      {/* {showRoute && <Polyline coordinates={[userCoords, ...markerCoordinates]} strokeWidth={5} strokeColor="red"/>} */}
 
-      {/* {showPolyLine &&  <MapViewDirections origin={userCoords} destination={markerCoordinates[0]} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="red" strokeWidth={5} precision="high"/>} */}
+      {showRoute && destination && <MapViewDirections origin={userCoords} destination={destination} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="red" strokeWidth={5} precision="high"/>}
 
       {markerCoordinates.map((coord, index) => {
         const { type, title, ...position } = coord;
