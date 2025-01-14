@@ -3,12 +3,9 @@ import React, { useState } from 'react'
 import { timeAgo } from "@/utils/helper"
 import { supabase } from "@/utils/supabase"
 import { router } from "expo-router"
+import { Bins } from "@/utils/schemas"
 
 
-interface Bins {
-    color: string,
-    set: string,
-}
 
 interface NotificationObj {
     notification_type: string,

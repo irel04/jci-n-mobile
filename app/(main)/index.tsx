@@ -8,12 +8,9 @@ import Route from "@/app/(main)/(route)/index"
 import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
 import LoaderKit from "react-native-loader-kit"
+import { DailySummarySchema, UserSchema } from "@/utils/schemas";
 
-interface UserSchema {
-	first_name: string,
-	last_name: string,
-	id: string
-}
+
 
 const Main = () => {
 
@@ -24,18 +21,35 @@ const Main = () => {
 	const parseSession = JSON.parse(session)
 
 	const currentDate = new Date()
+	const [dailySummary, setDailySummary] = useState<DailySummarySchema[]>([])
 
+	const getUser = async () => {
+		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id").eq("auth_id", parseSession.session.user.id)
+
+		if (error) throw error
+
+		setCurrentUser(data)
+	}
+
+	const getDailySummary = async () => {
+		const { data, error } = await supabase.from("daily_summary").select("*, bins(*)").eq("date", currentDate.toISOString().split("T")[0])
+
+		if(error) throw error
+
+		console.log(data)
+
+		setDailySummary(data)
+	}
 
 
 	useEffect(() => {
-		const getUser = async () => {
+		const fetchData = async () => {
 			try {
-				const { data, error } = await supabase.from("users_details").select("first_name, last_name, id").eq("auth_id", parseSession.session.user.id) 
+				// Get user
+				await getUser()
 
-				if(error) throw error
-
-				console.log(data)
-				setCurrentUser(data)
+				// get daily summary
+				await getDailySummary()
 
 			} catch (error) {
 				console.error(error)
@@ -44,7 +58,7 @@ const Main = () => {
 			}
 		}
 
-		getUser()
+		fetchData()
 	}, [])
 	
 
@@ -70,7 +84,7 @@ const Main = () => {
 							</View>
 							
 							<View className="flex-col justify-between p-3 rounded-xl bg-brand-700 items-left gap-2 w-[65%]">
-								<OverflowEvents />
+								<OverflowEvents daily_summary={dailySummary}/>
 							</View>
 						</View>
 

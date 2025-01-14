@@ -1,10 +1,16 @@
+import { DailySummarySchema } from "@/utils/schemas";
 import React from "react";
 import { View, Text, Dimensions } from "react-native";
 import { PieChart } from "react-native-chart-kit";
 
 const screenWidth = Dimensions.get("window").width;
 
-const Overflow = () => {
+interface OverflowProps {
+    daily_summary: DailySummarySchema[],
+
+}
+
+const Overflow = ({ daily_summary }: OverflowProps) => {
     const data = [
         {
             name: "Bin A",
@@ -28,6 +34,12 @@ const Overflow = () => {
             legendFontSize: 12,
         },
     ];
+
+    const newData = daily_summary.map(bin => {
+        return {
+            name: `${bin.}`
+        }
+    })
 
     return (
         <View className="flex-row items-center justify-center">
