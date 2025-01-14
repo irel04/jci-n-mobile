@@ -52,6 +52,7 @@
     "react-native-circular-progress": "^1.4.1",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-gifted-charts": "^1.4.47",
+    "react-native-loader-kit": "^2.0.8",
     "react-native-maps": "1.18.0",
     "react-native-maps-directions": "^1.9.0",
     "react-native-modal-datetime-picker": "^18.0.0",
