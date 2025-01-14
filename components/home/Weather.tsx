@@ -96,7 +96,10 @@ const getWeatherIcon = (condition) => {
 };
 */
 
-export default function Weather() {
+interface WeatherProps {
+    currentDate: string
+}
+export default function Weather({ currentDate }: WeatherProps) {
     // Hardcoded values for the design
     const location = 'Sta Mesa, Manila';
     const date = 'Saturday, November 30';
@@ -107,7 +110,7 @@ export default function Weather() {
         <View className="flex-row justify-between p-5 rounded-xl bg-brand-700 items-center">
             <View className="flex-col gap-[7px]">
                 <Text className="text-h5 text-white-500 font-bold font-sans">{location}</Text>
-                <Text className="text-body text-white-500 font-sans">{date}</Text>
+                <Text className="text-body text-white-500 font-sans">{currentDate}</Text>
             </View>
 
             <View className="flex-row gap-[5px] items-center">

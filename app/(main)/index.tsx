@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Weather from '@/components/home/Weather';
 import SolarPower from '@/components/home/SolarPower';
 import TrashBinLevel from '@/components/home/TrashBinLevel';
@@ -7,6 +7,7 @@ import OverflowEvents from '@/components/home/OverflowEvents';
 import Route from "@/app/(main)/(route)/index"
 import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
+import LoaderKit from "react-native-loader-kit"
 
 interface UserSchema {
 	first_name: string,
@@ -15,13 +16,16 @@ interface UserSchema {
 }
 
 const Main = () => {
-	const firstname = "Jonas Brian";
 
 	const [currentUser, setCurrentUser] = useState<UserSchema[]>([])
 	const [loading, setLoading] = useState(true);
 
 	const { session } = useSession()
 	const parseSession = JSON.parse(session)
+
+	const currentDate = new Date()
+
+
 
 	useEffect(() => {
 		const getUser = async () => {
@@ -40,22 +44,25 @@ const Main = () => {
 			}
 		}
 
-		// getUser()
+		getUser()
 	}, [])
 	
 
 	return (
-		<View className="flex-1 bg-white">
-			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }}>
+		<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16, height: "100%" }} className="">
 				{loading ? (
-					<ActivityIndicator size="large" color="#0000ff" />
+				<View className=" h-full flex items-center justify-center">
+					<LoaderKit style={{ width: 50, height: 50 }}
+						name={'BallPulse'} // Optional: see list of animations below
+						color={'#0E46A3'} />
+				</View>
 				) : (
 					<>
 						<View>
 							<Text className="text-left text-h5 font-[700] pb-5">Welcome, {currentUser[0].first_name}!</Text>
 						</View>
 
-						<Weather />
+						<Weather currentDate={currentDate.toDateString()}/>
 
 						<View className="flex-row gap-[5%] mt-5">
 							<View className="w-[30%]">
@@ -77,7 +84,6 @@ const Main = () => {
 					</>
 				)}
 			</ScrollView>
-		</View>
 	);
 };
 
