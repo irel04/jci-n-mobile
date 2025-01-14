@@ -36,11 +36,9 @@ const Main = () => {
 
 		if(error) throw error
 
-		console.log(data)
 
 		setDailySummary(data)
 	}
-
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -59,6 +57,22 @@ const Main = () => {
 		}
 
 		fetchData()
+	}, [])
+
+
+	// Make it realtime using subscribe
+	useEffect(() => {
+
+		const channels = supabase.channel('custom-update-channel')
+			.on(
+				'postgres_changes',
+				{ event: 'UPDATE', schema: 'public', table: 'daily_summary' },
+				(payload) => {
+					getDailySummary()
+					console.log("changes receieved")
+				}
+			)
+			.subscribe()
 	}, [])
 	
 
@@ -89,7 +103,7 @@ const Main = () => {
 						</View>
 
 						<View>
-							<TrashBinLevel />
+							<TrashBinLevel daily_summary={dailySummary}/>
 						</View>
 
 						<View className="flex h-52 mt-5 border-brand-700 border-2 rounded-xl p-1">

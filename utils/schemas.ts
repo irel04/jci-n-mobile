@@ -2,6 +2,7 @@
 export interface Bins {
     color: string,
     set: string,
+	id?: string
 }
 
 export interface UserSchema {
@@ -16,5 +17,6 @@ export interface DailySummarySchema {
 	current_fill_level: number,
 	usage: number,
 	fullness_100_count: number,
-	date: string
+	date: string,
+	bins: Bins
 }

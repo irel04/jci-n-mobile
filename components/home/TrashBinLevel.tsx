@@ -3,17 +3,30 @@ import React from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Feather from '@expo/vector-icons/Feather';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { DailySummarySchema } from "@/utils/schemas";
 
-const bins = [
-    { id: 'A', level: '50%' },
-    { id: 'B', level: '90%' },
-    { id: 'C', level: '30%' },
-];
+// const bins = [
+//     { id: 'A', level: '50%' },
+//     { id: 'B', level: '90%' },
+//     { id: 'C', level: '30%' },
+// ];
 
+interface TrashBinLevelProps {
+    daily_summary: DailySummarySchema[]
+}
 
-export default function TrashBinLevel() {
+export default function TrashBinLevel({ daily_summary }: TrashBinLevelProps) {
+
+    const bins = daily_summary.map((bin, index) => {
+        return {
+            id: bin.bins.id,
+            color: bin.bins.color,
+            level: bin.current_fill_level
+        }
+    })
+
     const averageLevel = Math.round(
-        bins.reduce((total, bin) => total + parseFloat(bin.level), 0) / bins.length
+        bins.reduce((total, bin) => total + bin.level, 0) / bins.length
     );
 
 
@@ -29,9 +42,9 @@ export default function TrashBinLevel() {
                         <View key={bin.id} className="flex-row justify-start gap-6 items-center">
                             <View className="flex-row gap-2 items-center">
                                 <Feather name="trash" size={15} color="white" />
-                                <Text className="text-body font-semibold text-white-500">{`Bin ${bin.id}`}</Text>
+                                <Text className="text-body font-semibold text-white-500">{`Bin ${bin.color}`}</Text>
                             </View>
-                            <Text className="text-base text-white-500">{bin.level}</Text>
+                            <Text className="text-base text-white-500">{bin.level} %</Text>
                         </View>
                     ))}
                 </View>
@@ -41,7 +54,7 @@ export default function TrashBinLevel() {
                         size={100} // Size of the progress bar
                         width={15} // Thickness of the bar
                         fill={averageLevel} // Percentage to fill
-                        tintColor="#1362E1" // Progress color
+                        tintColor={averageLevel < 80 ? "#1362E1" : averageLevel >= 80 && averageLevel < 100 ? "#FF6D1C" : "#CF1919" } // Progress color
                         backgroundColor="#C2D7FA" // Background color
                         lineCap='round' // Rounded edges
                     >
