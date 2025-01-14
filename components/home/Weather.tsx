@@ -97,9 +97,10 @@ const getWeatherIcon = (condition) => {
 */
 
 interface WeatherProps {
-    currentDate: string
+    currentDate: string,
+    degree: string
 }
-export default function Weather({ currentDate }: WeatherProps) {
+export default function Weather({ currentDate, degree }: WeatherProps) {
     // Hardcoded values for the design
     const location = 'Sta Mesa, Manila';
     const date = 'Saturday, November 30';
@@ -109,12 +110,12 @@ export default function Weather({ currentDate }: WeatherProps) {
     return (
         <View className="flex-row justify-between p-5 rounded-xl bg-brand-700 items-center">
             <View className="flex-col gap-[7px]">
-                <Text className="text-h5 text-white-500 font-bold font-sans">{location}</Text>
+                <Text className="text-title text-white-500 font-bold font-sans">{location}</Text>
                 <Text className="text-body text-white-500 font-sans">{currentDate}</Text>
             </View>
 
             <View className="flex-row gap-[5px] items-center">
-                <Text className="text-h3 font-bold text-white-500 font-sans">{temperature}</Text>
+                <Text className="text-h4 font-bold text-white-500 font-sans">{degree}</Text>
                 <Feather name={condition} size={32} color="white" />
             </View>
         </View>

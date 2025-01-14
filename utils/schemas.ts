@@ -8,7 +8,9 @@ export interface Bins {
 export interface UserSchema {
 	first_name: string,
 	last_name: string,
-	id: string
+	id: string,
+	lng?: number,
+	lat?: number
 }
 
 

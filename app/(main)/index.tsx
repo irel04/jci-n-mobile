@@ -23,12 +23,14 @@ const Main = () => {
 	const currentDate = new Date()
 	const [dailySummary, setDailySummary] = useState<DailySummarySchema[]>([])
 
+	const [currentWeather, setCurrentWeather] = useState(null)
+
 	const getUser = async () => {
-		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id").eq("auth_id", parseSession.session.user.id)
+		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id, lng, lat").eq("auth_id", parseSession.session.user.id)
 
 		if (error) throw error
-
-		setCurrentUser(data)
+		
+		return data
 	}
 
 	const getDailySummary = async () => {
@@ -40,14 +42,30 @@ const Main = () => {
 		setDailySummary(data)
 	}
 
+	const getWeather = async (lat: number, lon: number) => {
+		const API_KEY = process.env.EXPO_PUBLIC_OPWKEY; // Replace with your OpenWeatherMap API key
+		const API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+
+		const response = await fetch(API_URL);
+		if (!response.ok) {
+			throw new Error('Failed to fetch weather data');
+		}
+		const data = await response.json();
+
+		setCurrentWeather(data)
+	};
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				// Get user
-				await getUser()
+				const user = await getUser()
+				setCurrentUser(user)
 
 				// get daily summary
 				await getDailySummary()
+
+				await getWeather(user[0].lat, user[0].lng)
 
 			} catch (error) {
 				console.error(error)
@@ -90,7 +108,7 @@ const Main = () => {
 							<Text className="text-left text-h5 font-[700] pb-5">Welcome, {currentUser[0].first_name}!</Text>
 						</View>
 
-						<Weather currentDate={currentDate.toDateString()}/>
+						<Weather currentDate={currentDate.toDateString()} degree={`${currentWeather.main.feels_like}°`}/>
 
 						<View className="flex-row gap-[5%] mt-5">
 							<View className="w-[30%]">
