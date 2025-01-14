@@ -55,25 +55,26 @@ const Main = () => {
 		setCurrentWeather(data)
 	};
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				// Get user
-				const user = await getUser()
-				setCurrentUser(user)
+	const fetchData = async () => {
+		try {
+			// Get user
+			const user = await getUser()
+			setCurrentUser(user)
 
-				// get daily summary
-				await getDailySummary()
+			// get daily summary
+			await getDailySummary()
 
-				await getWeather(user[0].lat, user[0].lng)
+			await getWeather(user[0].lat, user[0].lng)
 
-			} catch (error) {
-				console.error(error)
-			} finally {
-				setLoading(false);
-			}
+		} catch (error) {
+			console.error(error)
+		} finally {
+			setLoading(false);
 		}
+	}
 
+	useEffect(() => {
+		
 		fetchData()
 	}, [])
 
@@ -81,23 +82,24 @@ const Main = () => {
 	// Make it realtime using subscribe
 	useEffect(() => {
 
-		const channels = supabase.channel('custom-update-channel')
-			.on(
+		const channels = supabase.channel('daily-summary-changes').on(
 				'postgres_changes',
 				{ event: 'UPDATE', schema: 'public', table: 'daily_summary' },
-				(payload) => {
-					console.log("changes receieved")
-					getDailySummary()
-				}
-			)
-			.subscribe()
+				() => {
+					fetchData()
+				}).subscribe()
+		
+		return () => {
+			supabase.removeChannel(channels);
+		};
+
 	}, [])
 	
 
 	return (
 		<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }} >
 				{loading ? (
-				<View className=" h-full flex items-center justify-center">
+				<View className="h-screen flex items-center justify-center">
 					<LoaderKit style={{ width: 50, height: 50 }}
 						name={'BallPulse'} // Optional: see list of animations below
 						color={'#0E46A3'} />
