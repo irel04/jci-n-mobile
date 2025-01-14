@@ -13,7 +13,7 @@ export enum StyleType {
 interface ButtonProps {
 	onPress: VoidFunction,
 	children?: ReactNode,
-	title: string,
+	// title: string,
 	styleType: StyleType,
 	width?: string
 

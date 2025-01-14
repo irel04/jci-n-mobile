@@ -7,13 +7,13 @@
     "icon": "./assets/images/pup-logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/pup-logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.kianirel.dev.thesismobile",
