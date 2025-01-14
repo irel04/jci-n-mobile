@@ -19,6 +19,6 @@ export interface DailySummarySchema {
 	current_fill_level: number,
 	usage: number,
 	fullness_100_count: number,
-	date: string,
-	bins: Bins
+	date?: string,
+	bins?: Bins
 }

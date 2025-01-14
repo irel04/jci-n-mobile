@@ -51,10 +51,10 @@ const Overflow = ({ daily_summary }: OverflowProps) => {
 
 
     return (
-        <View className="flex-row items-center justify-center">
-            <View className="w-full bg-brand-700 rounded-lg p-3 relative">
-                <Text className="text-white-500 text-title font-bold font-sans">Fullness Frequency</Text>
+        <View className="flex-1 bg-brand-700 rounded-xl relative p-3">
+            <Text className="flex-none text-white-500 text-title font-bold font-sans">Fullness Frequency</Text>
 
+            <View className="flex-1">
                 <PieChart
                     data={data}
                     width={screenWidth * 0.45} // Full width with padding
@@ -91,6 +91,7 @@ const Overflow = ({ daily_summary }: OverflowProps) => {
                     ))}
                 </View>
             </View>
+
         </View>
     );
 };

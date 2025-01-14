@@ -86,8 +86,8 @@ const Main = () => {
 				'postgres_changes',
 				{ event: 'UPDATE', schema: 'public', table: 'daily_summary' },
 				(payload) => {
-					getDailySummary()
 					console.log("changes receieved")
+					getDailySummary()
 				}
 			)
 			.subscribe()
@@ -95,7 +95,7 @@ const Main = () => {
 	
 
 	return (
-		<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16, height: "100%" }} className="">
+		<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }} >
 				{loading ? (
 				<View className=" h-full flex items-center justify-center">
 					<LoaderKit style={{ width: 50, height: 50 }}
@@ -110,14 +110,10 @@ const Main = () => {
 
 						<Weather currentDate={currentDate.toDateString()} degree={`${currentWeather.main.feels_like}°`}/>
 
-						<View className="flex-row gap-[5%] mt-5">
-							<View className="w-[30%]">
-								<SolarPower />
-							</View>
-							
-							<View className="flex-col justify-between p-3 rounded-xl bg-brand-700 items-left gap-2 w-[65%]">
-								<OverflowEvents daily_summary={dailySummary}/>
-							</View>
+						<View className="flex-row  mt-5 gap-2">
+							<SolarPower />
+
+							<OverflowEvents daily_summary={dailySummary} />
 						</View>
 
 						<View>
