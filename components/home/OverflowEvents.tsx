@@ -34,21 +34,21 @@ const Overflow = ({ weekly_summary }: OverflowProps) => {
     //         legendFontSize: 12,
     //     },
     // ];
-    const totalBinFullNess = weekly_summary.reduce((total, bin) => {
-        return total + bin.fullness_100_count
-    }, 0)
+    // const totalBinFullNess = weekly_summary.reduce((total, bin) => {
+    //     return total + bin.fullness_100_count
+    // }, 0)
 
-    const data = weekly_summary.map((bin, index) => {
-        return {
-            name: `${bin.bins.color}`,
-            color: ["#C2D7FA","#85B0F5","#4888EF"][index],
-            population: totalBinFullNess > 0 ? Math.round((bin.fullness_100_count / totalBinFullNess) * 100) : 0,
-            legendFontColor: "#FFFFFF",
-            legendFontSize: 12
-        }
-    })
+    // const data = weekly_summary.map((bin, index) => {
+    //     return {
+    //         name: `${bin.bins.color}`,
+    //         color: ["#C2D7FA","#85B0F5","#4888EF"][index],
+    //         population: totalBinFullNess > 0 ? Math.round((bin.fullness_100_count / totalBinFullNess) * 100) : 0,
+    //         legendFontColor: "#FFFFFF",
+    //         legendFontSize: 12
+    //     }
+    // })
 
-    const data2 = weekly_summary.reduce((acc, curr, index) => {
+    const data = weekly_summary.reduce((acc, curr, index) => {
         const existingBin = acc.find(bin => bin.id === curr.bin_id)
 
         if(existingBin){
@@ -69,7 +69,7 @@ const Overflow = ({ weekly_summary }: OverflowProps) => {
         return acc
     }, [])
 
-    console.log(data2)
+    console.log(data)
 
     return (
         <View className="flex-1 bg-brand-700 rounded-xl relative p-3">
@@ -77,7 +77,7 @@ const Overflow = ({ weekly_summary }: OverflowProps) => {
 
             <View className="flex-1">
                 <PieChart
-                    data={data2}
+                    data={data}
                     width={screenWidth * 0.45} // Full width with padding
                     height={screenWidth * 0.33}
                     chartConfig={{
@@ -93,7 +93,7 @@ const Overflow = ({ weekly_summary }: OverflowProps) => {
 
                 {/* Custom Legend with Rectangles Vertically on the right */}
                 <View className="absolute right-0 bottom-0 mr-2 mb-2">
-                    {data2.map((item, index) => (
+                    {data.map((item, index) => (
                         <View key={index} className="flex-row items-center mb-2 py-1/2">
                             {/* Rectangle Indicator */}
                             <View
