@@ -12,6 +12,14 @@ import { DailySummarySchema, UserSchema } from "@/utils/schemas";
 
 
 
+export const getDailySummary = async (date: string) => {
+	const { data, error } = await supabase.from("daily_summary").select("*, bins(*)").eq("date", date)
+
+	if(error) throw error
+
+	return data
+}
+
 const Main = () => {
 
 	const [currentUser, setCurrentUser] = useState<UserSchema[]>([])
@@ -27,21 +35,13 @@ const Main = () => {
 
 	const getUser = async () => {
 		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id, lng, lat").eq("auth_id", parseSession.session.user.id)
-
+	
 		if (error) throw error
-
+	
 		
 		return data
 	}
-
-	const getDailySummary = async () => {
-		const { data, error } = await supabase.from("daily_summary").select("*, bins(*)").eq("date", currentDate.toISOString().split("T")[0])
-
-		if(error) throw error
-
-		console.log(data)
-		setDailySummary(data)
-	}
+	
 
 	const getWeather = async (lat: number, lon: number) => {
 		const API_KEY = process.env.EXPO_PUBLIC_OPWKEY; // Replace with your OpenWeatherMap API key
@@ -63,7 +63,9 @@ const Main = () => {
 			setCurrentUser(user)
 
 			// get daily summary
-			await getDailySummary()
+			const daily_summary = await getDailySummary(currentDate.toISOString().split("T")[0])
+			setDailySummary(daily_summary)
+
 
 			await getWeather(user[0].lat, user[0].lng)
 
