@@ -6,11 +6,11 @@ import { PieChart } from "react-native-chart-kit";
 const screenWidth = Dimensions.get("window").width;
 
 interface OverflowProps {
-    daily_summary: DailySummarySchema[],
+    weekly_summary: any[],
 
 }
 
-const Overflow = ({ daily_summary }: OverflowProps) => {
+const Overflow = ({ weekly_summary }: OverflowProps) => {
     // const data = [
     //     {
     //         name: "Bin A",
@@ -34,11 +34,11 @@ const Overflow = ({ daily_summary }: OverflowProps) => {
     //         legendFontSize: 12,
     //     },
     // ];
-    const totalBinFullNess = daily_summary.reduce((total, bin) => {
+    const totalBinFullNess = weekly_summary.reduce((total, bin) => {
         return total + bin.fullness_100_count
     }, 0)
 
-    const data = daily_summary.map((bin, index) => {
+    const data = weekly_summary.map((bin, index) => {
         return {
             name: `${bin.bins.color}`,
             color: ["#C2D7FA","#85B0F5","#4888EF"][index],
@@ -48,6 +48,28 @@ const Overflow = ({ daily_summary }: OverflowProps) => {
         }
     })
 
+    const data2 = weekly_summary.reduce((acc, curr, index) => {
+        const existingBin = acc.find(bin => bin.id === curr.bin_id)
+
+        if(existingBin){
+            existingBin.population = existingBin.population + curr.fullness_100_count
+        } else {
+            const color = ["#C2D7FA","#85B0F5","#4888EF"][acc.length]
+            console.log(curr)
+            acc.push({
+                id: curr.bin_id,
+                name: curr.bins.color,
+                color: color,
+                population: curr.fullness_100_count,
+                legendFontColor: "#FFFFFF",
+                legendFontSize: 12
+
+            })
+        }
+        return acc
+    }, [])
+
+    console.log(data2)
 
     return (
         <View className="flex-1 bg-brand-700 rounded-xl relative p-3">
@@ -55,7 +77,7 @@ const Overflow = ({ daily_summary }: OverflowProps) => {
 
             <View className="flex-1">
                 <PieChart
-                    data={data}
+                    data={data2}
                     width={screenWidth * 0.45} // Full width with padding
                     height={screenWidth * 0.33}
                     chartConfig={{
@@ -71,7 +93,7 @@ const Overflow = ({ daily_summary }: OverflowProps) => {
 
                 {/* Custom Legend with Rectangles Vertically on the right */}
                 <View className="absolute right-0 bottom-0 mr-2 mb-2">
-                    {data.map((item, index) => (
+                    {data2.map((item, index) => (
                         <View key={index} className="flex-row items-center mb-2 py-1/2">
                             {/* Rectangle Indicator */}
                             <View

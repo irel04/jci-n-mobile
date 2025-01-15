@@ -59,6 +59,8 @@ const Main = () => {
 	const currentDate = new Date()
 	const [dailySummary, setDailySummary] = useState<DailySummarySchema[]>([])
 
+	const [weeklySummary, setWeeklySummary] = useState([])
+
 	const [currentWeather, setCurrentWeather] = useState(null)
 
 	const getUser = async () => {
@@ -93,6 +95,10 @@ const Main = () => {
 			// get daily summary
 			const daily_summary = await getDailySummary(currentDate.toISOString().split("T")[0])
 			setDailySummary(daily_summary)
+
+			const weekly_summary = await getWeeklySummary(currentDate.toISOString().split("T")[0])
+
+			setWeeklySummary(weekly_summary)
 
 
 			await getWeather(user[0].lat, user[0].lng)
@@ -146,7 +152,7 @@ const Main = () => {
 						<View className="flex-row  mt-5 gap-2">
 							<SolarPower />
 
-							<OverflowEvents daily_summary={dailySummary} />
+							<OverflowEvents weekly_summary={weeklySummary} />
 						</View>
 
 						<View>

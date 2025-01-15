@@ -24,6 +24,10 @@ const Statistics = () => {
   // Datasets
   const [trashBinUsageData, setTrashbinUsageData] = useState([])
   const [fullnessFrequencyData, setFullFrequencyData] = useState([])
+  const [collectionFrequencyData, setCollectionFrequencyData] = useState([])
+
+  // Color label
+  const color = ["rgba(133, 176, 245, 1)", "rgba(72, 136, 239, 1)", "rgba(19, 98, 255, 1)"]
 
   
 
@@ -60,20 +64,21 @@ const Statistics = () => {
             existingBin.data.push(curr.usage);
           } else {
             // If the bin_id does not exist, create a new entry with the data array
-            const color = ["rgba(133, 176, 245, 1)", "rgba(72, 136, 239, 1)", "rgba(19, 98, 255, 1)"][acc.length]
+            const labelColor = color[acc.length]
+            console.log(labelColor)
             acc.push({
               id: curr.bin_id,
               label: `Bin ${curr.bins.color}`,
               data: [curr.usage],
-              color: () => color
+              color: () => labelColor
             });
           }
 
           return acc;
         }, []);
         setTrashbinUsageData(usage)
+
         // Reduce the data needed for Fullness frequency of each bin in a week
-        
         const fullnessFrequency = weekly_summary.reduce((acc, curr) => {
           const existingBin = acc.find(item => item.id === curr.bin_id);
 
@@ -97,7 +102,27 @@ const Statistics = () => {
         }, [])
 
         setFullFrequencyData(fullnessFrequency)
-       
+
+        const collectionFrequency = weekly_summary.reduce((acc, curr, index) => {
+          const existingBin = acc.find(bin => bin.id === curr.bin_id)
+
+          if(existingBin){
+            existingBin.data.push(curr.total_pickups)
+          } else {
+            const labelColor = color[acc.length]
+            // console.log(labelColor)
+            acc.push({
+              id: curr.bin_id,
+              label: `Bin ${curr.bins.color}`,
+              data: [curr.total_pickups],
+              color: () => labelColor
+            })
+          }
+
+          return acc
+        }, [])
+
+        setCollectionFrequencyData(collectionFrequency)
       } catch (error) {
         console.error(error)
       } finally {
@@ -205,7 +230,7 @@ const Statistics = () => {
               <PickupFrequency />
             </View>
             <View className="my-5">
-              <CollectionFrequency datasets={CollectionFrequencyData[selectedBatch]} />
+              <CollectionFrequency datasets={collectionFrequencyData} />
             </View>
           </View>
         </ScrollView>
