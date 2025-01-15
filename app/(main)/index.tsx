@@ -20,6 +20,32 @@ export const getDailySummary = async (date: string) => {
 	return data
 }
 
+export const getWeeklySummary = async (date: string) => {
+	// Calculate the start and end of the week based on the provided date
+	const startOfWeek = new Date(date);
+	const endOfWeek = new Date(date);
+  
+	// Set the start of the week to be Sunday (or adjust based on your needs)
+	startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());  // Adjust for Sunday
+	endOfWeek.setDate(startOfWeek.getDate() + 6);  // Adjust for Saturday
+  
+	// Format dates to match the format in the database (if needed)
+	const formattedStartOfWeek = startOfWeek.toISOString().split('T')[0];
+	const formattedEndOfWeek = endOfWeek.toISOString().split('T')[0];
+  
+	// Query the database for data between the start and end of the week
+	const { data, error } = await supabase
+	  .from("daily_summary")
+	  .select("*, bins(*)")
+	  .gte("date", formattedStartOfWeek)  // Greater than or equal to the start date
+	  .lte("date", formattedEndOfWeek);   // Less than or equal to the end date
+  
+	if (error) throw error;
+  
+	return data;
+  };
+  
+
 const Main = () => {
 
 	const [currentUser, setCurrentUser] = useState<UserSchema[]>([])
