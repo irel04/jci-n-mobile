@@ -8,9 +8,9 @@ const Overflow = ({ datasets }) => {
   return (
     <View className="flex-row items-center justify-center">
       <View className="w-full bg-brand-700 rounded-lg p-4">
-        <Text className="text-white-500 text-title2 font-bold font-sans">Overflow Events</Text>
+        <Text className="text-white-500 text-title2 font-bold font-sans">Fullness Frequency</Text>
         <Text className="text-white-500 text-caption mb-4 font-sans">
-          This records the overflow occurrence per trash bins
+          This records the bins fullness freqency every week
         </Text>
 
         <PieChart
@@ -28,7 +28,7 @@ const Overflow = ({ datasets }) => {
         />
 
         {/* Custom Legend with Rectangles Vertically on the right */}
-        <View className="absolute right-0 top-0 mt-32 mr-10">
+        <View className="absolute right-0 bottom-0 mb-2 mr-2">
           {datasets.map((item, index) => (
             <View key={index} className="flex-row items-center mb-2 py-1/2">
               {/* Rectangle Indicator */}

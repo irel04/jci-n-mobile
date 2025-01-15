@@ -10,6 +10,7 @@ import { format, startOfWeek, endOfWeek, addDays } from 'date-fns';
 import { DailySummarySchema } from "@/utils/schemas";
 import { getDailySummary, getWeeklySummary } from "@/app/(main)";
 import LoaderKit from "react-native-loader-kit"
+import { CollectionFrequencyData, overflowEventsData} from "@/data";
 
 
 const Statistics = () => {
@@ -19,49 +20,12 @@ const Statistics = () => {
 
   const [isLoading, setIsloading] = useState(true)
   const currentDate = new Date()
-  const [dailySummary, setDailySummary] = useState<DailySummarySchema[]>([])
+  
+  // Datasets
+  const [trashBinUsageData, setTrashbinUsageData] = useState([])
+  const [fullnessFrequencyData, setFullFrequencyData] = useState([])
 
-  // Data for bin usage 
-  const trashBinUsageData = {
-    'Batch 1': [
-      { label: 'Bin A', data: [500, 450, 300, 500, 150, 350, 400], color: () => `rgba(133, 176, 245, 1)` },
-      { label: 'Bin B', data: [100, 250, 150, 200, 300, 450, 200], color: () => `rgba(72, 136, 239, 1)` },
-      { label: 'Bin C', data: [50, 150, 300, 250, 350, 100, 450], color: () => `rgba(19, 98, 255, 1)` },
-    ],
-    'Batch 2': [
-      { label: 'Bin D', data: [300, 200, 400, 300, 500, 200, 100], color: () => `rgba(133, 176, 245, 1)` },
-      { label: 'Bin E', data: [200, 100, 150, 300, 250, 400, 350], color: () => `rgba(72, 136, 239, 1)` },
-      { label: 'Bin F', data: [400, 300, 200, 100, 450, 350, 300], color: () => `rgba(19, 98, 255, 1)` },
-    ],
-  };
-
-  // Data for collection frequency
-  const CollectionFrequencyData = {
-    'Batch 1': [
-      { label: 'Bin A', data: [500, 450, 300, 500, 150, 350, 400], color: () => `rgba(133, 176, 245, 1)` },
-      { label: 'Bin B', data: [100, 250, 150, 200, 300, 450, 200], color: () => `rgba(72, 136, 239, 1)` },
-      { label: 'Bin C', data: [50, 150, 300, 250, 350, 100, 450], color: () => `rgba(19, 98, 255, 1)` },
-    ],
-    'Batch 2': [
-      { label: 'Bin D', data: [300, 200, 400, 300, 500, 200, 100], color: () => `rgba(133, 176, 245, 1)` },
-      { label: 'Bin E', data: [700, 100, 150, 300, 250, 400, 350], color: () => `rgba(72, 136, 239, 1)` },
-      { label: 'Bin F', data: [400, 300, 200, 100, 450, 350, 300], color: () => `rgba(19, 98, 255, 1)` },
-    ],
-  };
-
-  // data for overflow events
-  const overflowEventsData = {
-    "Batch 1": [
-      { name: "Bin A", population: 65, color: "#C2D7FA", legendFontColor: "#FFFFFF", legendFontSize: 12 },
-      { name: "Bin B", population: 25, color: "#85B0F5", legendFontColor: "#FFFFFF", legendFontSize: 12 },
-      { name: "Bin C", population: 10, color: "#4888EF", legendFontColor: "#FFFFFF", legendFontSize: 12 },
-    ],
-    "Batch 2": [
-      { name: "Bin D", population: 55, color: "#C2D7FA", legendFontColor: "#FFFFFF", legendFontSize: 12 },
-      { name: "Bin E", population: 30, color: "#85B0F5", legendFontColor: "#FFFFFF", legendFontSize: 12 },
-      { name: "Bin F", population: 15, color: "#4888EF", legendFontColor: "#FFFFFF", legendFontSize: 12 },
-    ],
-  };
+  
 
   // Generate week labels
   const generateWeekLabels = () => {
@@ -83,9 +47,57 @@ const Statistics = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const daily_summary = await getWeeklySummary(currentDate.toISOString().split("T")[0])
-        console.log(daily_summary) 
+        const weekly_summary = await getWeeklySummary(currentDate.toISOString().split("T")[0])
+        
+        // This manifest usage dataset
+        const usage = weekly_summary.reduce((acc, curr, index) => {
+          // Find if the bin_id already exists in the accumulator
+          const existingBin = acc.find(item => item.id === curr.bin_id);
 
+
+          if (existingBin) {
+            // If the bin_id exists, combine the current usage into the data array
+            existingBin.data.push(curr.usage);
+          } else {
+            // If the bin_id does not exist, create a new entry with the data array
+            const color = ["rgba(133, 176, 245, 1)", "rgba(72, 136, 239, 1)", "rgba(19, 98, 255, 1)"][acc.length]
+            acc.push({
+              id: curr.bin_id,
+              label: `Bin ${curr.bins.color}`,
+              data: [curr.usage],
+              color: () => color
+            });
+          }
+
+          return acc;
+        }, []);
+        setTrashbinUsageData(usage)
+        // Reduce the data needed for Fullness frequency of each bin in a week
+        
+        const fullnessFrequency = weekly_summary.reduce((acc, curr) => {
+          const existingBin = acc.find(item => item.id === curr.bin_id);
+
+          console.log("acc", acc)
+
+          if (existingBin) {
+            existingBin["population"] = existingBin["population"] + curr.fullness_100_count
+          } else {
+            const color = ["#C2D7FA", "#85B0F5", "#4888EF"][acc.length]
+            acc.push({
+              id: curr.bin_id,
+              name: `Bin ${curr.bins.color}`,
+              population: curr.fullness_100_count,
+              legendFontSize: 12,
+              legendFontColor: "#FFFFFF",
+              color
+            })
+          }
+
+          return acc
+        }, [])
+
+        setFullFrequencyData(fullnessFrequency)
+       
       } catch (error) {
         console.error(error)
       } finally {
@@ -184,10 +196,10 @@ const Statistics = () => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View className="flex-col justify-start items-center my-4 px-2">
             <View>
-              <BinUsage datasets={trashBinUsageData[selectedBatch]} />
+              <BinUsage datasets={trashBinUsageData} />
             </View>
             <View className="mt-5">
-              <Overflow datasets={overflowEventsData[selectedBatch]} />
+              <Overflow datasets={fullnessFrequencyData} />
             </View>
             <View className="mt-5">
               <PickupFrequency />
