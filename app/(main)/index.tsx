@@ -9,6 +9,7 @@ import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
 import LoaderKit from "react-native-loader-kit"
 import { DailySummarySchema, UserSchema } from "@/utils/schemas";
+import { startEndOfWeek } from "@/utils/helper";
 
 
 
@@ -21,18 +22,7 @@ export const getDailySummary = async (date: string) => {
 }
 
 export const getWeeklySummary = async (date: string) => {
-	// Calculate the start and end of the week based on the provided date
-	const startOfWeek = new Date(date);
-	const endOfWeek = new Date(date);
-  
-	// Set the start of the week to be Sunday (or adjust based on your needs)
-	startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());  // Adjust for Sunday
-	endOfWeek.setDate(startOfWeek.getDate() + 6);  // Adjust for Saturday
-
-  
-	// Format dates to match the format in the database (if needed)
-	const formattedStartOfWeek = startOfWeek.toISOString().split('T')[0];
-	const formattedEndOfWeek = endOfWeek.toISOString().split('T')[0];
+	const { formattedStartOfWeek, formattedEndOfWeek } = startEndOfWeek(date)
   
 	// Query the database for data between the start and end of the week
 	const { data, error } = await supabase

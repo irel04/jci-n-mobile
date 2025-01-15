@@ -11,7 +11,21 @@ import { DailySummarySchema } from "@/utils/schemas";
 import { getDailySummary, getWeeklySummary } from "@/app/(main)";
 import LoaderKit from "react-native-loader-kit"
 import { CollectionFrequencyData, overflowEventsData} from "@/data";
+import { supabase } from "@/utils/supabase";
+import { startEndOfWeek } from "@/utils/helper";
 
+const getPickup = async (date: string) => {
+
+  const { formattedEndOfWeekTimestamp, formattedStartOfWeekTimestamp } = startEndOfWeek(date)
+
+  const { data, error } = await supabase.from("pickups").select("*").gte("pickup_at", formattedStartOfWeekTimestamp).lte("pickup_at", formattedEndOfWeekTimestamp)
+
+  if(error) throw error
+
+  return data
+
+
+}
 
 const Statistics = () => {
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
@@ -25,11 +39,10 @@ const Statistics = () => {
   const [trashBinUsageData, setTrashbinUsageData] = useState([])
   const [fullnessFrequencyData, setFullFrequencyData] = useState([])
   const [collectionFrequencyData, setCollectionFrequencyData] = useState([])
+  const [staffPickupData, setStaffPickupData] = useState([])
 
   // Color label
   const color = ["rgba(133, 176, 245, 1)", "rgba(72, 136, 239, 1)", "rgba(19, 98, 255, 1)"]
-
-  
 
   // Generate week labels
   const generateWeekLabels = () => {
@@ -82,7 +95,6 @@ const Statistics = () => {
         const fullnessFrequency = weekly_summary.reduce((acc, curr) => {
           const existingBin = acc.find(item => item.id === curr.bin_id);
 
-          console.log("acc", acc)
 
           if (existingBin) {
             existingBin["population"] = existingBin["population"] + curr.fullness_100_count
@@ -123,6 +135,11 @@ const Statistics = () => {
         }, [])
 
         setCollectionFrequencyData(collectionFrequency)
+
+        const weekly_pickup = await getPickup(currentDate.toISOString().split("T")[0])
+
+        console.log(weekly_pickup)
+        
       } catch (error) {
         console.error(error)
       } finally {
