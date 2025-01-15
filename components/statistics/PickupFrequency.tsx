@@ -6,21 +6,14 @@ import { BarChart } from "react-native-gifted-charts";
 const PickupFrequency = () => {
   // Define bar data
   const barData = [
-    { value: 50, label: "1st Floor", labelWidth: 50, frontColor: "#C2D7FA", spacing: 2, },
-    { value: 60, frontColor: "#85B0F5", spacing: 2 },
-    { value: 42, frontColor: "#4888EF" },
-    
-    { value: 75, label: "2nd Floor", labelWidth: 50, frontColor: "#C2D7FA", spacing: 2 },
-    { value: 80, frontColor: "#85B0F5", spacing: 2, },
-    { value: 60, frontColor: "#4888EF" },
+    { value: 20, label: "Sun", frontColor: "#4888EF" },
+    { value: 45, label: "Mon", frontColor: "#4888EF"},
+    { value: 28, label: "Tues", frontColor: "#4888EF"},
+    { value: 80, label: "Wed", frontColor: "#4888EF"},
+    { value: 99, label: "Thurs", frontColor: "#4888EF"},
+    { value: 43, label: "Fri", frontColor: "#4888EF"},
+    { value: 43, label: "Sat", frontColor: "#4888EF"}
 
-    { value: 90, label: "3rd Floor", labelWidth: 50, frontColor: "#C2D7FA",spacing: 2},
-    { value: 70, frontColor: "#85B0F5", spacing: 2 },
-    { value: 80, frontColor: "#4888EF" },
-    
-    { value: 30, label: "4th Floor", labelWidth: 50, frontColor: "#C2D7FA", spacing: 2},
-    { value: 50, frontColor: "#85B0F5", spacing: 2, },
-    { value: 70, frontColor: "#4888EF" },
   ];
 
   return (
@@ -31,13 +24,13 @@ const PickupFrequency = () => {
           Pickup Frequency
         </Text>
         <Text className="text-white-500 text-caption mb-4 font-sans">
-          This records the frequency of trash bin pickup in CEA
+          Shows staff how many times he/she collects the garbage
         </Text>
 
         {/* Bar Chart */}
         <BarChart
           data={barData}
-          barWidth={17}
+          barWidth={23}
           spacing={10}
           maxValue={100}
           noOfSections={5}
@@ -51,17 +44,17 @@ const PickupFrequency = () => {
 
         {/* Legends */}
         <View className="flex-row justify-center mt-2">
-          <View className="flex-row items-center mx-2">
+          {/* <View className="flex-row items-center mx-2">
             <View className="w-[24px] h-[10px] bg-brand-100 mr-1" />
             <Text className="text-white-500 text-caption">Bin A</Text>
           </View>
           <View className="flex-row items-center mx-2">
             <View className="w-[24px] h-[10px] bg-brand-200 mr-1" />
             <Text className="text-white-500 text-caption">Bin B</Text>
-          </View>
+          </View> */}
           <View className="flex-row items-center mx-2">
             <View className="w-[24px] h-[10px] bg-brand-300 mr-1" />
-            <Text className="text-white-500 text-caption">Bin C</Text>
+            <Text className="text-white-500 text-caption">Number of collection perday</Text>
           </View>
         </View>
       </View>

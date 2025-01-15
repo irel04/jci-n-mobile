@@ -9,8 +9,34 @@ import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
 import LoaderKit from "react-native-loader-kit"
 import { DailySummarySchema, UserSchema } from "@/utils/schemas";
+import { startEndOfWeek } from "@/utils/helper";
 
 
+
+export const getDailySummary = async (date: string) => {
+	const { data, error } = await supabase.from("daily_summary").select("*, bins(*)").eq("date", date)
+
+	if(error) throw error
+
+	return data
+}
+
+export const getWeeklySummary = async (date: string) => {
+	const { formattedStartOfWeek, formattedEndOfWeek } = startEndOfWeek(date)
+  
+	// Query the database for data between the start and end of the week
+	const { data, error } = await supabase
+	  .from("daily_summary")
+	  .select("*, bins(*)")
+	  .gte("date", formattedStartOfWeek)  // Greater than or equal to the start date
+	  .lte("date", formattedEndOfWeek)
+	  
+  
+	if (error) throw error;
+  
+	return data;
+  };
+  
 
 const Main = () => {
 
@@ -23,25 +49,19 @@ const Main = () => {
 	const currentDate = new Date()
 	const [dailySummary, setDailySummary] = useState<DailySummarySchema[]>([])
 
+	const [weeklySummary, setWeeklySummary] = useState([])
+
 	const [currentWeather, setCurrentWeather] = useState(null)
 
 	const getUser = async () => {
 		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id, lng, lat").eq("auth_id", parseSession.session.user.id)
-
+	
 		if (error) throw error
-
+	
 		
 		return data
 	}
-
-	const getDailySummary = async () => {
-		const { data, error } = await supabase.from("daily_summary").select("*, bins(*)").eq("date", currentDate.toISOString().split("T")[0])
-
-		if(error) throw error
-
-		console.log(data)
-		setDailySummary(data)
-	}
+	
 
 	const getWeather = async (lat: number, lon: number) => {
 		const API_KEY = process.env.EXPO_PUBLIC_OPWKEY; // Replace with your OpenWeatherMap API key
@@ -63,7 +83,13 @@ const Main = () => {
 			setCurrentUser(user)
 
 			// get daily summary
-			await getDailySummary()
+			const daily_summary = await getDailySummary(currentDate.toISOString().split("T")[0])
+			setDailySummary(daily_summary)
+
+			const weekly_summary = await getWeeklySummary(currentDate.toISOString().split("T")[0])
+
+			setWeeklySummary(weekly_summary)
+
 
 			await getWeather(user[0].lat, user[0].lng)
 
@@ -116,7 +142,7 @@ const Main = () => {
 						<View className="flex-row  mt-5 gap-2">
 							<SolarPower />
 
-							<OverflowEvents daily_summary={dailySummary} />
+							<OverflowEvents weekly_summary={weeklySummary} />
 						</View>
 
 						<View>

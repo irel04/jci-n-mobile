@@ -68,7 +68,7 @@ const Signin = () => {
 					</Pressable>
 				</View>
 				<View className="justify-center items-center flex-auto h-1/6 gap-5 px-5">
-					<Text className="text-caption text-neutral-500 text-center">This is a mobile application developed for a research project titled "Enhancing Garbage Management: A Mobile-Integrated, Solar-Powered Intelligent Waste Collection System."</Text>
+					<Text className="text-caption text-neutral-500 text-center">This is a mobile application developed for a research project titled "Enhancing Garbage Management: A Mobile-Integrated, Solar-Powered Waste Collection System."</Text>
 				</View>
 			</View>
 		</View>

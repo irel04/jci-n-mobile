@@ -5,6 +5,7 @@ import { LineChart } from "react-native-chart-kit";
 const screenWidth = Dimensions.get("window").width;
 
 const BinUsage = ({ datasets }) => {
+  
   return (
     <View className="flex-row items-center justify-center">
       <View className="w-full bg-brand-700 rounded-lg p-4">
@@ -15,7 +16,7 @@ const BinUsage = ({ datasets }) => {
 
         <LineChart
           data={{
-            labels: ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"],
+            labels: ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"],
             datasets,
           }}
           width={screenWidth - 60}
