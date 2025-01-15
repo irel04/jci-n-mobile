@@ -29,6 +29,7 @@ const Main = () => {
 		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id, lng, lat").eq("auth_id", parseSession.session.user.id)
 
 		if (error) throw error
+
 		
 		return data
 	}
@@ -38,7 +39,7 @@ const Main = () => {
 
 		if(error) throw error
 
-
+		console.log(data)
 		setDailySummary(data)
 	}
 
@@ -110,7 +111,7 @@ const Main = () => {
 							<Text className="text-left text-h5 font-[700] pb-5">Welcome, {currentUser[0].first_name}!</Text>
 						</View>
 
-						<Weather currentDate={currentDate.toDateString()} degree={`${currentWeather.main.feels_like}°`}/>
+						<Weather currentDate={currentDate.toDateString()} degree={currentWeather.main.feels_like}/>
 
 						<View className="flex-row  mt-5 gap-2">
 							<SolarPower />

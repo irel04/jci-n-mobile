@@ -104,7 +104,7 @@ export default function Weather({ currentDate, degree }: WeatherProps) {
     // Hardcoded values for the design
     const location = 'Sta Mesa, Manila';
     const date = 'Saturday, November 30';
-    const temperature = '30°';
+    const temperature = `${parseFloat(degree).toFixed(1)}°`;
     const condition = 'sun'; // Feather icon name
 
     return (
@@ -115,7 +115,7 @@ export default function Weather({ currentDate, degree }: WeatherProps) {
             </View>
 
             <View className="flex-row gap-[5px] items-center">
-                <Text className="text-h4 font-bold text-white-500 font-sans">{degree}</Text>
+                <Text className="text-h4 font-bold text-white-500 font-sans">{temperature}</Text>
                 <Feather name={condition} size={32} color="white" />
             </View>
         </View>

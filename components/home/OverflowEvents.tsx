@@ -34,7 +34,6 @@ const Overflow = ({ daily_summary }: OverflowProps) => {
     //         legendFontSize: 12,
     //     },
     // ];
-
     const totalBinFullNess = daily_summary.reduce((total, bin) => {
         return total + bin.fullness_100_count
     }, 0)
@@ -43,7 +42,7 @@ const Overflow = ({ daily_summary }: OverflowProps) => {
         return {
             name: `${bin.bins.color}`,
             color: ["#C2D7FA","#85B0F5","#4888EF"][index],
-            population: Math.round((bin.fullness_100_count / totalBinFullNess) * 100),
+            population: totalBinFullNess > 0 ? Math.round((bin.fullness_100_count / totalBinFullNess) * 100) : 0,
             legendFontColor: "#FFFFFF",
             legendFontSize: 12
         }
