@@ -58,10 +58,10 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
 
 
           setUserCoords(newUserCoords)
-          mapRef.current?.fitToCoordinates(newCoordinates, {
-            edgePadding: { top: 5, right: 5, bottom: 5, left: 5 },
-            animated: true,
-          })
+          // mapRef.current?.fitToCoordinates(newCoordinates, {
+          //   edgePadding: { top: 5, right: 5, bottom: 5, left: 5 },
+          //   animated: true,
+          // })
         }
       )
       .subscribe()

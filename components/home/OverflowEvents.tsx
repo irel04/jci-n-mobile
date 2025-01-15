@@ -1,39 +1,59 @@
+import { DailySummarySchema } from "@/utils/schemas";
 import React from "react";
 import { View, Text, Dimensions } from "react-native";
 import { PieChart } from "react-native-chart-kit";
 
 const screenWidth = Dimensions.get("window").width;
 
-const Overflow = () => {
-    const data = [
-        {
-            name: "Bin A",
-            population: 65,
-            color: "#C2D7FA",
+interface OverflowProps {
+    daily_summary: DailySummarySchema[],
+
+}
+
+const Overflow = ({ daily_summary }: OverflowProps) => {
+    // const data = [
+    //     {
+    //         name: "Bin A",
+    //         population: 65,
+    //         color: "#C2D7FA",
+    //         legendFontColor: "#FFFFFF",
+    //         legendFontSize: 12,
+    //     },
+    //     {
+    //         name: "Bin B",
+    //         population: 25,
+    //         color: "#85B0F5",
+    //         legendFontColor: "#FFFFFF",
+    //         legendFontSize: 12,
+    //     },
+    //     {
+    //         name: "Bin C",
+    //         population: 10,
+    //         color: "#4888EF",
+    //         legendFontColor: "#FFFFFF",
+    //         legendFontSize: 12,
+    //     },
+    // ];
+    const totalBinFullNess = daily_summary.reduce((total, bin) => {
+        return total + bin.fullness_100_count
+    }, 0)
+
+    const data = daily_summary.map((bin, index) => {
+        return {
+            name: `${bin.bins.color}`,
+            color: ["#C2D7FA","#85B0F5","#4888EF"][index],
+            population: totalBinFullNess > 0 ? Math.round((bin.fullness_100_count / totalBinFullNess) * 100) : 0,
             legendFontColor: "#FFFFFF",
-            legendFontSize: 12,
-        },
-        {
-            name: "Bin B",
-            population: 25,
-            color: "#85B0F5",
-            legendFontColor: "#FFFFFF",
-            legendFontSize: 12,
-        },
-        {
-            name: "Bin C",
-            population: 10,
-            color: "#4888EF",
-            legendFontColor: "#FFFFFF",
-            legendFontSize: 12,
-        },
-    ];
+            legendFontSize: 12
+        }
+    })
+
 
     return (
-        <View className="flex-row items-center justify-center">
-            <View className="w-full bg-brand-700 rounded-lg p-3 relative">
-                <Text className="text-white-500 text-title font-bold font-sans">Overflow Events</Text>
+        <View className="flex-1 bg-brand-700 rounded-xl relative p-3">
+            <Text className="flex-none text-white-500 text-title font-bold font-sans">Fullness Frequency</Text>
 
+            <View className="flex-1">
                 <PieChart
                     data={data}
                     width={screenWidth * 0.45} // Full width with padding
@@ -70,6 +90,7 @@ const Overflow = () => {
                     ))}
                 </View>
             </View>
+
         </View>
     );
 };
