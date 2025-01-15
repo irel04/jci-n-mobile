@@ -11,43 +11,7 @@ interface OverflowProps {
 }
 
 const Overflow = ({ weekly_summary }: OverflowProps) => {
-    // const data = [
-    //     {
-    //         name: "Bin A",
-    //         population: 65,
-    //         color: "#C2D7FA",
-    //         legendFontColor: "#FFFFFF",
-    //         legendFontSize: 12,
-    //     },
-    //     {
-    //         name: "Bin B",
-    //         population: 25,
-    //         color: "#85B0F5",
-    //         legendFontColor: "#FFFFFF",
-    //         legendFontSize: 12,
-    //     },
-    //     {
-    //         name: "Bin C",
-    //         population: 10,
-    //         color: "#4888EF",
-    //         legendFontColor: "#FFFFFF",
-    //         legendFontSize: 12,
-    //     },
-    // ];
-    // const totalBinFullNess = weekly_summary.reduce((total, bin) => {
-    //     return total + bin.fullness_100_count
-    // }, 0)
-
-    // const data = weekly_summary.map((bin, index) => {
-    //     return {
-    //         name: `${bin.bins.color}`,
-    //         color: ["#C2D7FA","#85B0F5","#4888EF"][index],
-    //         population: totalBinFullNess > 0 ? Math.round((bin.fullness_100_count / totalBinFullNess) * 100) : 0,
-    //         legendFontColor: "#FFFFFF",
-    //         legendFontSize: 12
-    //     }
-    // })
-
+    
     const data = weekly_summary.reduce((acc, curr, index) => {
         const existingBin = acc.find(bin => bin.id === curr.bin_id)
 
@@ -55,7 +19,6 @@ const Overflow = ({ weekly_summary }: OverflowProps) => {
             existingBin.population = existingBin.population + curr.fullness_100_count
         } else {
             const color = ["#C2D7FA","#85B0F5","#4888EF"][acc.length]
-            console.log(curr)
             acc.push({
                 id: curr.bin_id,
                 name: curr.bins.color,
@@ -69,7 +32,6 @@ const Overflow = ({ weekly_summary }: OverflowProps) => {
         return acc
     }, [])
 
-    console.log(data)
 
     return (
         <View className="flex-1 bg-brand-700 rounded-xl relative p-3">

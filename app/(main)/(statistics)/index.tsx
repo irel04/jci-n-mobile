@@ -60,95 +60,111 @@ const Statistics = () => {
     return weeks;
   };
 
+  const fetchData = async () => {
+    try {
+      const weekly_summary = await getWeeklySummary(currentDate.toISOString().split("T")[0])
+      
+      // This manifest usage dataset
+      const usage = weekly_summary.reduce((acc, curr, index) => {
+        // Find if the bin_id already exists in the accumulator
+        const existingBin = acc.find(item => item.id === curr.bin_id);
+
+
+        if (existingBin) {
+          // If the bin_id exists, combine the current usage into the data array
+          existingBin.data.push(curr.usage);
+        } else {
+          // If the bin_id does not exist, create a new entry with the data array
+          const labelColor = color[acc.length]
+          // console.log(labelColor)
+          acc.push({
+            id: curr.bin_id,
+            label: `Bin ${curr.bins.color}`,
+            data: [curr.usage],
+            color: () => labelColor
+          });
+        }
+
+        return acc;
+      }, []);
+      setTrashbinUsageData(usage)
+
+      // Reduce the data needed for Fullness frequency of each bin in a week
+      const fullnessFrequency = weekly_summary.reduce((acc, curr) => {
+        const existingBin = acc.find(item => item.id === curr.bin_id);
+
+
+        if (existingBin) {
+          existingBin["population"] = existingBin["population"] + curr.fullness_100_count
+        } else {
+          const color = ["#C2D7FA", "#85B0F5", "#4888EF"][acc.length]
+          acc.push({
+            id: curr.bin_id,
+            name: `Bin ${curr.bins.color}`,
+            population: curr.fullness_100_count,
+            legendFontSize: 12,
+            legendFontColor: "#FFFFFF",
+            color
+          })
+        }
+
+        return acc
+      }, [])
+
+      setFullFrequencyData(fullnessFrequency)
+
+      const collectionFrequency = weekly_summary.reduce((acc, curr, index) => {
+        const existingBin = acc.find(bin => bin.id === curr.bin_id)
+
+        if(existingBin){
+          existingBin.data.push(curr.total_pickups)
+        } else {
+          const labelColor = color[acc.length]
+          // console.log(labelColor)
+          acc.push({
+            id: curr.bin_id,
+            label: `Bin ${curr.bins.color}`,
+            data: [curr.total_pickups],
+            color: () => labelColor
+          })
+        }
+
+        return acc
+      }, [])
+
+      setCollectionFrequencyData(collectionFrequency)
+
+      const weekly_pickup = await getPickup(currentDate.toISOString().split("T")[0])
+
+      // console.log(weekly_pickup)
+      
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsloading(false)
+    }
+  }
+
+
   // Load daily summary using the function component in main dashboard
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const weekly_summary = await getWeeklySummary(currentDate.toISOString().split("T")[0])
-        
-        // This manifest usage dataset
-        const usage = weekly_summary.reduce((acc, curr, index) => {
-          // Find if the bin_id already exists in the accumulator
-          const existingBin = acc.find(item => item.id === curr.bin_id);
-
-
-          if (existingBin) {
-            // If the bin_id exists, combine the current usage into the data array
-            existingBin.data.push(curr.usage);
-          } else {
-            // If the bin_id does not exist, create a new entry with the data array
-            const labelColor = color[acc.length]
-            console.log(labelColor)
-            acc.push({
-              id: curr.bin_id,
-              label: `Bin ${curr.bins.color}`,
-              data: [curr.usage],
-              color: () => labelColor
-            });
-          }
-
-          return acc;
-        }, []);
-        setTrashbinUsageData(usage)
-
-        // Reduce the data needed for Fullness frequency of each bin in a week
-        const fullnessFrequency = weekly_summary.reduce((acc, curr) => {
-          const existingBin = acc.find(item => item.id === curr.bin_id);
-
-
-          if (existingBin) {
-            existingBin["population"] = existingBin["population"] + curr.fullness_100_count
-          } else {
-            const color = ["#C2D7FA", "#85B0F5", "#4888EF"][acc.length]
-            acc.push({
-              id: curr.bin_id,
-              name: `Bin ${curr.bins.color}`,
-              population: curr.fullness_100_count,
-              legendFontSize: 12,
-              legendFontColor: "#FFFFFF",
-              color
-            })
-          }
-
-          return acc
-        }, [])
-
-        setFullFrequencyData(fullnessFrequency)
-
-        const collectionFrequency = weekly_summary.reduce((acc, curr, index) => {
-          const existingBin = acc.find(bin => bin.id === curr.bin_id)
-
-          if(existingBin){
-            existingBin.data.push(curr.total_pickups)
-          } else {
-            const labelColor = color[acc.length]
-            // console.log(labelColor)
-            acc.push({
-              id: curr.bin_id,
-              label: `Bin ${curr.bins.color}`,
-              data: [curr.total_pickups],
-              color: () => labelColor
-            })
-          }
-
-          return acc
-        }, [])
-
-        setCollectionFrequencyData(collectionFrequency)
-
-        const weekly_pickup = await getPickup(currentDate.toISOString().split("T")[0])
-
-        console.log(weekly_pickup)
-        
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setIsloading(false)
-      }
-    }
-
+    
     fetchData()
 
+  }, [])
+
+  useEffect(() => {
+
+    const channels = supabase.channel('stats_watch')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'daily_summary' },
+        (payload) => {
+          console.log("Changes received on statistics")
+          fetchData()
+        }
+      )
+      .subscribe()
   }, [])
 
   return (
