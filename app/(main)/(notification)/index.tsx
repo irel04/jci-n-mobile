@@ -3,16 +3,20 @@ import React, { useEffect, useState } from 'react'
 import NotificationCard from '@/components/notifications/NotificationCard'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { supabase } from "@/utils/supabase";
+import LoaderKit from "react-native-loader-kit"
+
 
 export default function NotificationTab() {
 
     const [upComingNotifications, setUpComingNotifications] = useState([])
 
+    const [isLoading, setIsloading] = useState(true)
+
     const fetchNotifications = async () => {
         try {
             const { data: userAuth } = await supabase.auth.getUser()
 
-            if(!userAuth.user) return
+            if (!userAuth.user) return
 
             const { data: user } = await supabase.from("users_details").select("id").eq("auth_id", userAuth.user.id)
 
@@ -22,6 +26,8 @@ export default function NotificationTab() {
 
         } catch (error) {
             console.error(error)
+        } finally {
+            setIsloading(false)
         }
     }
     // Initial fetching of notification to load 
@@ -58,21 +64,27 @@ export default function NotificationTab() {
 
     return (
         <>
-            <View className="flex-row justify-between p-5 items-end relative">
-                <View className='flex-row justify-between items-center gap-3'>
-                    <Text className="text-left text-h5 font-bold">Notifications</Text>
-                    <Ionicons name="notifications-outline" size={24} color="black" />
+            {isLoading ? <View className="h-screen flex items-center justify-center">
+					<LoaderKit style={{ width: 50, height: 50 }}
+						name={'BallPulse'} // Optional: see list of animations below
+						color={'#0E46A3'} />
+				</View> : <>
+                <View className="flex-row justify-between p-5 items-end relative">
+                    <View className='flex-row justify-between items-center gap-3'>
+                        <Text className="text-left text-h5 font-bold">Notifications</Text>
+                        <Ionicons name="notifications-outline" size={24} color="black" />
+                    </View>
+                    <TouchableOpacity>
+                        <Text className="text-body font-[400] text-brand-500">Mark all as read</Text>
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity>
-                    <Text className="text-body font-[400] text-brand-500">Mark all as read</Text>
-                </TouchableOpacity>
-            </View>
-            <ScrollView showsVerticalScrollIndicator={false} className='h-[95%] w-full'>
-                <View>
-                    {/* Pass the notifications data as props to NotificationCard */}
-                    <NotificationCard notifications={upComingNotifications} />
-                </View>
-            </ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false} className='h-[95%] w-full'>
+                    <View>
+                        {/* Pass the notifications data as props to NotificationCard */}
+                        <NotificationCard notifications={upComingNotifications} />
+                    </View>
+                </ScrollView>
+            </>}
         </>
     )
 }
