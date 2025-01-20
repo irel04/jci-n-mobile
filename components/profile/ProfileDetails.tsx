@@ -8,8 +8,8 @@ interface ProfileProps {
 	data: {
 		name: string
 		birthdate: string
-		email: string
-		phoneNumber: string
+		email_address: string
+		phone_number: string
 		address: string
 	}
 }
@@ -22,12 +22,12 @@ const ProfileDetails = ({ data }: ProfileProps) => {
 				<View className="flex flex-row items-center gap-1">
 					<Fontisto name="email" size={16} color="#919192" className="flex-none" />
 					<Text className="text-gray-500 flex-1 text-body">Email</Text>
-					<Text className="text-gray-500 text-body"> {data.email}</Text>
+					<Text className="text-gray-500 text-body"> {data.email_address}</Text>
 				</View>
 				<View className="flex flex-row items-center gap-1">
 					<Ionicons name="phone-portrait-outline" size={16} color="#919192" className="flex-none" />
 					<Text className="text-gray-500 flex-1 text-body">Phone</Text>
-					<Text className="text-gray-500 text-body">{data.phoneNumber}</Text>
+					<Text className="text-gray-500 text-body">{data.phone_number}</Text>
 				</View>
 				<View className="flex flex-row items-center gap-1">
 					<SimpleLineIcons name="calendar" size={16} color="#919192" className="flex-none" />
