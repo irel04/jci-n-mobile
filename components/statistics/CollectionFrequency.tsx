@@ -15,7 +15,7 @@ const CollectionFrequency = ({ datasets }) => {
 
         <LineChart
           data={{
-            labels: ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"],
+            labels: ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"],
             datasets,
           }}
           width={screenWidth - 60}

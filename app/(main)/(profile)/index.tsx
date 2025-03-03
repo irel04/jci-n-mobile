@@ -10,6 +10,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { useSession } from "@/contexts/auth";
 import { supabase } from "@/utils/supabase";
 import LoaderKit from "react-native-loader-kit"
+import { TUserSession } from "@/components/types";
 
 
 const getProfile = async (auth_id: string) => {
@@ -58,12 +59,12 @@ const ProfileTab = () => {
 		}, 1000)
 	}
 
-	const userSession = JSON.parse(session)
+	const userSession = JSON.parse(session) as TUserSession
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const userData = await getProfile(userSession.session.user.id)
+				const userData = await getProfile(userSession.user.id)
 
 				const processedUser = userData.map(user => {
 					const { first_name, last_name, ...other } = user

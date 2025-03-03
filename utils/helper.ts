@@ -1,3 +1,5 @@
+import { addDays, endOfWeek, format, startOfWeek } from "date-fns";
+
 export function timeAgo(timestamp: string) {
 	const now = new Date();
 	const time = new Date(timestamp);
@@ -36,23 +38,34 @@ export function timeAgo(timestamp: string) {
 	return `${diffInYears} years ago`;
 }
 
-export function startEndOfWeek(date: string){
+export function startEndOfWeek(date: Date){
 	// Calculate the start and end of the week based on the provided date
-		const startOfWeek = new Date(date);
-		const endOfWeek = new Date(date);
-	  
-		// Set the start of the week to be Sunday (or adjust based on your needs)
-		startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());  // Adjust for Sunday
-		endOfWeek.setDate(startOfWeek.getDate() + 6);  // Adjust for Saturday
-	
+		const startOfWeekDate = startOfWeek(date,{ weekStartsOn: 0} );
+		const endOfWeekDate = endOfWeek(date, { weekStartsOn: 0 });
 	  
 		// Format dates to match the format in the database (if needed)
-		const formattedStartOfWeek = startOfWeek.toISOString().split('T')[0];
-		const formattedEndOfWeek = endOfWeek.toISOString().split('T')[0];
+		const formattedStartOfWeek = format(startOfWeekDate, 'yyyy-MM-dd');
+		const formattedEndOfWeek = format(endOfWeekDate, 'yyyy-MM-dd');
 
-		const formattedStartOfWeekTimestamp = startOfWeek.toISOString()
+	// Format dates as ISO strings
+	const formattedStartOfWeekISO = format(startOfWeekDate, "yyyy-MM-dd'T'00:00:00XXX");
+	const formattedEndOfWeekISO = format(endOfWeekDate, "yyyy-MM-dd'T'23:59:59XXX");
 
-		const formattedEndOfWeekTimestamp = endOfWeek.toISOString()
-
-	return { formattedEndOfWeek, formattedStartOfWeek, formattedEndOfWeekTimestamp, formattedStartOfWeekTimestamp }
+	return { formattedEndOfWeek, formattedStartOfWeek, formattedStartOfWeekISO, formattedEndOfWeekISO }
 } 
+
+
+export const generateWeekLabels = (selectedYear: number) => {
+	const weeks = [];
+	const currentDate = new Date();
+	const startOfThisWeek = startOfWeek(currentDate, { weekStartsOn: 1 });
+
+	for (let i = 0; i < 5; i++) {
+	  const startOfWeekDate = addDays(startOfThisWeek, -i * 7);
+	  const endOfWeekDate = endOfWeek(startOfWeekDate, { weekStartsOn: 1 });
+	  const label = `${format(startOfWeekDate, 'MMM d')} - ${format(endOfWeekDate, 'MMM d')}, ${selectedYear}`;
+	  weeks.push({ label, value: label });
+	}
+
+	return weeks;
+  };
