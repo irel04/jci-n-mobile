@@ -22,8 +22,9 @@ export const getDailySummary = async (date: string) => {
 	return data
 }
 
-export const getWeeklySummary = async (date: string) => {
+export const getWeeklySummary = async (date: Date) => {
 	const { formattedStartOfWeek, formattedEndOfWeek } = startEndOfWeek(date)
+
   
 	// Query the database for data between the start and end of the week
 	const { data, error } = await supabase
@@ -87,7 +88,7 @@ const Main = () => {
 			const daily_summary = await getDailySummary(currentDate.toISOString().split("T")[0])
 			setDailySummary(daily_summary)
 
-			const weekly_summary = await getWeeklySummary(currentDate.toISOString().split("T")[0])
+			const weekly_summary = await getWeeklySummary(currentDate)
 
 			setWeeklySummary(weekly_summary)
 

@@ -1,5 +1,6 @@
 import { TPickUpTable, TUserSession } from "@/components/types";
 import { useSession } from "@/contexts/auth";
+import { startEndOfWeek } from "@/utils/helper";
 import { supabase } from "@/utils/supabase";
 import { endOfWeek, format, getDay, startOfWeek } from "date-fns";
 import React, { useEffect, useState } from "react";
@@ -34,19 +35,14 @@ const PickupFrequency = () => {
 
       // Get start (Sunday) and end (Saturday) of the current week
       const now = new Date();
-      const startOfWeekDate = startOfWeek(now, { weekStartsOn: 0 }); // Sunday
-      const endOfWeekDate = endOfWeek(now, { weekStartsOn: 0 }); // Saturday
-    
-      // Format dates as ISO strings
-      const startOfWeekISO = format(startOfWeekDate, "yyyy-MM-dd'T'00:00:00XXX");
-      const endOfWeekISO = format(endOfWeekDate, "yyyy-MM-dd'T'23:59:59XXX");
+     const {formattedStartOfWeek, formattedEndOfWeek} = startEndOfWeek(now)
     
       const { data, error } = await supabase
         .from("pickups")
         .select("*") // Adjust columns as needed
         .eq("collected_by", userId)
-        .gte("pickup_at", startOfWeekISO) // >= Sunday
-        .lte("pickup_at", endOfWeekISO); // <= Saturday
+        .gte("pickup_at", formattedStartOfWeek) // >= Sunday
+        .lte("pickup_at", formattedEndOfWeek); // <= Saturday
     
       if (error) {
         console.error("Error fetching data:", error.message);

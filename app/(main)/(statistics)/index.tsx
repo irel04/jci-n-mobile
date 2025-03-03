@@ -12,11 +12,11 @@ import LoaderKit from "react-native-loader-kit";
 import { supabase } from "@/utils/supabase";
 import { generateWeekLabels, startEndOfWeek } from "@/utils/helper";
 
-const getPickup = async (date: string) => {
+const getPickup = async (date: Date) => {
 
-  const { formattedEndOfWeekTimestamp, formattedStartOfWeekTimestamp } = startEndOfWeek(date)
+  const { formattedEndOfWeekISO, formattedStartOfWeekISO } = startEndOfWeek(date)
 
-  const { data, error } = await supabase.from("pickups").select("*").gte("pickup_at", formattedStartOfWeekTimestamp).lte("pickup_at", formattedEndOfWeekTimestamp)
+  const { data, error } = await supabase.from("pickups").select("*").gte("pickup_at", formattedStartOfWeekISO).lte("pickup_at", formattedEndOfWeekISO)
 
   if(error) throw error
 
@@ -45,7 +45,7 @@ const Statistics = () => {
 
   const fetchData = async () => {
     try {
-      const weekly_summary = await getWeeklySummary(currentDate.toISOString().split("T")[0])
+      const weekly_summary = await getWeeklySummary(currentDate)
       
       // This manifest usage dataset
       const usage = weekly_summary.reduce((acc, curr, index) => {
@@ -117,7 +117,7 @@ const Statistics = () => {
 
       setCollectionFrequencyData(collectionFrequency)
 
-      const weekly_pickup = await getPickup(currentDate.toISOString().split("T")[0])
+      const weekly_pickup = await getPickup(currentDate)
 
       // console.log(weekly_pickup)
       
