@@ -19,7 +19,7 @@ export default () => ({
       package: "com.kianirel.dev.thesismobile",
       config: {
         googleMaps: {
-          apiKey: process.env.GOOGLE_MAPS_API_KEY, // Use environment variable
+          apiKey: process.env.EXPO_GOOGLE_MAPS_API_KEY, // Use environment variable
         },
       },
     },
