@@ -47,7 +47,6 @@ const PickupFrequency = () => {
       if (error) {
         console.error("Error fetching data:", error.message);
       } else {
-        console.log("Pickups from Sun to Sat:", data);
           // Initialize an object to count pickups for each day (0: Sun, 1: Mon, ..., 6: Sat)
         const weekData = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
 
