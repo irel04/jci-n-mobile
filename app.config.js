@@ -8,9 +8,9 @@ export default () => ({
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
-    ios: {
-      supportsTablet: true,
-    },
+    // ios: {
+    //   supportsTablet: true,
+    // },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/images/pup-logo.png",
