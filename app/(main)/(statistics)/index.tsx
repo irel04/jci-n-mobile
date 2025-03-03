@@ -7,12 +7,10 @@ import PickupFrequency from '@/components/statistics/PickupFrequency';
 import CollectionFrequency from '@/components/statistics/CollectionFrequency';
 import RNPickerSelect from 'react-native-picker-select';
 import { format, startOfWeek, endOfWeek, addDays } from 'date-fns';
-import { DailySummarySchema } from "@/utils/schemas";
-import { getDailySummary, getWeeklySummary } from "@/app/(main)";
-import LoaderKit from "react-native-loader-kit"
-import { CollectionFrequencyData, overflowEventsData} from "@/data";
+import { getWeeklySummary } from "@/app/(main)";
+import LoaderKit from "react-native-loader-kit";
 import { supabase } from "@/utils/supabase";
-import { startEndOfWeek } from "@/utils/helper";
+import { generateWeekLabels, startEndOfWeek } from "@/utils/helper";
 
 const getPickup = async (date: string) => {
 
@@ -39,26 +37,11 @@ const Statistics = () => {
   const [trashBinUsageData, setTrashbinUsageData] = useState([])
   const [fullnessFrequencyData, setFullFrequencyData] = useState([])
   const [collectionFrequencyData, setCollectionFrequencyData] = useState([])
-  const [staffPickupData, setStaffPickupData] = useState([])
 
   // Color label
   const color = ["rgba(133, 176, 245, 1)", "rgba(72, 136, 239, 1)", "rgba(19, 98, 255, 1)"]
 
-  // Generate week labels
-  const generateWeekLabels = () => {
-    const weeks = [];
-    const currentDate = new Date();
-    const startOfThisWeek = startOfWeek(currentDate, { weekStartsOn: 1 });
-
-    for (let i = 0; i < 5; i++) {
-      const startOfWeekDate = addDays(startOfThisWeek, -i * 7);
-      const endOfWeekDate = endOfWeek(startOfWeekDate, { weekStartsOn: 1 });
-      const label = `${format(startOfWeekDate, 'MMM d')} - ${format(endOfWeekDate, 'MMM d')}, ${selectedYear}`;
-      weeks.push({ label, value: label });
-    }
-
-    return weeks;
-  };
+  const generatedWeeks = generateWeekLabels(selectedYear)
 
   const fetchData = async () => {
     try {
@@ -182,12 +165,11 @@ const Statistics = () => {
           </View>
         </View>
 
-        <View className="flex-row my-4">
-          {/* Week Selector Dropdown */}
+        {/* <View className="flex-row my-4">
           <View className="flex-initial w-64 mx-2">
             <RNPickerSelect
               onValueChange={(value) => setSelectedWeek(value)}
-              items={generateWeekLabels()}
+              items={generatedWeeks}
               style={{
                 inputIOS: {
                   borderWidth: 1,
@@ -214,7 +196,6 @@ const Statistics = () => {
             />
           </View>
 
-          {/* Batch Selector Dropdown */}
           <View className="flex-initial w-32 mx-2">
             <RNPickerSelect
               onValueChange={(value) => setSelectedBatch(value)}
@@ -247,7 +228,7 @@ const Statistics = () => {
               }}
             />
           </View>
-        </View>
+        </View> */}
 
 
         {/* Components */}

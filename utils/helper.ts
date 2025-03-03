@@ -1,3 +1,5 @@
+import { addDays, endOfWeek, format, startOfWeek } from "date-fns";
+
 export function timeAgo(timestamp: string) {
 	const now = new Date();
 	const time = new Date(timestamp);
@@ -56,3 +58,19 @@ export function startEndOfWeek(date: string){
 
 	return { formattedEndOfWeek, formattedStartOfWeek, formattedEndOfWeekTimestamp, formattedStartOfWeekTimestamp }
 } 
+
+
+export const generateWeekLabels = (selectedYear: number) => {
+	const weeks = [];
+	const currentDate = new Date();
+	const startOfThisWeek = startOfWeek(currentDate, { weekStartsOn: 1 });
+
+	for (let i = 0; i < 5; i++) {
+	  const startOfWeekDate = addDays(startOfThisWeek, -i * 7);
+	  const endOfWeekDate = endOfWeek(startOfWeekDate, { weekStartsOn: 1 });
+	  const label = `${format(startOfWeekDate, 'MMM d')} - ${format(endOfWeekDate, 'MMM d')}, ${selectedYear}`;
+	  weeks.push({ label, value: label });
+	}
+
+	return weeks;
+  };

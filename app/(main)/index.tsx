@@ -10,6 +10,7 @@ import { useSession } from "@/contexts/auth";
 import LoaderKit from "react-native-loader-kit"
 import { DailySummarySchema, UserSchema } from "@/utils/schemas";
 import { startEndOfWeek } from "@/utils/helper";
+import { TUserSession } from "@/components/types";
 
 
 
@@ -44,7 +45,7 @@ const Main = () => {
 	const [loading, setLoading] = useState(true);
 
 	const { session } = useSession()
-	const parseSession = JSON.parse(session)
+	const parseSession = JSON.parse(session) as TUserSession
 
 	const currentDate = new Date()
 	const [dailySummary, setDailySummary] = useState<DailySummarySchema[]>([])
@@ -54,7 +55,7 @@ const Main = () => {
 	const [currentWeather, setCurrentWeather] = useState(null)
 
 	const getUser = async () => {
-		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id, lng, lat").eq("auth_id", parseSession.session.user.id)
+		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id, lng, lat").eq("auth_id", parseSession.user.id)
 	
 		if (error) throw error
 	
