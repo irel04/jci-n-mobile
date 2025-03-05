@@ -6,3 +6,9 @@ export type TPickUpTable = {
 	collected_by: string;
 	pickup_at: Date
 } 
+
+export type TSetTable = {
+	id: string;
+	name: string;
+	created_at: Date | string
+}
