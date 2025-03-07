@@ -48,15 +48,12 @@ const ProfileTab = () => {
 	const [isLoading, setIsloading] = useState(true)
 
 	const { signOut, session } = useSession()
-	const handlePressLogout = () => {
+	const handlePressLogout = async () => {
 
-		signOut()
+		await signOut()
 
-		setTimeout(() => {
-			if (!session) {
-				router.push("/sign-in")
-			}
-		}, 1000)
+		router.push("/sign-in")
+
 	}
 
 	const userSession = JSON.parse(session) as TUserSession

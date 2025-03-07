@@ -1,16 +1,17 @@
-import Input from "@/components/ui/Input"
-import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
+import Input from "@/components/ui/Input";
+import { Image, KeyboardAvoidingView, Platform, Pressable, Text, TouchableOpacity, View } from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Redirect, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { Link, Redirect, useRouter } from "expo-router";
+import { useState } from "react";
 import React from "react";
 import { useSession } from "@/contexts/auth";
-import { supabase } from "@/utils/supabase";
 
 const Signin = () => {
+
+	const router = useRouter()
 
 	const [value, setValue] = useState({
 		email: "kianirel56@gmail.com",
@@ -22,8 +23,11 @@ const Signin = () => {
 
 
 	// Use the `signIn` function from the `useSession` hook to sign in the user. This provides the session context that will be used to check if the user is authenticated.
-	const { signIn, session } = useSession()
+	const { signIn } = useSession()
 
+	// if (session) {
+	// 	return <Redirect href="/(main)" />
+	// }
 
 	const handlePressContinue = async () => {
 		setIsLoading(true)
@@ -31,9 +35,7 @@ const Signin = () => {
 		setIsLoading(false)
 	}
 
-	if(session){
-		return <Redirect href="/(main)" />
-	}
+
 
 	return (
 		<View className="bg-white-500 text-base h-screen">
@@ -62,14 +64,14 @@ const Signin = () => {
 				</KeyboardAvoidingView>
 				{/* Button */}
 				<View className="justify-center items-center  gap-4">
-					<CustomButton onPress={handlePressContinue}  styleType={StyleType.BRAND_PRIMARY}>
+					<CustomButton onPress={handlePressContinue} styleType={StyleType.BRAND_PRIMARY}>
 						<Text className="text-white-500">{isLoading ? "Please wait..." : "Continue"} </Text>
 						{!isLoading && <AntDesign name="arrowright" size={16} color="white" />}
 					</CustomButton>
-					
+
 					<View className="flex flex-row gap-1">
 						<Text className="text-sm text-neutral-500">Don't have account? </Text>
-						<Pressable>
+						<Pressable onPress={() => router.push("/registration")}>
 							<Text className="text-sm text-brand-300 underline">Register</Text>
 						</Pressable>
 					</View>
