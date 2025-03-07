@@ -7,23 +7,28 @@ import { useRegistrationContext } from "@/app/(registration)/_layout";
 import { useRouter } from "expo-router";
 import Input from "@/components/ui/Input";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { Controller, useFormContext } from "react-hook-form";
+import { TUserPersonalInfo } from "@/components/types";
 
 const Step4 = () => {
 
 
-	const { personalInformationState, setCurrentPage } = useRegistrationContext()
+	const { setCurrentPage } = useRegistrationContext()
 
 	// const [value, setValue] = useState<TUserCredentials>({
 	// 	email: null,
 	// 	password: null
 	// })
 
+	const { handleSubmit, formState: { errors } , control} = useFormContext()
+
 	const router = useRouter()
 
-	const handleSubmit = async () => {
-		console.log(personalInformationState.personalInfo)
-		setCurrentPage(1)
-		router.push("/sign-in")
+	const handleSubmitEntry = async (value: TUserPersonalInfo) => {
+		
+		console.log(value)
+		// setCurrentPage(1)
+		// router.push("/sign-in")
 	}
 
 	return (
@@ -35,14 +40,19 @@ const Step4 = () => {
 					<Text className="text-h5 font-semibold text-brand-700">Other Information</Text>
 					<Text className="text-neutral-500">To complete registration please fill-out the form about personal details</Text>
 					<View className="flex gap-4 mt-4">
-						<Input onChangeText={(address) => personalInformationState.setPersonalInfo({ ...personalInformationState.personalInfo, address })} placeholder="Address" id="address" value={personalInformationState.personalInfo.address}/>
+						<Controller name="phone_number" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Phone Number" id="phone_number" onChangeText={onChange} value={value} error={errors.phone_number}/>}/>
+
+						<Controller name="email_address" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Email Address" id="email_address" onChangeText={onChange} value={value} error={errors.phone_number}/>} />
+
+						<Controller name="address" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Address" id="address" onChangeText={onChange} value={value} error={errors.address}/>} />
 						
-						<Input onChangeText={(phone_number) => personalInformationState.setPersonalInfo({ ...personalInformationState.personalInfo, phone_number })} placeholder="Phone Number" id="phone_number" value={personalInformationState.personalInfo.phone_number}/>	
+						
+						
 						
 					</View>
 				</View>
 				<View className="flex-grow justify-center items-center gap-2">
-					<CustomButton onPress={handleSubmit} styleType={StyleType.BRAND_PRIMARY}>
+					<CustomButton onPress={handleSubmit(handleSubmitEntry)} styleType={StyleType.BRAND_PRIMARY}>
 						<Text className="text-white-500"> Submit </Text>
 						<AntDesign name="arrowright" size={16} color="white" />
 					</CustomButton>

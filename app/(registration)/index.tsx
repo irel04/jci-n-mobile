@@ -1,4 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native'
+import { useForm, Controller } from "react-hook-form"
+import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useState } from 'react'
 import Feather from '@expo/vector-icons/Feather';
 import Input from "@/components/ui/Input";
@@ -7,15 +9,22 @@ import { TUserCredentials } from "@/components/types";
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import { useRouter } from "expo-router";
 import { useRegistrationContext } from "@/app/(registration)/_layout";
+import * as yup from "yup"
+
+const schema = yup.object().shape({
+	email: yup.string().email("Please enter a valid email").required("This field is required"),
+	password: yup.string().min(6).required("This field is required")
+})
 
 const Step1 = () => {
 
-	const { userCredentialState, setCurrentPage } = useRegistrationContext()
+	const { setCurrentPage } = useRegistrationContext()
 
-	// const [value, setValue] = useState<TUserCredentials>({
-	// 	email: null,
-	// 	password: null
-	// })
+	const { control, handleSubmit, formState: { errors } } = useForm({
+		resolver: yupResolver(schema),
+		mode: "onChange"
+
+	})
 
 	const router = useRouter()
 
@@ -34,20 +43,23 @@ const Step1 = () => {
 			<View className="mt-4 gap-2">
 				<Text className="text-h5 font-semibold text-brand-700">Create Account</Text>
 				<Text className="text-neutral-500">To get startted, create an account. This help us keep your personal information safe and secured</Text>
-				<View className="flex gap-4 mt-4">
-					<Input onChangeText={(email) => userCredentialState.setUserCredentials({ ...userCredentialState.userCredentials, email })} placeholder="Email" id="email" value={userCredentialState.userCredentials.email}>
-						<FontAwesome name="user-o" size={13} color="#757576" />
-					</Input>
-					<Input onChangeText={(password) => userCredentialState.setUserCredentials({ ...userCredentialState.userCredentials, password })} secureTextEntry={isPasswordHidden} placeholder="Password" id="password" value={userCredentialState.userCredentials.password} >
+				<View className="flex gap-2 mt-4">
+					<Controller control={control} name="email" render={({ field: { onChange, value} }) => 
+						<Input onChangeText={onChange} value={value} placeholder="Email" id="email" error={errors.email}>
+							<FontAwesome name="user-o" size={13} color="#757576" />
+						</Input>
+					} />
+					
+					<Controller control={control} name="password" render={({ field: { onChange, value } }) => <Input onChangeText={onChange} value={value} secureTextEntry={isPasswordHidden} placeholder="Password" id="password"  error={errors.password}>
 						<TouchableOpacity onPress={() => setIsPasswordHidden(!isPasswordHidden)}>
 							<Feather size={13} name={isPasswordHidden ? 'eye-off' : 'eye'} color="#757576" />
 						</TouchableOpacity>
-					</Input>
+					</Input>}/>
 				</View>
 			</View>
 			<View className="flex-grow justify-center items-center">
-				<CustomButton onPress={handleGoPage2} styleType={StyleType.BRAND_PRIMARY}>
-					<Text className="text-white-500"> Next </Text>
+				<CustomButton onPress={handleSubmit(handleGoPage2)} styleType={StyleType.BRAND_PRIMARY}>
+					<Text className="text-white-500" > Next </Text>
 					<AntDesign name="arrowright" size={16} color="white" />
 				</CustomButton>
 			</View>

@@ -27,13 +27,13 @@ export type TUserPersonalInfo = {
 }
 
 export type TRegistrationContext = {
-	personalInformationState: {
-		personalInfo: TUserPersonalInfo;
-		setPersonalInfo: React.Dispatch<SetStateAction<TUserPersonalInfo>>
-	};
-	userCredentialState: {
-		userCredentials: TUserCredentials;
-		setUserCredentials: React.Dispatch<SetStateAction<TUserCredentials>>
-	};
+	// personalInformationState: {
+	// 	personalInfo: TUserPersonalInfo;
+	// 	setPersonalInfo: React.Dispatch<SetStateAction<TUserPersonalInfo>>
+	// };
+	// userCredentialState: {
+	// 	userCredentials: TUserCredentials;
+	// 	setUserCredentials: React.Dispatch<SetStateAction<TUserCredentials>>
+	// };
 	setCurrentPage: React.Dispatch<SetStateAction<number>>
 }

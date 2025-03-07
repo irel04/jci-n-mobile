@@ -1,4 +1,5 @@
 import React, { ReactNode, useState } from "react";
+import { ErrorOption } from "react-hook-form";
 import { Text, TextInput, View } from "react-native";
 
 
@@ -10,20 +11,25 @@ interface InputProps {
 	id: string,
 	value: string,
 	secureTextEntry?: boolean,
-} 
+	error?: ErrorOption
+}
 
-const Input = ({ children, onChangeText, placeholder, id, value, secureTextEntry }: InputProps) => {
+const Input = ({ children, onChangeText, placeholder, id, value, secureTextEntry, error }: InputProps) => {
+
 
 	const [isFocus, setIsFocus] = useState<boolean>(value ? true : false)
 
 	return (
-		<View className={`flex px-5 py-2 bg-neutral-100 rounded-lg flex-row items-center justify-between w-full min-h-14`}>
-			<View className="w-full">
-				<Text className={`text-xs text-neutral-500/75 transition-all ${isFocus || value ? "flex" : "hidden"}`}>{placeholder}</Text>
-				<TextInput placeholder={placeholder} onChangeText={onChangeText} id={id} className="text-body w-full" maxLength={25} value={value} secureTextEntry={secureTextEntry} onBlur={() => setIsFocus(false)}/>
+		<View>
+			<View className={`flex px-5 py-2 bg-neutral-100 rounded-lg flex-row items-center justify-between w-full min-h-14 ${error?.message ? "border-red-500 border-[1px]" : ""}`}>
+				<View className="w-full">
+					<Text className={`text-xs text-neutral-500/75 transition-all ${isFocus || value ? "flex" : "hidden"}`}>{placeholder}</Text>
+					<TextInput placeholder={placeholder} onChangeText={onChangeText} id={id} className="text-body w-full" maxLength={25} value={value} secureTextEntry={secureTextEntry} onBlur={() => setIsFocus(false)} />
+				</View>
+				{/* Pass the icon as */}
+				{children}
 			</View>
-			{/* Pass the icon as */}
-			{children}
+			<Text className="text-xs text-red-500 ml-2">{error?.message}</Text>
 		</View>
 	)
 }
