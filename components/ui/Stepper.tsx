@@ -1,20 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 type Props = {
 	total: number
 	current: number
+	handlePressBack: () => void
 }
 
-const Stepper = ({ current, total }: Props) => {
+const Stepper = ({ current, total, handlePressBack }: Props) => {
 
 
 
 	return (
 		<View>
-			<View className="relative flex  flex-row items-center p-2">
-				<MaterialIcons name="keyboard-backspace" size={24} color="black" className="absolute"/>
+			<View className="relative flex  flex-row items-center p-4">
+				<TouchableOpacity className="absolute left-2" >
+					<MaterialIcons name="keyboard-backspace" size={27} color="black" onPress={handlePressBack} />
+				</TouchableOpacity>
 				<Text className="flex-grow text-lg font-semibold text-center">Step {current} of {total}</Text>
 
 			</View>
@@ -29,5 +32,3 @@ const Stepper = ({ current, total }: Props) => {
 }
 
 export default Stepper
-
-const styles = StyleSheet.create({})
