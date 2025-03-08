@@ -4,6 +4,7 @@ import NotificationCard from '@/components/notifications/NotificationCard'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { supabase } from "@/utils/supabase";
 import LoaderKit from "react-native-loader-kit"
+import LoadingAnimation from "@/components/ui/LoadingAnimation";
 
 
 export default function NotificationTab() {
@@ -64,11 +65,7 @@ export default function NotificationTab() {
 
     return (
         <>
-            {isLoading ? <View className="h-screen flex items-center justify-center">
-					<LoaderKit style={{ width: 50, height: 50 }}
-						name={'BallPulse'} // Optional: see list of animations below
-						color={'#0E46A3'} />
-				</View> : <>
+            {isLoading ? <LoadingAnimation/> : <>
                 <View className="flex-row justify-between p-5 items-end relative">
                     <View className='flex-row justify-between items-center gap-3'>
                         <Text className="text-left text-h5 font-bold">Notifications</Text>

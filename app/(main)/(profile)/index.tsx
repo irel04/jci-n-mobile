@@ -11,6 +11,7 @@ import { useSession } from "@/contexts/auth";
 import { supabase } from "@/utils/supabase";
 import LoaderKit from "react-native-loader-kit"
 import { TUserSession } from "@/components/types";
+import LoadingAnimation from "@/components/ui/LoadingAnimation";
 
 
 const getProfile = async (auth_id: string) => {
@@ -84,11 +85,7 @@ const ProfileTab = () => {
 
 	return (
 		<View className="flex p-7 h-full">
-			{isLoading ? <View className="h-screen flex items-center justify-center">
-					<LoaderKit style={{ width: 50, height: 50 }}
-						name={'BallPulse'} // Optional: see list of animations below
-						color={'#0E46A3'} />
-				</View> : <>
+			{isLoading ? <LoadingAnimation/> : <>
 				{/* Profile picture */}
 				<View className="relative h-10 flex items-center flex-auto gap-1">
 					<Image source={require("@/assets/images/employee-icon.png")} className="rounded-full w-40 h-40" />

@@ -7,10 +7,10 @@ import OverflowEvents from '@/components/home/OverflowEvents';
 import Route from "@/app/(main)/(route)/index"
 import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
-import LoaderKit from "react-native-loader-kit"
 import { DailySummarySchema, UserSchema } from "@/utils/schemas";
 import { startEndOfWeek } from "@/utils/helper";
 import { TUserSession } from "@/components/types";
+import LoadingAnimation from "@/components/ui/LoadingAnimation";
 
 
 
@@ -128,11 +128,7 @@ const Main = () => {
 	return (
 		<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }} >
 				{loading ? (
-				<View className="h-screen flex items-center justify-center">
-					<LoaderKit style={{ width: 50, height: 50 }}
-						name={'BallPulse'} // Optional: see list of animations below
-						color={'#0E46A3'} />
-				</View>
+					<LoadingAnimation/>
 				) : (
 					<>
 						<View>
