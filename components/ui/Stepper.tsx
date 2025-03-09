@@ -5,10 +5,11 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 type Props = {
 	total: number
 	current: number
-	handlePressBack: () => void
+	handlePressBack: () => void,
+	stepUp?: () => void // For debugging purpose
 }
 
-const Stepper = ({ current, total, handlePressBack }: Props) => {
+const Stepper = ({ current, total, handlePressBack, stepUp }: Props) => {
 
 
 
@@ -19,7 +20,9 @@ const Stepper = ({ current, total, handlePressBack }: Props) => {
 					<MaterialIcons name="keyboard-backspace" size={27} color="black" onPress={handlePressBack} />
 				</TouchableOpacity>
 				<Text className="flex-grow text-lg font-semibold text-center">Step {current} of {total}</Text>
-
+				{stepUp && <TouchableOpacity className="absolute right-2" onPress={stepUp}>
+					<Text>Next</Text>
+				</TouchableOpacity>}
 			</View>
 			{/* Progress */}
 			<View className="flex flex-row gap-[0.1rem]">

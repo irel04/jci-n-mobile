@@ -61,6 +61,27 @@ const Registration = () => {
 		router.dismiss(1)
 	}
 
+	const handleGoNext = () => {
+		console.log(currentPage)
+		switch (currentPage) {
+			case 1:
+				router.push("/(registration)/step-2")
+				break
+			case 2:
+				router.push("/(registration)/step-3")
+				break
+			case 3:
+				router.push("/(registration)/step-4")
+				break
+			default:
+				break;
+		}
+
+		if(currentPage < 4){
+			setCurrentPage(currentPage+1)
+		}
+	}
+
 	if (session) {
 		return <Redirect href="/(main)" />
 	}
@@ -72,7 +93,7 @@ const Registration = () => {
 				<KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 					<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 						<View className="p-4 flex-1 flex gap-4 bg-white-500">
-							<Stepper current={currentPage} total={4} handlePressBack={handlePressGoBack} />
+							<Stepper current={currentPage} total={4} handlePressBack={handlePressGoBack} stepUp={handleGoNext}/>
 							<Stack screenOptions={{ headerShown: false }} />
 						</View>
 					</TouchableWithoutFeedback>

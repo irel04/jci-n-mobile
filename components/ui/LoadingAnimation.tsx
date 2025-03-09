@@ -5,12 +5,13 @@ import LoaderKit from "react-native-loader-kit"
 
 type Props = {
 	animationName?: string,
-	displayMessage?: string
+	displayMessage?: string,
+	backgroundColor?: "bg-none" | "bg-white-500"
 }
 
-const LoadingAnimation = ({ animationName, displayMessage }: Props) => {
+const LoadingAnimation = ({ animationName, displayMessage, backgroundColor }: Props) => {
 	return (
-		<View className="flex h-screen items-center justify-center gap-4">
+		<View className={`flex h-screen items-center justify-center gap-4 ${backgroundColor}`}>
 			<LoaderKit style={{ width: 50, height: 50, marginTop: 20 }}
 				name={animationName || 'BallSpinFadeLoader'} // Optional: see list of animations below
 				color={'#757576'} />

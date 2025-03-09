@@ -7,9 +7,11 @@ import Input from "@/components/ui/Input";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { TUserCredentials } from "@/components/types";
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { useRegistrationContext } from "@/app/(registration)/_layout";
 import * as yup from "yup"
+import LoadingAnimation from "@/components/ui/LoadingAnimation";
+import { supabase } from "@/utils/supabase";
 
 const schema = yup.object().shape({
 	email: yup.string().email("Please enter a valid email").required("This field is required"),
@@ -26,15 +28,46 @@ const Step1 = () => {
 
 	})
 
+	const [isLoading, setIsloading] = useState<boolean>(false)
+
 	const router = useRouter()
 
-	const handleGoPage2 = async () => {
-		setCurrentPage(2)
-		router.push("/(registration)/step-2")
+	const handleGoPage2 = async (value: TUserCredentials) => {
+		const { email, password } = value
+		setIsloading(true)
+		try {
+
+			const { data, error } = await supabase.auth.signUp({
+				email,
+				password
+			})
+
+			if(error) throw error
+
+			console.log(data)
+
+			setCurrentPage(2)
+			router.push("/(registration)/step-2")
+
+
+		} catch (error) {
+			console.error(error)
+		} finally {
+			setIsloading(false)
+		}
+
+
+
 	}
 
 
 	const [isPasswordHidden, setIsPasswordHidden] = useState<boolean>(true)
+
+	if (isLoading) {
+		return <LoadingAnimation displayMessage="Processing" backgroundColor="bg-white-500" />
+	}
+
+	
 
 	return (
 		<View className="flex-1 bg-white-500">
@@ -44,17 +77,17 @@ const Step1 = () => {
 				<Text className="text-h5 font-semibold text-brand-700">Create Account</Text>
 				<Text className="text-neutral-500">To get startted, create an account. This help us keep your personal information safe and secured</Text>
 				<View className="flex gap-2 mt-4">
-					<Controller control={control} name="email" render={({ field: { onChange, value} }) => 
+					<Controller control={control} name="email" render={({ field: { onChange, value } }) =>
 						<Input onChangeText={onChange} value={value} placeholder="Email" id="email" error={errors.email}>
 							<FontAwesome name="user-o" size={13} color="#757576" />
 						</Input>
 					} />
-					
-					<Controller control={control} name="password" render={({ field: { onChange, value } }) => <Input onChangeText={onChange} value={value} secureTextEntry={isPasswordHidden} placeholder="Password" id="password"  error={errors.password}>
+
+					<Controller control={control} name="password" render={({ field: { onChange, value } }) => <Input onChangeText={onChange} value={value} secureTextEntry={isPasswordHidden} placeholder="Password" id="password" error={errors.password}>
 						<TouchableOpacity onPress={() => setIsPasswordHidden(!isPasswordHidden)}>
 							<Feather size={13} name={isPasswordHidden ? 'eye-off' : 'eye'} color="#757576" />
 						</TouchableOpacity>
-					</Input>}/>
+					</Input>} />
 				</View>
 			</View>
 			<View className="flex-grow justify-center items-center">

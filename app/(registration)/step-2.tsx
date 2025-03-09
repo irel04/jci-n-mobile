@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
@@ -9,9 +9,11 @@ import Input from "@/components/ui/Input";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup"
+import { supabase } from "@/utils/supabase";
+import LoadingAnimation from "@/components/ui/LoadingAnimation";
 
 const schema = yup.object().shape({
-	code: yup.string().required("Please provide pin before proceeding").min(6)
+	token: yup.string().required("Please provide token that can be found in your email address")
 })
 
 const Step2 = () => {
@@ -20,6 +22,8 @@ const Step2 = () => {
 		resolver: yupResolver(schema),
 		mode: "onChange"
 	})
+
+	const [isLoading, setIsLoading] = useState<boolean>(false)
 
 	const { setCurrentPage } = useRegistrationContext()
 
@@ -30,9 +34,45 @@ const Step2 = () => {
 
 	const router = useRouter()
 
-	const handleGoPage3 = async () => {
-		setCurrentPage(3)
-		router.push("/(registration)/step-3")
+	const handleGoPage3 = async (value: { token: string }) => {
+		setIsLoading(true)
+		try {
+			
+			const { data, error } = await supabase.auth.verifyOtp({ token_hash: value.token, type: 'email'})
+
+			if(error) throw error
+
+			console.log(data)
+
+			setCurrentPage(3)
+			router.push("/(registration)/step-3")
+
+		} catch (error) {
+			console.error(error)
+		} finally {
+			setIsLoading(false)
+		}
+	}
+
+	const handleResendToken = async () => {
+		setIsLoading(true)
+		try {
+			
+			const { error } = await supabase.auth.resend({
+				type: 'signup',
+				email: 'irelkian@gmail.com'
+			  })
+
+			if(error) throw error
+		} catch (error) {
+			console.error(error)
+		} finally {
+			setIsLoading(false)
+		}
+	}
+
+	if (isLoading) {
+		return <LoadingAnimation displayMessage="Processing" backgroundColor="bg-white-500" />
 	}
 
 	return (
@@ -42,9 +82,9 @@ const Step2 = () => {
 				{/* Form */}
 				<View className="mt-4 gap-2">
 					<Text className="text-h5 font-semibold text-brand-700">Verify your Email</Text>
-					<Text className="text-neutral-500">We just sent a 6-digit code to kianirel56@gmail.com</Text>
+					<Text className="text-neutral-500">We just sent a confirmation token to kianirel56@gmail.com</Text>
 					<View className="flex gap-4 mt-4">
-						<Controller name="code" control={control} render={({ field: { onChange, value } }) => <Input onChangeText={onChange} value={value} placeholder="Code" id="code" error={errors.code}/>}/>
+						<Controller name="token" control={control} render={({ field: { onChange, value } }) => <Input onChangeText={onChange} value={value} placeholder="Confirmation Token" id="token-hash" error={errors.token}/>}/>
 					</View>
 				</View>
 				<View className="flex-grow justify-center items-center gap-2">
@@ -52,8 +92,8 @@ const Step2 = () => {
 						<Text className="text-white-500"> Verify Email </Text>
 						<AntDesign name="arrowright" size={16} color="white" />
 					</CustomButton>
-					<CustomButton onPress={handleSubmit(handleGoPage3)} styleType={StyleType.BRAND_SECONDARY}>
-						<Text className="text-brand-900"> Resend Code </Text>
+					<CustomButton onPress={handleResendToken} styleType={StyleType.BRAND_SECONDARY}>
+						<Text className="text-brand-900"> Resend Token </Text>
 					</CustomButton>
 				</View>
 
