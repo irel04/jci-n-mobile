@@ -46,9 +46,9 @@ const Step1 = () => {
 				password
 			})
 
-			console.log(signUpData)
+			console.log(signUpData.user.user_metadata)
 
-			if(signUpData.user.user_metadata.email_verified){
+			if(signUpData.user.user_metadata && Object.keys(signUpData.user.user_metadata).length === 0){
 				setAuthId(signUpData.user.id)
 				setCurrentPage(3)
 				router.push("/(registration)/step-3")

@@ -1,13 +1,14 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { View, Text } from 'react-native';
+import React from 'react';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { useRegistrationContext } from "@/app/(registration)/_layout";
 import { useRouter } from "expo-router";
 import Input from "@/components/ui/Input";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Controller, useFormContext } from "react-hook-form";
+import TextInputMask from 'react-native-text-input-mask';
+
 
 const Step3 = () => {
 
@@ -46,7 +47,7 @@ const Step3 = () => {
 						
 						<Controller name="first_name" control={control} render={({ field: { onChange, value } }) => <Input placeholder="First Name" id="first_name" onChangeText={onChange} value={value} error={errors.first_name}/>}/>
 						
-						<Controller name="birthdate" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Birthdate" id="birthdate" onChangeText={onChange} value={value} error={errors.birthdate}/>}/>
+						<Controller name="birthdate" control={control} render={({ field: { onChange, value } }) => <TextInputMask placeholder="Birthdate (MM-DD-YYYY)" id="birthdate" onChangeText={onChange} value={value}/>}/>
 						
 					</View>
 				</View>
