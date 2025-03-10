@@ -32,13 +32,15 @@ const Step2 = () => {
 	// 	password: null
 	// })
 
+	const { email } = useRegistrationContext()
+
 	const router = useRouter()
 
 	const handleGoPage3 = async (value: { token: string }) => {
 		setIsLoading(true)
 		try {
 			
-			const { data, error } = await supabase.auth.verifyOtp({ token_hash: value.token, type: 'email'})
+			const { data, error } = await supabase.auth.verifyOtp({email, token: value.token, type: "email"})
 
 			if(error) throw error
 
@@ -60,7 +62,7 @@ const Step2 = () => {
 			
 			const { error } = await supabase.auth.resend({
 				type: 'signup',
-				email: 'irelkian@gmail.com'
+				email
 			  })
 
 			if(error) throw error
@@ -82,9 +84,9 @@ const Step2 = () => {
 				{/* Form */}
 				<View className="mt-4 gap-2">
 					<Text className="text-h5 font-semibold text-brand-700">Verify your Email</Text>
-					<Text className="text-neutral-500">We just sent a confirmation token to kianirel56@gmail.com</Text>
+					<Text className="text-neutral-500">We just sent a 6-digit code to {email}</Text>
 					<View className="flex gap-4 mt-4">
-						<Controller name="token" control={control} render={({ field: { onChange, value } }) => <Input onChangeText={onChange} value={value} placeholder="Confirmation Token" id="token-hash" error={errors.token}/>}/>
+						<Controller name="token" control={control} render={({ field: { onChange, value } }) => <Input onChangeText={onChange} value={value} placeholder="6-digit Code" id="token-hash" error={errors.token}/>}/>
 					</View>
 				</View>
 				<View className="flex-grow justify-center items-center gap-2">

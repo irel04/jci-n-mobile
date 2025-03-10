@@ -1,15 +1,15 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import { useForm, Controller } from "react-hook-form"
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import Feather from '@expo/vector-icons/Feather';
 import Input from "@/components/ui/Input";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { TUserCredentials } from "@/components/types";
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
-import { Redirect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useRegistrationContext } from "@/app/(registration)/_layout";
-import * as yup from "yup"
+import * as yup from "yup";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
 import { supabase } from "@/utils/supabase";
 
@@ -20,13 +20,14 @@ const schema = yup.object().shape({
 
 const Step1 = () => {
 
-	const { setCurrentPage } = useRegistrationContext()
+	const { setCurrentPage, setEmail, setAuthId } = useRegistrationContext()
 
 	const { control, handleSubmit, formState: { errors } } = useForm({
 		resolver: yupResolver(schema),
 		mode: "onChange"
 
 	})
+
 
 	const [isLoading, setIsloading] = useState<boolean>(false)
 
@@ -35,19 +36,33 @@ const Step1 = () => {
 	const handleGoPage2 = async (value: TUserCredentials) => {
 		const { email, password } = value
 		setIsloading(true)
+		setEmail(email)
 		try {
 
-			const { data, error } = await supabase.auth.signUp({
+			
+
+			const { data: signUpData, error } = await supabase.auth.signUp({
 				email,
 				password
 			})
 
+			console.log(signUpData)
+
+			if(signUpData.user.user_metadata.email_verified){
+				setAuthId(signUpData.user.id)
+				setCurrentPage(3)
+				router.push("/(registration)/step-3")
+				return
+			}
+
 			if(error) throw error
 
-			console.log(data)
 
+			setAuthId(signUpData.user.id)
 			setCurrentPage(2)
 			router.push("/(registration)/step-2")
+
+			
 
 
 		} catch (error) {

@@ -22,7 +22,7 @@ export type TUserPersonalInfo = {
 	RFID?: string;
 	lat?: number;
 	lng?: number;
-	address?: string;
+	address: string;
 	created_at?: string;
 }
 
@@ -35,5 +35,9 @@ export type TRegistrationContext = {
 	// 	userCredentials: TUserCredentials;
 	// 	setUserCredentials: React.Dispatch<SetStateAction<TUserCredentials>>
 	// };
+	authId: string;
+	setAuthId: React.Dispatch<SetStateAction<string>>;
+	email: string;
+	setEmail: React.Dispatch<SetStateAction<string>>;
 	setCurrentPage: React.Dispatch<SetStateAction<number>>
 }

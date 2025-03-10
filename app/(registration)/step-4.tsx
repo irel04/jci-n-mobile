@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
@@ -9,6 +9,8 @@ import Input from "@/components/ui/Input";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Controller, useFormContext } from "react-hook-form";
 import { TUserPersonalInfo } from "@/components/types";
+import { supabase } from "@/utils/supabase";
+import LoadingAnimation from "@/components/ui/LoadingAnimation";
 
 const Step4 = () => {
 
@@ -20,15 +22,37 @@ const Step4 = () => {
 	// 	password: null
 	// })
 
+	const { email, authId: auth_id } = useRegistrationContext()
+
 	const { handleSubmit, formState: { errors } , control} = useFormContext()
+	
+	const [isLoading, setIsLoading] = useState<boolean>(false)
 
 	const router = useRouter()
 
 	const handleSubmitEntry = async (value: TUserPersonalInfo) => {
-		
-		console.log(value)
-		// setCurrentPage(1)
-		// router.push("/sign-in")
+		setIsLoading(true)
+		try {
+			const { error } = await supabase.from("users_details").insert({...value, auth_id })
+
+			if(error) throw error
+
+			setCurrentPage(1)
+			router.push("/sign-in")
+
+		} catch (error) {
+			console.error(error)
+		} finally {
+			setIsLoading(false)
+		}
+	}
+
+	useEffect(() => {
+		console.log(errors)
+	}, [errors])
+
+	if(isLoading){
+		return <LoadingAnimation displayMessage="Processing..." backgroundColor="bg-white-500"/>
 	}
 
 	return (
@@ -42,7 +66,7 @@ const Step4 = () => {
 					<View className="flex gap-4 mt-4">
 						<Controller name="phone_number" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Phone Number" id="phone_number" onChangeText={onChange} value={value} error={errors.phone_number}/>}/>
 
-						<Controller name="email_address" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Email Address" id="email_address" onChangeText={onChange} value={value} error={errors.phone_number}/>} />
+						<Controller name="email_address" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Email Address" id="email_address" onChangeText={onChange} value={value} error={errors.email}/>} />
 
 						<Controller name="address" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Address" id="address" onChangeText={onChange} value={value} error={errors.address}/>} />
 						

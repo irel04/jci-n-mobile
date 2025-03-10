@@ -28,6 +28,9 @@ const Registration = () => {
 
 	const [currentPage, setCurrentPage] = useState<number>(1)
 
+	const [email, setEmail] = useState<string>("")
+	const [authId, setAuthId] = useState<string>(null)
+
 
 	const methods = useForm({
 		resolver: yupResolver(schema),
@@ -35,7 +38,8 @@ const Registration = () => {
 		defaultValues: {
 			first_name: "",
 			last_name: "",
-			birthdate: ""
+			birthdate: "",
+			email_address: ""
 		}
 	})
 
@@ -45,6 +49,10 @@ const Registration = () => {
 	//  THis will be used to feed the context of the registration component
 	const contextValue: TRegistrationContext = {
 		setCurrentPage,
+		email,
+		setEmail,
+		authId,
+		setAuthId
 	}
 
 	const { session } = useSession()
@@ -57,30 +65,37 @@ const Registration = () => {
 			setCurrentPage(1)
 			return
 		}
+
+		if(currentPage === 3 && authId){
+			router.dismissTo("/(registration)")
+			setCurrentPage(1)
+			return
+		}
+
 		setCurrentPage(currentPage - 1)
 		router.dismiss(1)
 	}
 
-	const handleGoNext = () => {
-		console.log(currentPage)
-		switch (currentPage) {
-			case 1:
-				router.push("/(registration)/step-2")
-				break
-			case 2:
-				router.push("/(registration)/step-3")
-				break
-			case 3:
-				router.push("/(registration)/step-4")
-				break
-			default:
-				break;
-		}
+	// const handleGoNext = () => {
+	// 	console.log(currentPage)
+	// 	switch (currentPage) {
+	// 		case 1:
+	// 			router.push("/(registration)/step-2")
+	// 			break
+	// 		case 2:
+	// 			router.push("/(registration)/step-3")
+	// 			break
+	// 		case 3:
+	// 			router.push("/(registration)/step-4")
+	// 			break
+	// 		default:
+	// 			break;
+	// 	}
 
-		if(currentPage < 4){
-			setCurrentPage(currentPage+1)
-		}
-	}
+	// 	if(currentPage < 4){
+	// 		setCurrentPage(currentPage+1)
+	// 	}
+	// }
 
 	if (session) {
 		return <Redirect href="/(main)" />
@@ -93,7 +108,7 @@ const Registration = () => {
 				<KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 					<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 						<View className="p-4 flex-1 flex gap-4 bg-white-500">
-							<Stepper current={currentPage} total={4} handlePressBack={handlePressGoBack} stepUp={handleGoNext}/>
+							<Stepper current={currentPage} total={4} handlePressBack={handlePressGoBack} />
 							<Stack screenOptions={{ headerShown: false }} />
 						</View>
 					</TouchableWithoutFeedback>
