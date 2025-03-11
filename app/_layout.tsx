@@ -4,7 +4,6 @@ import { Stack } from "expo-router"
 import "../global.css"
 import { SessionProvider } from "@/contexts/auth"
 
-
 const AppLayout = () => {
   
 

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFormContext } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useState } from 'react';
 import Feather from '@expo/vector-icons/Feather';
@@ -12,6 +12,7 @@ import { useRegistrationContext } from "@/app/(registration)/_layout";
 import * as yup from "yup";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
 import { supabase } from "@/utils/supabase";
+import { useSession } from "@/contexts/auth";
 
 const schema = yup.object().shape({
 	email: yup.string().email("Please enter a valid email").required("This field is required"),
@@ -22,16 +23,21 @@ const Step1 = () => {
 
 	const { setCurrentPage, setEmail, setAuthId } = useRegistrationContext()
 
-	const { control, handleSubmit, formState: { errors } } = useForm({
+	const { control, handleSubmit, formState: { errors }, setError } = useForm({
 		resolver: yupResolver(schema),
 		mode: "onChange"
 
 	})
 
+	const { setValue } = useFormContext()
+
 
 	const [isLoading, setIsloading] = useState<boolean>(false)
 
 	const router = useRouter()
+
+	const { signOut } = useSession()
+	  
 
 	const handleGoPage2 = async (value: TUserCredentials) => {
 		const { email, password } = value
@@ -39,30 +45,54 @@ const Step1 = () => {
 		setEmail(email)
 		try {
 
+			const alreadyUsedEmail = "Email already used"
 			
+			const { data: signinData } = await supabase.auth.signInWithPassword({
+				email, 
+				password
+			})
+			
+			if(signinData.user){
+
+				const { data } = await supabase.from("users_details").select("auth_id").eq("auth_id", signinData.user.id)
+				console.log(data)
+
+				if(data.length > 0){
+					await signOut()
+					setError("email", { message:  alreadyUsedEmail})
+					throw new Error(alreadyUsedEmail)
+				}
+
+				await signOut()
+
+				setAuthId(signinData.user.id)
+				setValue("email_address", email)
+				setCurrentPage(3)
+				router.push("/(registration)/step-3")
+				return
+			}
+
 
 			const { data: signUpData, error } = await supabase.auth.signUp({
 				email,
 				password
 			})
 
-			console.log(signUpData.user.user_metadata)
-
-			if(signUpData.user.user_metadata && Object.keys(signUpData.user.user_metadata).length === 0){
-				setAuthId(signUpData.user.id)
-				setCurrentPage(3)
-				router.push("/(registration)/step-3")
-				return
+			if(signUpData.user && Object.keys(signUpData.user.user_metadata).length === 0){
+				setError("email", {message: alreadyUsedEmail})
+				throw new Error(alreadyUsedEmail)
 			}
 
-			if(error) throw error
+
+			if (error) throw error
 
 
 			setAuthId(signUpData.user.id)
+			setValue("email_address", email)
 			setCurrentPage(2)
 			router.push("/(registration)/step-2")
 
-			
+
 
 
 		} catch (error) {
@@ -71,6 +101,7 @@ const Step1 = () => {
 			setIsloading(false)
 		}
 
+		
 
 
 	}
@@ -82,7 +113,7 @@ const Step1 = () => {
 		return <LoadingAnimation displayMessage="Processing" backgroundColor="bg-white-500" />
 	}
 
-	
+
 
 	return (
 		<View className="flex-1 bg-white-500">

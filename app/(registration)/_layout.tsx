@@ -39,7 +39,6 @@ const Registration = () => {
 			first_name: "",
 			last_name: "",
 			birthdate: "",
-			email_address: ""
 		}
 	})
 

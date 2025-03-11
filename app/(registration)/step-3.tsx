@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import { AntDesign } from "@expo/vector-icons";
 import { useRegistrationContext } from "@/app/(registration)/_layout";
@@ -7,6 +7,9 @@ import { useRouter } from "expo-router";
 import Input from "@/components/ui/Input";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Controller, useFormContext } from "react-hook-form";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { format } from 'date-fns';
+
 
 const Step3 = () => {
 
@@ -20,16 +23,29 @@ const Step3 = () => {
 
 	const { control, formState: { errors, dirtyFields } } = useFormContext()
 
+	const [isDatePickerVisible, setDatePickerVisibility] = useState<boolean>(false);
+
+	const showDatePicker = () => {
+		setDatePickerVisibility(true);
+	};
+
+	const hideDatePicker = () => {
+		setDatePickerVisibility(false);
+	};
+
+
 	const router = useRouter()
 
 
 	const handleGoPage4 = async () => {
-		
-		if(Object.keys(dirtyFields).length < 3) return 
-		
+
+		if (Object.keys(dirtyFields).length < 3) return
+
 		setCurrentPage(4)
 		router.push("/(registration)/step-4")
 	}
+
+	
 
 	return (
 		<View className="bg-white-500 flex-1">
@@ -40,22 +56,38 @@ const Step3 = () => {
 					<Text className="text-h5 font-semibold text-brand-700">Personal Information</Text>
 					<Text className="text-neutral-500">To complete registration please fill-out the form about personal details</Text>
 					<View className="flex gap-4 mt-4">
-						<Controller name="last_name" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Last Name" id="last_name" onChangeText={onChange} value={value} error={errors.last_name}/>}/>
-						
-						
-						<Controller name="first_name" control={control} render={({ field: { onChange, value } }) => <Input placeholder="First Name" id="first_name" onChangeText={onChange} value={value} error={errors.first_name}/>}/>
-						
-						<Controller name="birthdate" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Birthdate (MM-DD-YYYY)" id="birthdate" onChangeText={onChange} value={value} error={errors.birthdate}/>}/>
-						
+						<Controller name="last_name" control={control} render={({ field: { onChange, value } }) => <Input placeholder="Last Name" id="last_name" onChangeText={onChange} value={value} error={errors.last_name} />} />
+
+
+						<Controller name="first_name" control={control} render={({ field: { onChange, value } }) => <Input placeholder="First Name" id="first_name" onChangeText={onChange} value={value} error={errors.first_name} />} />
+
+						<Controller name="birthdate" control={control} render={({ field: { onChange, value } }) => {
+							return <>
+
+								<Input placeholder="Birthdate (MM-DD-YYYY)" id="birthdate" value={value} error={errors.birthdate} onPress={showDatePicker} />
+								<DateTimePickerModal isVisible={isDatePickerVisible}
+									mode="date"
+									onConfirm={(date: Date) => {
+										const formattedDate = format(date, 'MM-dd-yyyy');
+										onChange(formattedDate)
+										hideDatePicker();
+									}}
+									onCancel={hideDatePicker} />
+							</>
+						}} />
+
+
+
 					</View>
 				</View>
 				<View className="flex-grow justify-center items-center gap-2">
-					<CustomButton onPress={handleGoPage4} styleType={Object.keys(dirtyFields).length < 3 ? StyleType.BRAND_DISABLED: StyleType.BRAND_PRIMARY}>
+					<CustomButton onPress={handleGoPage4} styleType={Object.keys(dirtyFields).length < 3 ? StyleType.BRAND_DISABLED : StyleType.BRAND_PRIMARY}>
 						<Text className="text-white-500"> Next </Text>
 						<AntDesign name="arrowright" size={16} color="white" />
 					</CustomButton>
 				</View>
 			</View>
+			
 		</View>
 	)
 }
