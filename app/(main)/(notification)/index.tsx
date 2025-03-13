@@ -6,6 +6,8 @@ import { supabase } from "@/utils/supabase";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
 import { getLast7Days, getToday, getYesterday } from "@/utils/helper";
 import Entypo from '@expo/vector-icons/Entypo';
+import { useSession } from "@/contexts/auth";
+import { TUserSession } from "@/components/types";
 
 export default function NotificationTab() {
 
@@ -15,6 +17,10 @@ export default function NotificationTab() {
 
     const [yesterdayNotification, setYesterdayNotification] = useState([])
 
+    // user id 
+    const { session } = useSession()
+    const userAuth = JSON.parse(session) as TUserSession
+
     const [isLoading, setIsLoading] = useState(false)
 
     const fetchNotifications = async () => {
@@ -23,19 +29,7 @@ export default function NotificationTab() {
         try {
             setIsLoading(true); // Ensure loading state starts here
 
-            // Get user authentication info
-            const { data: userAuth, error: authError } = await supabase.auth.getUser();
-            if (authError || !userAuth.user) throw new Error("User authentication failed.");
 
-            // Get user ID from users_details
-            const { data: user, error: userError } = await supabase
-                .from("users_details")
-                .select("id")
-                .eq("auth_id", userAuth.user.id);
-
-            if (userError || !user || user.length === 0) throw new Error("User not found.");
-
-            const userId = user[0].id;
             const { yesterdayDateStart, yesterdayDateEnd } = getYesterday(formatString);
 
             const { todayDateStart, todayDateEnd } = getToday(formatString)
@@ -48,7 +42,7 @@ export default function NotificationTab() {
                     supabase
                         .from("notifications")
                         .select(`notification_type, bins(color, set(id, name), id), created_at, is_read, id`)
-                        .eq("nearest_user_id", userId)
+                        .eq("nearest_user_id", userAuth.user_id)
                         .gte("created_at", todayDateStart)
                         .lte("created_at", todayDateEnd)
                         .order("created_at", { ascending: false }).order("bin_id", { ascending: true }),
@@ -56,7 +50,7 @@ export default function NotificationTab() {
                     supabase
                         .from("notifications")
                         .select(`notification_type, bins(color, set(id, name), id), created_at, is_read, id`)
-                        .eq("nearest_user_id", userId)
+                        .eq("nearest_user_id", userAuth.user_id)
                         .gte("created_at", yesterdayDateStart)
                         .lte("created_at", yesterdayDateEnd)
                         .order("created_at", { ascending: false }).order("bin_id", { ascending: true }),
@@ -64,7 +58,7 @@ export default function NotificationTab() {
                     supabase
                         .from("notifications")
                         .select(`notification_type, bins(color, set(id, name), id), created_at, is_read, id`)
-                        .eq("nearest_user_id", userId)
+                        .eq("nearest_user_id", userAuth.user_id)
                         .gte("created_at", last7DaysStart)
                         .lte("created_at", last7DaysEnd)
                         .order("created_at", { ascending: false }).order("bin_id", { ascending: true }),
@@ -93,6 +87,20 @@ export default function NotificationTab() {
         fetchNotifications()
 
     }, [])
+
+
+    const handlePressMarkAllAsRead = async () => {
+        setIsLoading(true)
+        try {
+            const { error } = await supabase.from("notifications").update({ is_read: true }).eq("nearest_user_id", userAuth.user_id)
+            
+            if(error) throw error
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     // Update Realtime using subscribe
     useEffect(() => {
@@ -127,7 +135,7 @@ export default function NotificationTab() {
                         <Text className="text-left text-h5 font-bold">Notifications</Text>
                         <Ionicons name="notifications-outline" size={24} color="black" />
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handlePressMarkAllAsRead}>
                         <Text className="text-body font-[400] text-brand-500">Mark all as read</Text>
                     </TouchableOpacity>
                 </View>
