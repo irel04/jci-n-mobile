@@ -93,7 +93,7 @@ export default function NotificationTab() {
         setIsLoading(true)
         try {
             const { error } = await supabase.from("notifications").update({ is_read: true }).eq("nearest_user_id", userAuth.user_id)
-            
+
             if(error) throw error
         } catch (error) {
             console.error(error)
@@ -139,7 +139,7 @@ export default function NotificationTab() {
                         <Text className="text-body font-[400] text-brand-500">Mark all as read</Text>
                     </TouchableOpacity>
                 </View>
-                {upComingNotifications.length > 0 && yesterdayNotification.length > 0 && last7Days.length > 0 ?
+                {upComingNotifications.length > 0 || yesterdayNotification.length > 0 ||last7Days.length > 0 ?
                     <ScrollView showsVerticalScrollIndicator={false} className='h-[95%] w-full'>
                         <View className="flex flex-col gap-2 pb-4">
                             {/* Pass the notifications data as props to NotificationCard */}

@@ -14,8 +14,8 @@ import { TUserSession } from "@/components/types";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
 
 
-const getProfile = async (auth_id: string) => {
-	const { data, error } = await supabase.from("users_details").select("*").eq("auth_id", auth_id)
+const getProfile = async (userId: string) => {
+	const { data, error } = await supabase.from("users_details").select("*").eq("id", userId)
 
 	if (error) throw error
 
@@ -62,7 +62,7 @@ const ProfileTab = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const userData = await getProfile(userSession.user.id)
+				const userData = await getProfile(userSession.user_id)
 
 				const processedUser = userData.map(user => {
 					const { first_name, last_name, ...other } = user

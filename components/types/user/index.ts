@@ -2,8 +2,10 @@ import { Session } from "@supabase/supabase-js";
 import React, { SetStateAction } from "react";
 
 
-export type TUserSession = Session & {
-	user_id: string
+export type TUserSession = {
+	refresh_token: string;
+	user_id: string;
+	access_token: string;
 }
 
 
