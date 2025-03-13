@@ -21,7 +21,7 @@ export default function NotificationTab() {
 
             const { data: user } = await supabase.from("users_details").select("id").eq("auth_id", userAuth.user.id)
 
-            const { data: notifications } = await supabase.from("notifications").select(`notification_type, bins(color, set, id), created_at, is_read, id`).eq("nearest_user_id", user[0].id).order('created_at', { ascending: false });
+            const { data: notifications } = await supabase.from("notifications").select(`notification_type, bins(color, set(id, name), id), created_at, is_read, id`).eq("nearest_user_id", user[0].id).order('created_at', { ascending: false });
 
             setUpComingNotifications(notifications)
 

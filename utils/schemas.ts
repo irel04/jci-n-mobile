@@ -1,7 +1,8 @@
+import { TSetTable } from "@/components/types"
 
 export interface Bins {
     color: string,
-    set: string,
+    set: TSetTable,
 	id?: string
 }
 

@@ -53,7 +53,7 @@ export default function NotificationCard({ notifications }: NotificationCardAttr
                 />
                 <View className="flex-1">
                     <Text className="text-[14px]">
-                        <Text className="font-bold">{notification.bins.set}</Text>
+                        <Text className="font-bold">{notification.bins.set.name}</Text>
                         <Text className="font-bold"> {notification.bins.color}</Text>
                         <Text> is</Text>
                         <Text className="font-bold"> {notification.notification_type}</Text>
