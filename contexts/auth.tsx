@@ -61,7 +61,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
             setTimeout(() => {
               router.push("/(main)");
-            }, 2000);
+            }, 1000);
           } catch (error) {
             
             Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
@@ -70,11 +70,10 @@ export function SessionProvider({ children }: PropsWithChildren) {
         signOut: async () => {
           try {
             let { error } = await supabase.auth.signOut()
-
-            if(error) throw error
             
+            if(error) throw error
             setSession(null);
-
+            
             
             
           } catch (error) {

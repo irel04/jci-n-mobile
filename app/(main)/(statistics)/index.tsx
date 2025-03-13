@@ -11,6 +11,7 @@ import { getWeeklySummary } from "@/app/(main)";
 import LoaderKit from "react-native-loader-kit";
 import { supabase } from "@/utils/supabase";
 import { generateWeekLabels, startEndOfWeek } from "@/utils/helper";
+import LoadingAnimation from "@/components/ui/LoadingAnimation";
 
 const getPickup = async (date: Date) => {
 
@@ -152,11 +153,7 @@ const Statistics = () => {
 
   return (
     <View className="flex-1 bg-gray-100 p-4">
-      {isLoading ? <View className="h-screen flex items-center justify-center">
-        <LoaderKit style={{ width: 50, height: 50 }}
-          name={'BallPulse'} // Optional: see list of animations below
-          color={'#0E46A3'} />
-      </View> : <>
+      {isLoading ? <LoadingAnimation/> : <>
         {/* Header */}
         <View className="flex-row items-center my-2 px-2">
           <Text className="text-h5 font-sans font-bold ml-2">Reports</Text>
