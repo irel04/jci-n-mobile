@@ -28,7 +28,7 @@
     "date-fns": "^4.1.0",
     "expo": "~52.0.25",
     "expo-blur": "~14.0.2",
-    "expo-constants": "~17.0.3",
+    "expo-constants": "~17.0.8",
     "expo-dev-client": "^5.0.9",
     "expo-font": "~13.0.1",
     "expo-haptics": "~14.0.1",
@@ -67,7 +67,9 @@
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "yup": "^1.6.1"
+    "yup": "^1.6.1",
+    "expo-notifications": "~0.29.14",
+    "expo-device": "~7.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
