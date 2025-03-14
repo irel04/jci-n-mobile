@@ -1,8 +1,8 @@
 export default () => ({
   expo: {
-    name: "thesis-mobile",
-    slug: "thesis-mobile",
-    version: "0.0.0",
+    name: "JCi-N",
+    slug: "JCi-N",
+    version: "0.1.0",
     orientation: "portrait",
     icon: "./assets/images/pup-logo.png",
     scheme: "myapp",
@@ -53,6 +53,19 @@ export default () => ({
             "Allow Thesis app to use your location.",
         },
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification_icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "sounds": [
+            "./local/assets/notification_sound.wav",
+            "./local/assets/notification_sound_other.wav"
+          ],
+          "enableBackgroundRemoteNotifications": true
+        }
+      ]
     ],
     experiments: {
       typedRoutes: true,
