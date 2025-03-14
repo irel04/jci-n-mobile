@@ -60,8 +60,7 @@ export default () => ({
           "color": "#ffffff",
           "defaultChannel": "default",
           "sounds": [
-            "./local/assets/notification_sound.wav",
-            "./local/assets/notification_sound_other.wav"
+            "./assets/sounds/notification_sound.mp3"
           ],
           "enableBackgroundRemoteNotifications": true
         }
