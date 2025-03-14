@@ -7,7 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSession } from "@/contexts/auth";
-
+import * as TaskManager from 'expo-task-manager';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
@@ -25,6 +25,15 @@ type TMessagePushNotication = {
 	}
 
 }
+
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, executionInfo }) => {
+	console.log('Received a notification in the background!', data);
+	// Do something with the notification data
+});
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
