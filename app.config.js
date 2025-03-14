@@ -1,7 +1,7 @@
 export default () => ({
   expo: {
     name: "JCi-N",
-    slug: "JCi-N",
+    slug: "thesis-mobile",
     version: "0.1.0",
     orientation: "portrait",
     icon: "./assets/images/pup-logo.png",
