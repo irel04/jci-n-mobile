@@ -143,13 +143,24 @@ const MainLayout = () => {
 				async (payload) => {
 					console.log('Change received!', payload)
 
-					const message: TMessagePushNotication = {
-						to: expoPushToken,
-						body: `Hello! Kindly check the bin`,
-						title: `Bin is ${payload.new.notification_type}`,
-						sound: "Default"
+					try {
+						const { data, error } = await supabase.from("notifications").select("*, bins(color, set(id, name)), users_details(last_name, first_name)").eq("id", payload.new.id).single()
+
+						if(error) throw error
+
+						const actionMessage = data.notification_type === "empty" ? "The current bin is now empty.Keep it up!" : "Kindly check the bin as we preventing the overflow of trashes"
+
+						const message: TMessagePushNotication = {
+							to: expoPushToken,
+							body: `Hello ${data.users_details.first_name}! ${actionMessage}`,
+							title: `${data.bins.set.name.toUpperCase()} ${data.bins.color.toUpperCase()} is ${data.notification_type}`,
+							sound: "Default"
+						}
+
+						await sendPushNotification(message)
+					} catch (error) {
+						console.error(error)
 					}
-					await sendPushNotification(message)
 				}
 			)
 			.subscribe()
