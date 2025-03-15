@@ -11,9 +11,9 @@ import { TUserSession } from "@/components/types";
 import { supabase } from "@/utils/supabase";
 import * as Notifications from 'expo-notifications';
 import { registerForPushNotificationsAsync, sendPushNotification, TMessagePushNotication } from "@/components/notifications/push-notification";
-// import * as TaskManager from "expo-task-manager"
+import * as TaskManager from 'expo-task-manager';
 
-const BACKGROUND_NOTIFICATION = 'BACKGROUND-NOTIFICATION-TASK'
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK'
 
 
 Notifications.setNotificationHandler({
@@ -24,13 +24,13 @@ Notifications.setNotificationHandler({
 	})
 })
 
-// TaskManager.defineTask(BACKGROUND_NOTIFICATION, async ({ data, error, executionInfo }) => {
-// 	console.log('Received a notification in the background!');
-// 	// Do something with the notification data
-//   });
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, executionInfo }) => {
+	console.log('Received a notification in the background!');
+	// Do something with the notification data
+  });
 
 
-Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION)
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK)
 
 const MainLayout = () => {
 
