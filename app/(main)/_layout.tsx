@@ -7,23 +7,13 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSession } from "@/contexts/auth";
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-import { Platform } from "react-native";
 import { TUserSession } from "@/components/types";
 import { supabase } from "@/utils/supabase";
+import * as Notifications from 'expo-notifications';
+import { registerForPushNotificationsAsync, sendPushNotification, TMessagePushNotication } from "@/components/notifications/push-notification";
+// import * as TaskManager from "expo-task-manager"
 
-type TMessagePushNotication = {
-	to: string,
-	sound: string,
-	title: string,
-	body: string,
-	data?: {
-		[key: string]: string
-	}
-
-}
+const BACKGROUND_NOTIFICATION = 'BACKGROUND-NOTIFICATION-TASK'
 
 
 Notifications.setNotificationHandler({
@@ -34,67 +24,13 @@ Notifications.setNotificationHandler({
 	})
 })
 
+// TaskManager.defineTask(BACKGROUND_NOTIFICATION, async ({ data, error, executionInfo }) => {
+// 	console.log('Received a notification in the background!');
+// 	// Do something with the notification data
+//   });
 
-async function sendPushNotification(message: TMessagePushNotication) {
-	
 
-	await fetch('https://exp.host/--/api/v2/push/send', {
-		method: 'POST',
-		headers: {
-			Accept: 'application/json',
-			'Accept-encoding': 'gzip, deflate',
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(message),
-	});
-}
-
-function handleRegistrationError(errorMessage: string) {
-	alert(errorMessage);
-	throw new Error(errorMessage);
-}
-
-async function registerForPushNotificationsAsync() {
-	if (Platform.OS === 'android') {
-		Notifications.setNotificationChannelAsync('default', {
-			name: 'default',
-			importance: Notifications.AndroidImportance.MAX,
-			vibrationPattern: [0, 250, 250, 250],
-			lightColor: '#FF231F7C',
-		});
-	}
-
-	if (Device.isDevice) {
-		const { status: existingStatus } = await Notifications.getPermissionsAsync();
-		let finalStatus = existingStatus;
-		if (existingStatus !== 'granted') {
-			const { status } = await Notifications.requestPermissionsAsync();
-			finalStatus = status;
-		}
-		if (finalStatus !== 'granted') {
-			handleRegistrationError('Permission not granted to get push token for push notification!');
-			return;
-		}
-		const projectId =
-			Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-		if (!projectId) {
-			handleRegistrationError('Project ID not found');
-		}
-		try {
-			const pushTokenString = (
-				await Notifications.getExpoPushTokenAsync({
-					projectId,
-				})
-			).data;
-			console.log(pushTokenString);
-			return pushTokenString;
-		} catch (e: unknown) {
-			handleRegistrationError(`${e}`);
-		}
-	} else {
-		handleRegistrationError('Must use physical device for push notifications');
-	}
-}
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION)
 
 const MainLayout = () => {
 
@@ -108,8 +44,9 @@ const MainLayout = () => {
 	const notificationListener = useRef<Notifications.EventSubscription>();
 	const responseListener = useRef<Notifications.EventSubscription>();
 
+	// This block register the notification to push notification
 	useEffect(() => {
-		registerForPushNotificationsAsync()
+		registerForPushNotificationsAsync(Notifications)
 			.then(token => setExpoPushToken(token ?? ''))
 			.catch((error: any) => setExpoPushToken(`${error}`));
 
@@ -133,9 +70,7 @@ const MainLayout = () => {
 	const userSession = session ? JSON.parse(session) as TUserSession : null 
 
 	// Send push notification while watching notification table
-
 	useEffect(() => {
-
 		const channels = supabase.channel('custom-insert-channel')
 			.on(
 				'postgres_changes',
