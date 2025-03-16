@@ -10,10 +10,13 @@ import { useSession } from "@/contexts/auth";
 import { TUserSession } from "@/components/types";
 import { supabase } from "@/utils/supabase";
 import * as Notifications from 'expo-notifications';
-import { registerForPushNotificationsAsync, sendPushNotification, TMessagePushNotication } from "@/components/notifications/push-notification";
+import { getPushToken, handleRegistrationError, registerForPushNotificationsAsync, sendPushNotification, setUpNoticationChannel, TMessagePushNotication } from "@/components/notifications/push-notification";
 import * as TaskManager from 'expo-task-manager';
+import Constants from 'expo-constants';
 
 const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK'
+
+
 
 
 Notifications.setNotificationHandler({
@@ -27,10 +30,24 @@ Notifications.setNotificationHandler({
 TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, executionInfo }) => {
 	console.log('Received a notification in the background!');
 	// Do something with the notification data
+	// const expoPushToken = await getPushToken()
+	// const channels = setUpNoticationChannel(expoPushToken).subscribe()
+	console.log("BAckground data:", data)
+
   });
+
+// (async () => {
+// 	const expoPushToken = await getPushToken()
+// 	const channels = setUpNoticationChannel(expoPushToken)
+
+// 	channels.subscribe()
+
+// })()
 
 
 Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK)
+
+
 
 const MainLayout = () => {
 
@@ -46,7 +63,7 @@ const MainLayout = () => {
 
 	// This block register the notification to push notification
 	useEffect(() => {
-		registerForPushNotificationsAsync(Notifications)
+		registerForPushNotificationsAsync()
 			.then(token => setExpoPushToken(token ?? ''))
 			.catch((error: any) => setExpoPushToken(`${error}`));
 
@@ -58,12 +75,12 @@ const MainLayout = () => {
 			console.log(response);
 		});
 
-		return () => {
-			notificationListener.current &&
-				Notifications.removeNotificationSubscription(notificationListener.current);
-			responseListener.current &&
-				Notifications.removeNotificationSubscription(responseListener.current);
-		};
+		// return () => {
+		// 	notificationListener.current &&
+		// 		Notifications.removeNotificationSubscription(notificationListener.current);
+		// 	responseListener.current &&
+		// 		Notifications.removeNotificationSubscription(responseListener.current);
+		// };
 	}, []);
 
 
@@ -71,34 +88,7 @@ const MainLayout = () => {
 
 	// Send push notification while watching notification table
 	useEffect(() => {
-		const channels = supabase.channel('custom-insert-channel')
-			.on(
-				'postgres_changes',
-				{ event: 'INSERT', schema: 'public', table: 'notifications' },
-				async (payload) => {
-					console.log('Change received!', payload)
-
-					try {
-						const { data, error } = await supabase.from("notifications").select("*, bins(color, set(id, name)), users_details(last_name, first_name)").eq("id", payload.new.id).single()
-
-						if(error) throw error
-
-						const actionMessage = data.notification_type === "empty" ? "The current bin is now empty. Keep it up!" : "Kindly check the bin as we preventing the overflow of trashes"
-
-						const message: TMessagePushNotication = {
-							to: expoPushToken,
-							body: `Hello ${data.users_details.first_name}! ${actionMessage}`,
-							title: `${data.bins.set.name.toUpperCase()} ${data.bins.color.toUpperCase()} is ${data.notification_type}`,
-							sound: "Default"
-						}
-
-						await sendPushNotification(message)
-					} catch (error) {
-						console.error(error)
-					}
-				}
-			)
-			.subscribe()
+		const channels = setUpNoticationChannel(expoPushToken).subscribe()
 
 		// Cleanup function to unsubscribe when the component unmounts
 		return () => {
