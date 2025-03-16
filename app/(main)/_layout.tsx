@@ -1,5 +1,5 @@
 import { View, Text, Alert, Button } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Redirect, Tabs } from "expo-router"
 import Entypo from '@expo/vector-icons/Entypo';
 import Octicons from '@expo/vector-icons/Octicons';
@@ -56,11 +56,11 @@ const MainLayout = () => {
 
 
 	const [expoPushToken, setExpoPushToken] = useState('');
-	const [notification, setNotification] = useState<Notifications.Notification | undefined>(
-		undefined
-	);
-	const notificationListener = useRef<Notifications.EventSubscription>();
-	const responseListener = useRef<Notifications.EventSubscription>();
+	// const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+	// 	undefined
+	// );
+	// const notificationListener = useRef<Notifications.EventSubscription>();
+	// const responseListener = useRef<Notifications.EventSubscription>();
 
 	// This block register the notification to push notification
 	useEffect(() => {
@@ -68,13 +68,13 @@ const MainLayout = () => {
 			.then(token => setExpoPushToken(token ?? ''))
 			.catch((error: any) => setExpoPushToken(`${error}`));
 
-		notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-			setNotification(notification);
-		});
+		// notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+		// 	setNotification(notification);
+		// });
 
-		responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-			console.log(response);
-		});
+		// responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+		// 	console.log(response);
+		// });
 
 		// return () => {
 		// 	notificationListener.current &&
@@ -83,6 +83,43 @@ const MainLayout = () => {
 		// 		Notifications.removeNotificationSubscription(responseListener.current);
 		// };
 	}, []);
+
+	const [notificationCount, setNotificationCount] = useState<number>(0)
+
+	const userAuth = session ? JSON.parse(session) as TUserSession : null
+
+	const fetchNotification = useCallback(async () => {
+		try {
+			const { count, error } = await supabase.from("notifications").select("id", { count: 'exact' }).eq("nearest_user_id", userAuth.user_id).eq("is_read", false)
+
+			if(error) throw error
+
+			setNotificationCount(count)
+		} catch (error) {
+			console.error(error)
+		}
+	}, [])
+
+	useEffect(() => {
+		fetchNotification()
+	}, [])
+
+	useEffect(() => {
+		const channel = supabase
+		.channel('counting-notifications')
+		.on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
+			console.log("Count me in")
+
+			fetchNotification()
+		  
+		})
+		.subscribe()
+	  
+
+		return () => {
+			channel.unsubscribe()
+		}
+	}, [])
 
 
 	const userSession = session ? JSON.parse(session) as TUserSession : null 
@@ -140,7 +177,7 @@ const MainLayout = () => {
 			<Tabs.Screen name="(notification)"
 				options={{
 					tabBarShowLabel: false,
-					tabBarIcon: ({ color }) => <NotificationIcon color={color} />
+					tabBarIcon: ({ color }) => <NotificationIcon color={color} notificationCount={notificationCount}/>
 				}}
 			/>
 			<Tabs.Screen name="(profile)"

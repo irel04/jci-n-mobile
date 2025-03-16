@@ -6,47 +6,12 @@ import { TUserSession } from "@/components/types"
 import { supabase } from "@/utils/supabase"
 
 type Props = {
-	color: string
+	color: string,
+	notificationCount: number
 }
 
-const NotificationIcon = ({ color }: Props) => {
-	const [notificationCount, setNotificationCount] = useState<number>(100)
-
-	const { session } = useSession()
-	const userAuth = session ? JSON.parse(session) as TUserSession : null
-
-	const fetchNotification = useCallback(async () => {
-		try {
-			const { count, error } = await supabase.from("notifications").select("id", { count: 'exact' }).eq("nearest_user_id", userAuth.user_id).eq("is_read", false)
-
-			if(error) throw error
-
-			setNotificationCount(count)
-		} catch (error) {
-			console.error(error)
-		}
-	}, [])
-
-	useEffect(() => {
-		fetchNotification()
-	}, [])
-
-	useEffect(() => {
-		const channel = supabase
-		.channel('counting-notifications')
-		.on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
-			console.log("Count me in")
-
-			fetchNotification()
-		  
-		})
-		.subscribe()
-	  
-
-		return () => {
-			channel.unsubscribe()
-		}
-	}, [])
+const NotificationIcon = ({ color, notificationCount }: Props) => {
+	
 
 
 	return (
