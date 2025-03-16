@@ -13,6 +13,7 @@ import * as Notifications from 'expo-notifications';
 import { getPushToken, handleRegistrationError, registerForPushNotificationsAsync, sendPushNotification, setUpNoticationChannel, TMessagePushNotication } from "@/components/notifications/push-notification";
 import * as TaskManager from 'expo-task-manager';
 import Constants from 'expo-constants';
+import NotificationIcon from "@/components/notifications/NotificationIcon";
 
 const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK'
 
@@ -139,7 +140,7 @@ const MainLayout = () => {
 			<Tabs.Screen name="(notification)"
 				options={{
 					tabBarShowLabel: false,
-					tabBarIcon: ({ color }) => <Ionicons name="notifications" size={22} color={color} />
+					tabBarIcon: ({ color }) => <NotificationIcon color={color} />
 				}}
 			/>
 			<Tabs.Screen name="(profile)"
