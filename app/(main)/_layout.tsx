@@ -33,17 +33,10 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, execu
 	// Do something with the notification data
 	// const expoPushToken = await getPushToken()
 	// const channels = setUpNoticationChannel(expoPushToken).subscribe()
-	console.log("BAckground data:", data)
+	// console.log("BAckground data:", data)
 
   });
 
-// (async () => {
-// 	const expoPushToken = await getPushToken()
-// 	const channels = setUpNoticationChannel(expoPushToken)
-
-// 	channels.subscribe()
-
-// })()
 
 
 Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK)
