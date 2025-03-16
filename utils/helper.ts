@@ -1,4 +1,4 @@
-import { addDays, endOfWeek, format, startOfWeek } from "date-fns";
+import { addDays, endOfDay, endOfToday, endOfWeek, endOfYesterday, format, startOfDay, startOfToday, startOfWeek, startOfYesterday, subDays } from "date-fns";
 
 export function timeAgo(timestamp: string) {
 	const now = new Date();
@@ -54,6 +54,33 @@ export function startEndOfWeek(date: Date){
 	return { formattedEndOfWeek, formattedStartOfWeek, formattedStartOfWeekISO, formattedEndOfWeekISO }
 } 
 
+// Calculate the date yesterday
+export function getYesterday(formatString: string){
+	
+	const yesterdayDateEnd = format(endOfYesterday(), formatString)
+
+	const yesterdayDateStart = format(startOfYesterday(), formatString)
+	return { yesterdayDateEnd, yesterdayDateStart }
+}
+
+// Calculate the date yesterday
+export function getToday(formatString: string){
+	
+	const todayDateEnd = format(endOfToday(), formatString)
+
+	const todayDateStart = format(startOfToday(), formatString)
+	return { todayDateEnd, todayDateStart }
+}
+
+
+export function getLast7Days(formatString: string="yyyy-MM-dd") {
+  const last7DaysStart = format(startOfDay(subDays(new Date(), 7)), formatString);
+  const last7DaysEnd = format(endOfDay(subDays(new Date(), 1)), formatString);
+
+  return { last7DaysStart, last7DaysEnd };
+}
+
+
 
 export const generateWeekLabels = (selectedYear: number) => {
 	const weeks = [];
@@ -69,3 +96,5 @@ export const generateWeekLabels = (selectedYear: number) => {
 
 	return weeks;
   };
+
+

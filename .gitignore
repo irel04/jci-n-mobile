@@ -39,3 +39,5 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+# Remove this when building or making prod
+google-services.json 

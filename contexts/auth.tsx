@@ -54,10 +54,11 @@ export function SessionProvider({ children }: PropsWithChildren) {
             const { data: users_details } = await supabase.from("users_details").select("id").eq("auth_id", data.session.user.id)
 
            
+            const { access_token, refresh_token } = data.session
 
            
 
-            setSession(JSON.stringify({...data.session, user_id: users_details[0].id}));
+            setSession(JSON.stringify({access_token, refresh_token, user_id: users_details[0].id}));
 
             setTimeout(() => {
               router.push("/(main)");

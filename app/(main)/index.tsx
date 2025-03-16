@@ -56,7 +56,7 @@ const Main = () => {
 	const [currentWeather, setCurrentWeather] = useState(null)
 
 	const getUser = async () => {
-		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id, lng, lat").eq("auth_id", parseSession.user.id)
+		const { data, error } = await supabase.from("users_details").select("first_name, last_name, id, lng, lat").eq("id", parseSession.user_id)
 	
 		if (error) throw error
 	
