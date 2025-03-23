@@ -3,15 +3,10 @@ import React from 'react'
 import Fontisto from "@expo/vector-icons/Fontisto"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons"
+import { TUserPersonalInfo } from "@/components/types"
 
 interface ProfileProps {
-	data: {
-		name: string
-		birthdate: string
-		email_address: string
-		phone_number: string
-		address: string
-	}
+	data: TUserPersonalInfo
 }
 
 const ProfileDetails = ({ data }: ProfileProps) => {
