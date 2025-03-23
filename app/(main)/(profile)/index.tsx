@@ -1,6 +1,6 @@
 
 import { View, Text, Image, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import ProfileDetails from "@/components/profile/ProfileDetails";
 import Support from "@/components/profile/Support";
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
@@ -10,12 +10,13 @@ import Feather from '@expo/vector-icons/Feather';
 import { useSession } from "@/contexts/auth";
 import { supabase } from "@/utils/supabase";
 import LoaderKit from "react-native-loader-kit"
-import { TUserSession } from "@/components/types";
+import { TUserPersonalInfo, TUserSession } from "@/components/types";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
+import * as WebBrowser from 'expo-web-browser';
 
 
 const getProfile = async (userId: string) => {
-	const { data, error } = await supabase.from("users_details").select("*").eq("id", userId)
+	const { data, error } = await supabase.from("users_details").select("*").eq("id", userId).single()
 
 	if (error) throw error
 
@@ -25,27 +26,7 @@ const getProfile = async (userId: string) => {
 
 const ProfileTab = () => {
 
-	// const profileData = { 
-	// 	name: "Jonas Brian Macacua",
-	// 	birthdate: "December 24, 2001",
-	// 	email: "jonas@gmail.com",
-	// 	phoneNumber: "+63 9704778642",
-	// 	address: "Muslim Compound",
-	// }	
-
-	const [profileData, setProfileData] = useState<{
-		name: string;
-		birthdate: string;
-		email_address: string;
-		phone_number: string;
-		address: string;
-	}>({
-		name: '',
-		birthdate: '',
-		email_address: '',
-		phone_number: '',
-		address: ''
-	})
+	const [profileData, setProfileData] = useState<TUserPersonalInfo | null>()
 	const [isLoading, setIsloading] = useState(true)
 
 	const { signOut, session } = useSession()
@@ -57,31 +38,43 @@ const ProfileTab = () => {
 
 	}
 
-	const userSession = JSON.parse(session) as TUserSession
+	const userSession = useMemo(() => JSON.parse(session) as TUserSession, [session]);
+
+	const fetchData = useCallback(async () => {
+		try {
+			const userData = await getProfile(userSession.user_id)
+			setProfileData(userData)
+		} catch (error) {
+			console.error(error)
+		} finally {
+			setIsloading(false)
+		}
+	}, [userSession?.user_id])
+
+	
+	useEffect(() => {
+		fetchData()
+	}, [userSession?.user_id])
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const userData = await getProfile(userSession.user_id)
+		supabase.channel("profile-changes")
+			.on("postgres_changes", { event: "*", schema: "public", table: "users_details"}, (payload) => {
+				fetchData()
+			}).subscribe()
 
-				const processedUser = userData.map(user => {
-					const { first_name, last_name, ...other } = user
-					return {
-						name: first_name + " " + last_name,
-						...other
-					}
-				})[0]
-
-				setProfileData(processedUser)
-			} catch (error) {
-				console.error(error)
-			} finally {
-				setIsloading(false)
-			}
+		return () => {
+			supabase.channel("profile-changes").unsubscribe()
 		}
+	}, [fetchData])
 
-		fetchData()
-	}, [])
+
+	const _handlePressButtonAsync = async () => {
+		try {
+			await WebBrowser.openBrowserAsync('https://jci-n-web.vercel.app/edit-profile');
+		} catch (error) {
+			console.error(error)
+		}
+	};
 
 	return (
 		<View className="flex p-7 h-full">
@@ -89,9 +82,9 @@ const ProfileTab = () => {
 				{/* Profile picture */}
 				<View className="relative h-10 flex items-center flex-auto gap-1">
 					<Image source={require("@/assets/images/employee-icon.png")} className="rounded-full w-40 h-40" />
-					<Text className="text-h5 font-bold text-brand-900">{profileData.name}</Text>
+					<Text className="text-h5 font-bold text-brand-900">{profileData.first_name + " " + profileData.last_name}</Text>
 					<Text className="text-caption rounded-lg bg-brand-800 text-white-500 px-[10px] py-[5px]">Employee</Text>
-					<Pressable className="absolute right-0" onPress={() => { }}>
+					<Pressable className="absolute right-0" onPress={_handlePressButtonAsync}>
 						<Feather name="edit" size={20} color="#082B63" />
 					</Pressable>
 				</View>

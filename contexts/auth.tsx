@@ -70,7 +70,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
         },
         signOut: async () => {
           try {
-            let { error } = await supabase.auth.signOut()
+            let { error } = await supabase.auth.signOut({
+              scope: "local"
+            })
             
             if(error) throw error
             setSession(null);

@@ -82,6 +82,7 @@ const MainLayout = () => {
 	const userAuth = session ? JSON.parse(session) as TUserSession : null
 
 	const fetchNotification = useCallback(async () => {
+		if (userAuth === null) return
 		try {
 			const { count, error } = await supabase.from("notifications").select("id", { count: 'exact' }).eq("nearest_user_id", userAuth.user_id).eq("is_read", false)
 
