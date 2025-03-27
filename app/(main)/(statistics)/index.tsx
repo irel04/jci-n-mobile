@@ -151,6 +151,13 @@ const Statistics = () => {
       .subscribe()
   }, [])
 
+
+  useEffect(() => {
+    console.log("Trash bin usage data: ", trashBinUsageData)
+    console.log("Fullness frequency data: ", fullnessFrequencyData)
+    console.log("Collection frequency data: ", collectionFrequencyData)
+  } , [trashBinUsageData, fullnessFrequencyData, collectionFrequencyData])
+
   return (
     <View className="flex-1 bg-gray-100 p-4">
       {isLoading ? <LoadingAnimation/> : <>

@@ -4,7 +4,7 @@ export default () => ({
     slug: "thesis-mobile",
     version: "0.1.0",
     orientation: "portrait",
-    icon: "./assets/images/pup-logo.png",
+    icon: "./assets/icons/App Icon.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -13,7 +13,7 @@ export default () => ({
     // },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/pup-logo.png",
+        foregroundImage: "./assets/icons/Splash Icon.png",
         backgroundColor: "#ffffff",
       },
       package: "com.kianirel.dev.thesismobile",
@@ -34,7 +34,7 @@ export default () => ({
       [
         "expo-splash-screen",
         {
-          image: "./assets/images/pup-logo.png",
+          image: "./assets/icons/Splash Icon.png",
           imageWidth: 200,
           resizeMode: "contain",
           backgroundColor: "#ffffff",
