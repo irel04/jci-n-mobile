@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Image, Text, View } from 'react-native';
 import mapStyleSheet from './Style';
 import MapView, { AnimatedRegion, Marker, MarkerAnimated, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -13,22 +13,23 @@ const INITIAL_REGION = {
   longitudeDelta: 0.00821,
 };
 
-interface MarkerCoordinate {
+export interface MarkerCoordinate {
   latitude: number;
   longitude: number;
   title?: string;
   type?: string,
-  id: string
+  id: string,
+  setId?: string
 }
 
 interface GoogleMapsInterface {
   markerCoordinates: MarkerCoordinate[];
   movingMarkerCoords: MarkerCoordinate,
   showRoute?: boolean,
-  selectedBin: string
+  selectedSetId: string
 }
 
-const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selectedBin }: GoogleMapsInterface) => {
+const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selectedSetId }: GoogleMapsInterface) => {
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef(null)
 
@@ -68,14 +69,13 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
 
   }, [])
 
-  // This is when it came from route that passes bin id
-  const { id: bin_id } = useGlobalSearchParams()
+  const targetSet = useMemo(() => {
+    return markerCoordinates.filter(bin => bin.setId === selectedSetId)[0] || null
+  }, [selectedSetId, markerCoordinates])
 
   useEffect(() => {
-    // if (bin_id) {
-      
-    // }
-  }, [bin_id])
+    console.log(targetSet)
+  }, [targetSet])
 
   return (
     <MapView
@@ -101,7 +101,7 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
       {/* {showRoute && <Polyline coordinates={[userCoords, ...markerCoordinates]} strokeWidth={5} strokeColor="red"/>} */}
 
       {/* Ensure showroute and selected bin is true and has value respectively before triggerring polyline for direction */}
-      {showRoute && selectedBin && <MapViewDirections origin={userCoords} destination={markerCoordinates.filter(bin => bin.id === selectedBin)[0]} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="#0E46A3" strokeWidth={8} precision="high" />}
+      {showRoute && targetSet && <MapViewDirections origin={userCoords} destination={targetSet} apikey={process.env.EXPO_PUBLIC_API_KEY} mode="WALKING" strokeColor="#0E46A3" strokeWidth={8} precision="high" />}
 
       {markerCoordinates.map((coord, index) => {
         const { type, title, ...position } = coord;

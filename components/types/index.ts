@@ -12,3 +12,4 @@ export type TSetTable = {
 	name: string;
 	created_at: Date | string
 }
+

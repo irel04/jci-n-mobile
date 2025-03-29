@@ -3,13 +3,14 @@ import { View, Text, Alert, Modal } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import OnDevelopment from "@/components/OnDevelopment";
-import GoogleMaps from "@/components/google-maps/GoogleMaps";
+import GoogleMaps, { MarkerCoordinate } from "@/components/google-maps/GoogleMaps";
 import { supabase } from "@/utils/supabase";
 import { useSession } from "@/contexts/auth";
 import * as Location from "expo-location"
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import CustomModal from "@/components/ui/Modal";
 import SelectBinToRouteModal from "@/components/route/SelectBinToRouteModal";
+import { TSetTable, TUserSession } from "@/components/types";
 
 interface RouteComponent {
 	showButton?: boolean
@@ -25,11 +26,17 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 	const [positions, setPositions] = useState([])
 	const [userPos, setUserPos] = useState(null)
 
+	const [sets, setSets] = useState<TSetTable[]>(null)
+
 	const [showRoute, setShowRoute] = useState(false)
 	const [showChoseModal, setShowChoseModal] = useState(false)
 	const pickerRef = useRef(null)
 
-	const [selectedBinId, setSelectedBinId] = useState(null)
+	const [selectedSetId, setSelectedSetId] = useState(null)
+
+	
+	const { session } = useSession()
+	const userAuth = session ? JSON.parse(session) as TUserSession : null
 
 	// side effect for prompting user about permission on location sharing and navigation
 	useEffect(() => {
@@ -37,9 +44,9 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 
 		const updateSupabaseLocation = async (lastLocation: UpdateLocation) => {
 			try {
-				const { data: userAuth } = await supabase.auth.getUser();
+				
 
-				if (!userAuth.user) return;
+				if (!userAuth.user_id) return;
 
 				const { data, error } = await supabase
 					.from('users_details')
@@ -47,7 +54,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 						lng: lastLocation.longitude,
 						lat: lastLocation.latitude,
 					})
-					.eq('auth_id', userAuth.user.id)
+					.eq('id', userAuth.user_id)
 					.select();
 
 				if (error) throw error;
@@ -66,6 +73,8 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 				return;
 			}
 
+			
+
 			let { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
 			if (backgroundStatus !== 'granted') {
 				console.log('Background permission denied');
@@ -81,10 +90,11 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 					distanceInterval: 5,
 				},
 				async (newLocation) => {
-					const { accuracy, latitude, longitude } = newLocation.coords;
+					const { accuracy, latitude, longitude, speed } = newLocation.coords;
 
+					console.log(accuracy)
 					// Reject updates with poor accuracy
-					if (accuracy > 10) return;
+					if (accuracy > 20) return;
 
 					// Smooth the location updates using weighted averaging
 					if (lastValidLocation) {
@@ -128,33 +138,28 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 		const fetchBinLocation = async () => {
 			try {
 
-				const { data: userAuth } = await supabase.auth.getUser()
-
 
 				if(!userAuth) return
 
-				const { data: user } = await supabase.from("users_details").select("id").eq("auth_id", userAuth.user.id)
-
-
 				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat), color, id`)
 
-				
 
 				if (error) {
 					throw error
 				}
 
-
-				const flattenData = data.map(bin => {
+				const flattenData: MarkerCoordinate[] = data.map(bin => {
 					return {
 						id: bin.id,
 						title: bin.set,
-						bin_color: bin.color,
-						longitude: bin.location[0].lng,
-						latitude: bin.location[0].lat,
-						type: "bin"
+						longitude: bin.location[0]?.lng,
+						latitude: bin.location[0]?.lat,
+						type: "bin",
+						setId: bin.set
 					}
 				})
+
+				console.log("new data: ",data)
 
 
 				setPositions(flattenData)
@@ -168,13 +173,10 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 		const fetchUserLocation = async () => {
 			try {
 
-				const { data: userAuth } = await supabase.auth.getUser()
-
-
 				if(!userAuth) return
 
 
-				const { data, error } = await supabase.from("users_details").select("lat, lng, first_name").eq("auth_id", userAuth.user.id)
+				const { data, error } = await supabase.from("users_details").select("lat, lng, first_name").eq("id", userAuth.user_id)
 
 
 				if (error) {
@@ -198,9 +200,29 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 		fetchBinLocation()
 	}, [])
 
+	// Fetch sets
+	useEffect(() => {
+		const fetchSets = async () => {
+			try {
+				const {data, error} = await supabase.from("sets").select("*")
+
+				if(error) throw error
+
+				setSets(data)
+			} catch (error) {
+				console.error(error)
+			}
+		}
+
+		fetchSets()
+
+	}, [])
+	
+	
+	
 	// This function is for recording changes via the dropdowns -- it feeds the record for handlecontinue
-	function handleSelectBin(binId: any){
-		setSelectedBinId(binId)
+	function handleSelectBin(setId: string){
+		setSelectedSetId(setId)
 	}
 
 	// Function for showing the actual polyline/route on the maps 
@@ -211,7 +233,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 
 	// This is for the show route button where it is parameter for the choose modal 
 	function handleOnPressShowRoute (){
-		if(!showRoute){
+		if (!showRoute) {
 			setShowChoseModal(!showChoseModal)
 		} else {
 			setShowRoute(!showRoute)
@@ -228,12 +250,11 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 					<Text className="text-white-500 text-sm">{showRoute ? "Hide Route" : "Show Route"}</Text>
 				</CustomButton>
 			</View>}
-			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showRoute={showRoute} selectedBin={selectedBinId}/>}
-
+			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showRoute={showRoute} selectedSetId={selectedSetId}/>}
 			{/* Modal */}
 			<CustomModal isVisible={showChoseModal}>
 				<View className="bg-white-500 p-5 rounded-lg shadow-lg flex justify-center items-center w-3/4 gap-10">
-					<SelectBinToRouteModal bins={positions} ref={pickerRef} handleSelectValue={handleSelectBin}/>
+					{sets && <SelectBinToRouteModal sets={sets} handleSelectValue={handleSelectBin} />}
 					<View className="gap-2">
 						<CustomButton styleType={StyleType.BRAND_PRIMARY} width="w-36" onPress={handleContinueOnRoute}>
 							<Text className="text-white-500">Continue</Text>
