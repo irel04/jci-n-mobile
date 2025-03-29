@@ -19,7 +19,7 @@ const SelectBinToRouteModal = React.forwardRef<Picker<string>, SelectBinToRouteP
 			<Text className="text-title text-brand-700 font-bold">Select Bin Destination</Text>
 			<Picker ref={ref} style={style.picker} onValueChange={handleSelectValue}>
 				{bins.map((bin: BinProps, index) => {
-					return <Picker.Item label={`${bin.title} ${bin.bin_color}`} value={bin.id} key={index}/>
+					return <Picker.Item label={bin.title} value={bin.id} key={index}/>
 				})}
 			</Picker>
 		</View>

@@ -10,6 +10,7 @@ import * as Location from "expo-location"
 import CustomButton, { StyleType } from "@/components/ui/CustomButton";
 import CustomModal from "@/components/ui/Modal";
 import SelectBinToRouteModal from "@/components/route/SelectBinToRouteModal";
+import { TUserSession } from "@/components/types";
 
 interface RouteComponent {
 	showButton?: boolean
@@ -31,15 +32,18 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 
 	const [selectedBinId, setSelectedBinId] = useState(null)
 
+	const { session } = useSession()
+	const userAuth = session ? JSON.parse(session) as TUserSession : null
+
 	// side effect for prompting user about permission on location sharing and navigation
 	useEffect(() => {
 		let locationWatcher: Location.LocationSubscription; // Declare the location watcher variable
 
 		const updateSupabaseLocation = async (lastLocation: UpdateLocation) => {
 			try {
-				const { data: userAuth } = await supabase.auth.getUser();
+				
 
-				if (!userAuth.user) return;
+				if (!userAuth.user_id) return;
 
 				const { data, error } = await supabase
 					.from('users_details')
@@ -47,7 +51,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 						lng: lastLocation.longitude,
 						lat: lastLocation.latitude,
 					})
-					.eq('auth_id', userAuth.user.id)
+					.eq('id', userAuth.user_id)
 					.select();
 
 				if (error) throw error;
@@ -66,6 +70,8 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 				return;
 			}
 
+			
+
 			let { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
 			if (backgroundStatus !== 'granted') {
 				console.log('Background permission denied');
@@ -81,10 +87,11 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 					distanceInterval: 5,
 				},
 				async (newLocation) => {
-					const { accuracy, latitude, longitude } = newLocation.coords;
+					const { accuracy, latitude, longitude, speed } = newLocation.coords;
 
+					console.log(accuracy)
 					// Reject updates with poor accuracy
-					if (accuracy > 10) return;
+					if (accuracy > 20) return;
 
 					// Smooth the location updates using weighted averaging
 					if (lastValidLocation) {
@@ -128,30 +135,23 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 		const fetchBinLocation = async () => {
 			try {
 
-				const { data: userAuth } = await supabase.auth.getUser()
-
 
 				if(!userAuth) return
 
-				const { data: user } = await supabase.from("users_details").select("id").eq("auth_id", userAuth.user.id)
+				const { data, error } = await supabase.from("bins").select(`set(id, name), location(lng, lat), color, id`)
 
-
-				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat), color, id`)
-
-				
 
 				if (error) {
 					throw error
 				}
 
-
 				const flattenData = data.map(bin => {
 					return {
 						id: bin.id,
-						title: bin.set,
+						title: bin.set[0]?.id,
 						bin_color: bin.color,
-						longitude: bin.location[0].lng,
-						latitude: bin.location[0].lat,
+						longitude: bin.location[0]?.lng,
+						latitude: bin.location[0]?.lat,
 						type: "bin"
 					}
 				})
@@ -168,13 +168,10 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 		const fetchUserLocation = async () => {
 			try {
 
-				const { data: userAuth } = await supabase.auth.getUser()
-
-
 				if(!userAuth) return
 
 
-				const { data, error } = await supabase.from("users_details").select("lat, lng, first_name").eq("auth_id", userAuth.user.id)
+				const { data, error } = await supabase.from("users_details").select("lat, lng, first_name").eq("id", userAuth.user_id)
 
 
 				if (error) {
@@ -229,21 +226,6 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 				</CustomButton>
 			</View>}
 			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showRoute={showRoute} selectedBin={selectedBinId}/>}
-
-			{/* Modal */}
-			<CustomModal isVisible={showChoseModal}>
-				<View className="bg-white-500 p-5 rounded-lg shadow-lg flex justify-center items-center w-3/4 gap-10">
-					<SelectBinToRouteModal bins={positions} ref={pickerRef} handleSelectValue={handleSelectBin}/>
-					<View className="gap-2">
-						<CustomButton styleType={StyleType.BRAND_PRIMARY} width="w-36" onPress={handleContinueOnRoute}>
-							<Text className="text-white-500">Continue</Text>
-						</CustomButton>
-						<CustomButton styleType={StyleType.DESTRUCTIVE_SECONDARY} width="w-36" onPress={() => setShowChoseModal(!showChoseModal)}>
-							<Text>Cancel</Text>
-						</CustomButton>
-					</View>
-				</View>
-			</CustomModal>
 		</View>
 	)
 }
