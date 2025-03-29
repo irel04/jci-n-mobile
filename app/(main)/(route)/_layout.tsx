@@ -5,7 +5,7 @@ import { Tabs } from "expo-router"
 
 const RouteLayout = () => {
 	return (
-		<Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: "none" } }} />
+		<Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: "none" } }}/>
 	)
 }
 
