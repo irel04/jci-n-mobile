@@ -70,7 +70,7 @@ const ProfileTab = () => {
 
 	const _handlePressButtonAsync = async () => {
 		try {
-			await WebBrowser.openBrowserAsync('https://jci-n-web.vercel.app/edit-profile');
+			await WebBrowser.openBrowserAsync(`https://jci-n-web.vercel.app/edit-profile?token=${userSession.access_token}`);
 		} catch (error) {
 			console.error(error)
 		}
