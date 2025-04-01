@@ -16,49 +16,51 @@ export default function SolarPower() {
 
     const [isSetLocked, setIsSetLocked] = useState<boolean>(false)
 
-    // Call sets for picker
-    useEffect(() => {
-        const fetchSets = async () => {
-            const { data, error } = await supabase.from("sets").select("*")
+    const fetchBinIsLockedStatus = async () => {
+        try {
 
-            if (error) return
-            setSets(data)
+            const { data: binSets, error:binSetsError } = await supabase.from("sets").select("*")
 
-            setSelectedSet(data[0].id)
+            if (binSetsError) return
+            setSets(binSets)
 
+
+
+            const { data, error } = await supabase.from("bins").select("is_locked").eq("set", binSets[0].id)
+
+            if(error) throw error
+
+
+            setIsSetLocked(data[0].is_locked)
+        
+        } catch (error) {
+            console.error(error)
         }
+    }
 
-        fetchSets()
+    useEffect(() => {
+        fetchBinIsLockedStatus()
     }, [])
 
     // check if unlocked or locked
     useEffect(() => {
-        const fetchBinIsLockedStatus = async () => {
-            try {
-                const { data, error } = await supabase.from("bins").select("is_locked").eq("set", selectedSet)
+       
 
-                if(error) throw error
+        const channels = supabase.channel('custom-all-channel')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'bins' },
+                (payload) => {
+                    fetchBinIsLockedStatus()
+                }
+            )
+            .subscribe()
 
-                setIsSetLocked(data[0].is_locked)
             
-            } catch (error) {
-                console.error(error)
-            }
+        return () => {
+            channels.unsubscribe()
         }
-
-        if(selectedSet) {
-            
-            const channels = supabase.channel('custom-all-channel')
-                .on(
-                    'postgres_changes',
-                    { event: '*', schema: 'public', table: 'bins' },
-                    (payload) => {
-                        fetchBinIsLockedStatus()
-                    }
-                )
-                .subscribe()
-        }
-    }, [selectedSet])
+    }, [])   
 
     const handleBinLocked = async (isLocked: boolean
     ) => {
