@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from "@/hooks/useStorageState";
 import { supabase } from "@/utils/supabase";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
+import { TUserSession } from "@/components/types";
 
 interface AuthContextType {
   signIn: (credentials: { email: string; password: string }) => Promise<void>;
@@ -38,16 +39,30 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
 
   const router = useRouter()
+
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === 'TOKEN_REFRESHED'){
+        const { access_token, refresh_token } = newSession
+        const oldSession = JSON.parse(session) as TUserSession
+
+        setSession(JSON.stringify({ access_token, refresh_token, user_id: oldSession.user_id }))
+        
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
   
   async function signIn(credentials: { email: string; password: string }) {
     try {
-      const { error } = await supabase.auth.signInWithPassword(credentials);
+      const {data, error } = await supabase.auth.signInWithPassword(credentials);
 
       if (error) throw error;
 
-
-
-      const { data } = await supabase.auth.getSession();
 
       const { data: users_details } = await supabase.from("users_details").select("id, status").eq("auth_id", data.session.user.id)
 
@@ -56,12 +71,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
         throw new Error("Your account is not activated. Please wait for admin verification", { cause: "not-activated" })
       }
 
+      const { refresh_token, access_token } = data.session
 
-      const { access_token, refresh_token } = data.session
-
-
-
-      setSession(JSON.stringify({ access_token, refresh_token, user_id: users_details[0].id }));
+      setSession(JSON.stringify({ refresh_token, access_token, user_id: users_details[0].id }))
 
       setTimeout(() => {
         router.push("/(main)");
