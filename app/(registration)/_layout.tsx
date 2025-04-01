@@ -106,7 +106,7 @@ const Registration = () => {
 			<RegistrationContext.Provider value={contextValue}>
 				<KeyboardAvoidingView className="h-screen" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 					<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-						<View className="p-4 flex-1 flex gap-4 bg-white-500 border-red-500 border-2">
+						<View className="p-4 flex-1 flex gap-4 bg-white-500">
 							<Stepper current={currentPage} total={4} handlePressBack={handlePressGoBack} />
 							<Stack screenOptions={{ headerShown: false }} />
 						</View>

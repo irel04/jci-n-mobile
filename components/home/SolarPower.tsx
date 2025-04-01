@@ -46,20 +46,21 @@ export default function SolarPower() {
     useEffect(() => {
        
 
-        if(selectedSet) {
-            
-            const channels = supabase.channel('custom-all-channel')
-                .on(
-                    'postgres_changes',
-                    { event: '*', schema: 'public', table: 'bins' },
-                    (payload) => {
-                        fetchBinIsLockedStatus()
-                    }
-                )
-                .subscribe()
-        }
+        const channels = supabase.channel('custom-all-channel')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'bins' },
+                (payload) => {
+                    fetchBinIsLockedStatus()
+                }
+            )
+            .subscribe()
 
-    }, [selectedSet])
+            
+        return () => {
+            channels.unsubscribe()
+        }
+    }, [])   
 
     const handleBinLocked = async (isLocked: boolean
     ) => {
