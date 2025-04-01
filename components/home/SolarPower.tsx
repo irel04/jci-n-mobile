@@ -39,6 +39,8 @@ export default function SolarPower() {
 
                 if(error) throw error
 
+
+                console.log("is locked?", data[0].is_locked)
                 setIsSetLocked(data[0].is_locked)
             
             } catch (error) {
@@ -58,6 +60,8 @@ export default function SolarPower() {
                 )
                 .subscribe()
         }
+
+        fetchBinIsLockedStatus()
     }, [selectedSet])
 
     const handleBinLocked = async (isLocked: boolean
