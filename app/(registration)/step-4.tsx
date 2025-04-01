@@ -12,10 +12,13 @@ import { TUserPersonalInfo } from "@/components/types";
 import { supabase } from "@/utils/supabase";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
 import OnScreenModal from "@/components/ui/OnScreenModal";
+import Checkbox from 'expo-checkbox';
+import * as WebBrowser from 'expo-web-browser';
 
 
 const Step4 = () => {
 
+	const [isChecked, setChecked] = useState(false);
 
 	const { setCurrentPage } = useRegistrationContext()
 
@@ -34,6 +37,9 @@ const Step4 = () => {
 	const router = useRouter()
 
 	const handleSubmitEntry = async (value: TUserPersonalInfo) => {
+
+		if(!isChecked) return 
+
 		setIsLoading(true)
 		console.log(value)
 		try {
@@ -56,6 +62,15 @@ const Step4 = () => {
 		setIsModalOpen(false)
 		setCurrentPage(1)
 		router.push("/sign-in")
+	}
+
+
+	const handlePressLinks = async (path: string) => {
+		try {
+			await WebBrowser.openBrowserAsync(`https://jci-n-web.vercel.app/${path}`)
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	if (isLoading) {
@@ -81,6 +96,21 @@ const Step4 = () => {
 
 
 					</View>
+					<View className="mt-4 flex flex-row gap-2 items-">
+						<Checkbox value={isChecked} onValueChange={setChecked}/>
+						<Text>
+							I agree to the{" "}
+							<Text className="text-blue-500 underline" onPress={() => handlePressLinks("/terms-and-conditions")}>
+								Terms and Conditions
+							</Text>{" "}
+							and{" "}
+							<Text className="text-blue-500 underline" onPress={() => handlePressLinks("/privacy-policy")}>
+								Privacy Policy
+							</Text>
+							.
+						</Text>
+					</View>
+
 				</View>
 				<View className="flex-grow justify-center items-center gap-2">
 					<CustomButton onPress={handleSubmit(handleSubmitEntry)} styleType={StyleType.BRAND_PRIMARY}>
@@ -91,9 +121,9 @@ const Step4 = () => {
 			</View>
 			<OnScreenModal isVisible={isModalOpen}>
 				<View className="bg-white-500 p-4 rounded-lg max-w-80 flex flex-col items-center gap-4">
-					<Text className="text-xl font-bold">Waiting for Admin Verification</Text>
+					<Text className="text-xl font-bold">For Verification</Text>
 					<Text className="text-sm">
-						Your account is currently under review. Once the admin verifies your details, you will be able to access the system. In the meantime, feel free to go back to the sign-in page and enter your email and password to check for updates on your verification status. Thank you for your patience!
+						Your account is currently under review. Once the admin verifies your details, you will be able to access the system. Thank you for your patience!
 					</Text>
 					<CustomButton onPress={handlePressConfirm} styleType={StyleType.BRAND_PRIMARY}>
 						<Text className="text-white-500">Confirm</Text>
