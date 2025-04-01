@@ -38,51 +38,59 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
 
   const router = useRouter()
+  
+  async function signIn(credentials: { email: string; password: string }) {
+    try {
+      const { error } = await supabase.auth.signInWithPassword(credentials);
 
+      if (error) throw error;
+
+
+
+      const { data } = await supabase.auth.getSession();
+
+      const { data: users_details } = await supabase.from("users_details").select("id, status").eq("auth_id", data.session.user.id)
+
+      if (users_details[0].status === "onboarding" || users_details[0].status==="inactive") {
+        await signOut()
+        throw new Error("Your account is not activated. Please wait for admin verification", { cause: "not-activated" })
+      }
+
+
+      const { access_token, refresh_token } = data.session
+
+
+
+      setSession(JSON.stringify({ access_token, refresh_token, user_id: users_details[0].id }));
+
+      setTimeout(() => {
+        router.push("/(main)");
+      }, 1000);
+    } catch (error) {
+      Alert.alert('Login Failed', error.message);
+    }
+  }
+
+  async function signOut() {
+    try {
+      let { error } = await supabase.auth.signOut({
+        scope: "local"
+      })
+
+      if (error) throw error
+      setSession(null);
+
+
+    } catch (error) {
+      Alert.alert('Logout Failed', 'An error occurred while logging out. Please try again.');
+    }
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        signIn: async (credentials: { email: string; password: string }) => {
-          try {
-            const { error } = await supabase.auth.signInWithPassword(credentials);
-
-            if (error) throw error;
-
-            const { data } = await supabase.auth.getSession();
-            
-            const { data: users_details } = await supabase.from("users_details").select("id").eq("auth_id", data.session.user.id)
-
-           
-            const { access_token, refresh_token } = data.session
-
-           
-
-            setSession(JSON.stringify({access_token, refresh_token, user_id: users_details[0].id}));
-
-            setTimeout(() => {
-              router.push("/(main)");
-            }, 1000);
-          } catch (error) {
-            
-            Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
-          }
-        },
-        signOut: async () => {
-          try {
-            let { error } = await supabase.auth.signOut({
-              scope: "local"
-            })
-            
-            if(error) throw error
-            setSession(null);
-            
-            
-            
-          } catch (error) {
-            Alert.alert('Logout Failed', 'An error occurred while logging out. Please try again.');
-          }
-        },
+        signIn,
+        signOut,
         session,
         isLoading,
       }}
