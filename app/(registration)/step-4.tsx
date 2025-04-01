@@ -91,8 +91,10 @@ const Step4 = () => {
 			</View>
 			<OnScreenModal isVisible={isModalOpen}>
 				<View className="bg-white-500 p-4 rounded-lg max-w-80 flex flex-col items-center gap-4">
-					<Text className="text-xl font-bold ">Registration successful</Text>
-					<Text className="text-sm">You can now back in sign-in page and enter your email and password</Text>
+					<Text className="text-xl font-bold">Waiting for Admin Verification</Text>
+					<Text className="text-sm">
+						Your account is currently under review. Once the admin verifies your details, you will be able to access the system. In the meantime, feel free to go back to the sign-in page and enter your email and password to check for updates on your verification status. Thank you for your patience!
+					</Text>
 					<CustomButton onPress={handlePressConfirm} styleType={StyleType.BRAND_PRIMARY}>
 						<Text className="text-white-500">Confirm</Text>
 					</CustomButton>
