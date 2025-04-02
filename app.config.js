@@ -22,7 +22,7 @@ export default () => ({
           apiKey: process.env.EXPO_GOOGLE_MAPS_API_KEY, // Use environment variable
         },
       },
-      googleServicesFile: "./google-services.js"
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON || "./google-services.json"
     },
     web: {
       bundler: "metro",
