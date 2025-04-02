@@ -14,7 +14,7 @@ export default () => ({
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/icons/app-icon-2.png",
-        backgroundColor: "#0E46A3",
+        backgroundColor: "#030E21",
       },
       package: "com.kianirel.dev.thesismobile",
       config: {
@@ -37,7 +37,7 @@ export default () => ({
           image: "./assets/icons/splash-icon-2.png",
           imageWidth: 200,
           resizeMode: "contain",
-          backgroundColor: "#0E46A3",
+          backgroundColor: "#030E21",
         },
       ],
       [
