@@ -1,19 +1,15 @@
-import { View, Text, Alert, Button } from 'react-native'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Redirect, Tabs } from "expo-router"
+import React, { useCallback, useEffect, useState } from 'react';
+import { Redirect, Tabs } from "expo-router";
 import Entypo from '@expo/vector-icons/Entypo';
-import Octicons from '@expo/vector-icons/Octicons';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSession } from "@/contexts/auth";
 import { TUserSession } from "@/components/types";
 import { supabase } from "@/utils/supabase";
 import * as Notifications from 'expo-notifications';
-import { getPushToken, handleRegistrationError, registerForPushNotificationsAsync, sendPushNotification, setUpNoticationChannel, TMessagePushNotication } from "@/components/notifications/push-notification";
+import { registerForPushNotificationsAsync, setUpNoticationChannel } from "@/components/notifications/push-notification";
 import * as TaskManager from 'expo-task-manager';
-import Constants from 'expo-constants';
 import NotificationIcon from "@/components/notifications/NotificationIcon";
+
 
 const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK'
 
@@ -35,7 +31,7 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, execu
 	// const channels = setUpNoticationChannel(expoPushToken).subscribe()
 	// console.log("BAckground data:", data)
 
-  });
+});
 
 
 
@@ -86,7 +82,7 @@ const MainLayout = () => {
 		try {
 			const { count, error } = await supabase.from("notifications").select("id", { count: 'exact' }).eq("nearest_user_id", userAuth.user_id).eq("is_read", false)
 
-			if(error) throw error
+			if (error) throw error
 
 			setNotificationCount(count)
 		} catch (error) {
@@ -100,15 +96,15 @@ const MainLayout = () => {
 
 	useEffect(() => {
 		const channel = supabase
-		.channel('counting-notifications')
-		.on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
-			console.log("Count me in")
+			.channel('counting-notifications')
+			.on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
+				console.log("Count me in")
 
-			fetchNotification()
-		  
-		})
-		.subscribe()
-	  
+				fetchNotification()
+
+			})
+			.subscribe()
+
 
 		return () => {
 			channel.unsubscribe()
@@ -116,7 +112,7 @@ const MainLayout = () => {
 	}, [])
 
 
-	const userSession = session ? JSON.parse(session) as TUserSession : null 
+	const userSession = session ? JSON.parse(session) as TUserSession : null
 
 	// Send push notification while watching notification table
 	useEffect(() => {
@@ -125,7 +121,7 @@ const MainLayout = () => {
 		// Cleanup function to unsubscribe when the component unmounts
 		return () => {
 			channels.unsubscribe();
-		};	
+		};
 	}, [])
 
 	// You can keep the splash screen open, or render a loading screen like we do here.
@@ -161,6 +157,7 @@ const MainLayout = () => {
 				}}
 			/>
 
+
 			<Tabs.Screen name="(route)"
 				options={{
 					tabBarShowLabel: false,
@@ -168,12 +165,15 @@ const MainLayout = () => {
 				}}
 			/>
 
+			
+
 			<Tabs.Screen name="(notification)"
 				options={{
 					tabBarShowLabel: false,
-					tabBarIcon: ({ color }) => <NotificationIcon color={color} notificationCount={notificationCount}/>
+					tabBarIcon: ({ color }) => <NotificationIcon color={color} notificationCount={notificationCount} />
 				}}
 			/>
+
 			<Tabs.Screen name="(profile)"
 				options={{
 					tabBarShowLabel: false,
