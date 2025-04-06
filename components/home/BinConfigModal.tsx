@@ -1,6 +1,6 @@
 import CustomButton, { StyleType } from "@/components/ui/CustomButton"
 import React, { useEffect, useState } from "react"
-import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import RNPickerSelect from 'react-native-picker-select';
 import { TSetTable } from "@/components/types";
 import { supabase } from "@/utils/supabase";
@@ -28,6 +28,8 @@ const BinConfigModal = () => {
 
 			console.log("Success")
 			// setModalVisible(false)
+			Alert.alert("Bin Status Updated", `The bin has been ${isLocked ? "locked" : "unlocked"} successfully. You can now proceed.`)
+
 		} catch (error) {
 			console.error(error)
 		}
@@ -113,7 +115,7 @@ const BinConfigModal = () => {
 								inputAndroid: {
 									borderWidth: 1,
 									borderColor: 'lightgray',
-									color: 'black',
+									color: '#737373',
 									backgroundColor: '#E3E3E3',
 								}
 							}} />
@@ -135,7 +137,21 @@ const BinConfigModal = () => {
 						<Text className="text-sm mb-2 text-neutral-400">
 							Set a schedule for the bin to automatically sleep and power back on.
 						</Text>
-
+						{sets && sets.length > 0 && <View className="my-5">
+							<RNPickerSelect items={sets.map((item) => {
+								return {
+									label: item.name,
+									value: item.id
+								}
+							})} onValueChange={(value) => console.log(value)} style={{
+								inputAndroid: {
+									borderWidth: 1,
+									borderColor: 'lightgray',
+									color: '#737373',
+									backgroundColor: '#E3E3E3',
+								}
+							}} />
+						</View>}
 					</View>
 				</View>
 			</Modal>
