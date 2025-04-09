@@ -17,7 +17,7 @@ type TButton = PressableProps & {
 
 
 
-const Button = ({ icon, iconFamily = "Entypo", iconSize = 18, label, variant="ghost", ...otherProps }: TButton) => {
+const Button = ({ icon, iconFamily = "Entypo", iconSize = 18, label, variant="default", ...otherProps }: TButton) => {
 
 	const iconMap: Record<TIconFamilies, React.ComponentType<any>> = {
 		Entypo,

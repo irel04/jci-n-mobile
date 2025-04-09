@@ -8,13 +8,40 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { MaterialIcons } from "@expo/vector-icons";
-import Input from "@/components/ui/Input";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Button from "@/components/ui/Button";
+import * as yup from "yup"
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { format } from "date-fns";
+
+
+const validationSchema = yup.object({
+	set: yup.string().required(),
+	time_on: yup.string().required(),
+	time_off: yup.string().required()
+})
+
+
+type TSchedule = {
+	set: string, 
+	time_on: string,
+	time_off: string,
+} 
 
 const BinConfigModal = () => {
 
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+	const { control, handleSubmit, formState: { isValid }, reset } = useForm({
+		resolver: yupResolver(validationSchema),
+		mode: "onChange",
+		defaultValues: {
+			time_on: "00:00",
+			set: "",
+			time_off: "00:00"
+		}
+	})
 
 	const [sets, setSets] = useState<TSetTable[]>(null)
 	const [selectedSet, setSelectedSet] = useState<string>(null)
@@ -87,6 +114,13 @@ const BinConfigModal = () => {
 		}
 	}, [])   
 
+
+	const handleSave = (value: TSchedule) => {
+		alert(JSON.stringify(value))
+		reset()
+	}
+
+
 	return (
 		<>
 			
@@ -112,23 +146,64 @@ const BinConfigModal = () => {
 							Set a schedule for the bin to automatically sleep and power back on.
 						</Text>
 						{sets && sets.length > 0 && <View className="my-5">
-							<RNPickerSelect items={sets.map((item) => {
-								return {
-									label: item.name,
-									value: item.id
-								}
-							})} onValueChange={(value) => console.log(value)} style={{
-								inputAndroid: {
-									borderWidth: 1,
-									borderColor: 'lightgray',
-									color: '#737373',
-									backgroundColor: '#E3E3E3',
-								}
-							}} />
+							<Controller control={control} name="set" render={({field: {onChange, value}}) => (
+								<RNPickerSelect items={sets.map((item) => {
+									return {
+										label: item.name,
+										value: item.id
+									}
+								})} onValueChange={onChange} style={{
+									inputAndroid: {
+										borderWidth: 1,
+										borderColor: 'lightgray',
+										color: '#737373',
+										backgroundColor: '#E3E3E3',
+									}
+								}} value={value} />
+							)}/>
 						</View>}
 						{/* Time picker */}
-						<Button label="01:00" icon="clock-check-outline" iconFamily="MaterialCommunityIcons"/>
-						
+						<View className="flex flex-row gap-4">
+							<Controller control={control} name="time_on" render={({field: {onChange, value}}) => (
+								<View className="flex gap-2">
+								<Text className="text-sm text-neutral-500 font-bold">Turn On</Text>
+								<Button label={value} icon="clock-check-outline"
+								variant="neutral"
+								iconFamily="MaterialCommunityIcons" onPress={() => setShowTimeOnPicker(true)}/>
+								<DateTimePickerModal 
+								mode="time"
+								isVisible={showTimeOnPicker}
+								onCancel={() => setShowTimeOnPicker(false)} onConfirm={(date: Date) => {
+									const formatDate = format(date, "HH:mm")
+									onChange(formatDate)
+									setShowTimeOnPicker(false)
+								}}/>
+							</View>
+							)}/>
+
+							<Controller control={control} name="time_off" render={({field: {value, onChange}}) => (
+								<View className=" flex gap-2">
+								<Text className="text-sm text-neutral-500 font-bold">Turn Off</Text>
+								<Button label={value} icon="clock-check-outline"variant="neutral" iconFamily="MaterialCommunityIcons" onPress={() => setShowTimeOffPicker(true)} />
+								<DateTimePickerModal
+								mode="time"
+								isVisible={showTimeOffPicker}
+								 onCancel={() => setShowTimeOffPicker(false)} onConfirm={(date: Date) => {
+									const formatDate = format(date, "HH:mm")
+									onChange(formatDate)
+									setShowTimeOffPicker(false)
+								}}/>
+							</View>
+							)}/>
+
+						</View>
+
+						<View className="flex justify-end flex-row mt-4">
+							<Button label="Save"
+								icon="save" variant={isValid ? "default" : "ghost"} iconFamily="Entypo"
+								onPress={handleSubmit(handleSave)}/>
+						</View>
+
 						
 
 					</View>
