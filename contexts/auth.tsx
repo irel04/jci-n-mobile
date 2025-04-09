@@ -51,7 +51,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         
       }
 
-      console.info("old session: ", session)
+      
     })
 
     return () => {
@@ -99,6 +99,10 @@ export function SessionProvider({ children }: PropsWithChildren) {
       Alert.alert('Logout Failed', 'An error occurred while logging out. Please try again.');
     }
   }
+
+  useEffect(() => {
+    console.log("current session", session)
+  }, [session])
 
   return (
     <AuthContext.Provider
