@@ -26,14 +26,17 @@ jobs:
         env: 
           EXPO_TOKEN: ${{secrets.EXPO_TOKEN}}
       
-      - name: Download latest build artifact
-        id: download
+      - name: Download APK from EAS build
         run: |
           BUILD_URL=$(eas build:list --limit 1 --status finished --platform android --non-interactive --json | jq -r '.[0].artifacts.buildUrl')
+          if [ -z "$BUILD_URL" ]; then
+            echo "Error: No build URL found or build is not finished"
+            exit 1
+          fi
           curl -o app.apk "$BUILD_URL"
         env:
-          EXPO_TOKEN: ${{secrets.EXPO_TOKEN}}
-        
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          
       - name: Upload Release to Github
         uses: softprops/action-gh-release@v1
         with:
