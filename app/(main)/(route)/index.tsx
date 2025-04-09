@@ -159,8 +159,6 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 					}
 				})
 
-				console.log("new data: ",data)
-
 
 				setPositions(flattenData)
 

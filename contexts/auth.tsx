@@ -50,6 +50,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
         setSession(JSON.stringify({ access_token, refresh_token, user_id: oldSession.user_id }))
         
       }
+
+      
     })
 
     return () => {
@@ -97,6 +99,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
       Alert.alert('Logout Failed', 'An error occurred while logging out. Please try again.');
     }
   }
+
 
   return (
     <AuthContext.Provider
