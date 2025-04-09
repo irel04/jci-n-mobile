@@ -104,7 +104,7 @@ const Registration = () => {
 	return (
 		<FormProvider {...methods}>
 			<RegistrationContext.Provider value={contextValue}>
-				<KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+				<KeyboardAvoidingView className="h-screen" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 					<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 						<View className="p-4 flex-1 flex gap-4 bg-white-500">
 							<Stepper current={currentPage} total={4} handlePressBack={handlePressGoBack} />

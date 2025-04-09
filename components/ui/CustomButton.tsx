@@ -30,7 +30,7 @@ const BUTTONSTYLE = {
 }
 
 const CustomButton = ({ children, onPress, styleType, width="w-[143px]", disabled}: ButtonProps) => {
-	const [] = useState(BUTTONSTYLE.BRAND_PRIMARY)
+	// const [] = useState(BUTTONSTYLE.BRAND_PRIMARY)
 
 	return (
 		<Pressable className={`flex flex-row h-[43px] rounded-2xl gap-2 justify-center items-center px-5 ${BUTTONSTYLE[styleType]} ${width}`} onPress={onPress} disabled={disabled}>

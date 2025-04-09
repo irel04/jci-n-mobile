@@ -4,7 +4,7 @@ export default () => ({
     slug: "thesis-mobile",
     version: "0.1.0",
     orientation: "portrait",
-    icon: "./assets/images/pup-logo.png",
+    icon: "./assets/icons/app-icon-2.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -13,8 +13,8 @@ export default () => ({
     // },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/pup-logo.png",
-        backgroundColor: "#ffffff",
+        foregroundImage: "./assets/icons/app-icon-2.png",
+        backgroundColor: "#030E21",
       },
       package: "com.kianirel.dev.thesismobile",
       config: {
@@ -22,7 +22,7 @@ export default () => ({
           apiKey: process.env.EXPO_GOOGLE_MAPS_API_KEY, // Use environment variable
         },
       },
-      googleServicesFile: "./google-services.json"
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON || "./google-services.json"
     },
     web: {
       bundler: "metro",
@@ -34,10 +34,10 @@ export default () => ({
       [
         "expo-splash-screen",
         {
-          image: "./assets/images/pup-logo.png",
+          image: "./assets/icons/splash-icon-2.png",
           imageWidth: 200,
           resizeMode: "contain",
-          backgroundColor: "#ffffff",
+          backgroundColor: "#030E21",
         },
       ],
       [

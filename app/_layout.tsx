@@ -1,16 +1,20 @@
 
-import React from 'react'
-import { Stack } from "expo-router"
-import "../global.css"
-import { SessionProvider } from "@/contexts/auth"
+import { SessionProvider } from "@/contexts/auth";
+import { Stack } from "expo-router";
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import "../global.css";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppLayout = () => {
-  
 
   return (
- 
+
     <SessionProvider>
-      <Stack screenOptions={{ headerShown: false }} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar style="auto" networkActivityIndicatorVisible={true}/>
+        <Stack screenOptions={{ headerShown: false }} />
+      </SafeAreaView>
     </SessionProvider>
 
   )

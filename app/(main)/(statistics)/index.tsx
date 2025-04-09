@@ -151,6 +151,7 @@ const Statistics = () => {
       .subscribe()
   }, [])
 
+
   return (
     <View className="flex-1 bg-gray-100 p-4">
       {isLoading ? <LoadingAnimation/> : <>

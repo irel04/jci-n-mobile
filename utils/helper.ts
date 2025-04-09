@@ -3,7 +3,7 @@ import { addDays, endOfDay, endOfToday, endOfWeek, endOfYesterday, format, start
 export function timeAgo(timestamp: string) {
 	const now = new Date();
 	const time = new Date(timestamp);
-	const diffInSeconds = Math.floor((now.getTime() - time.getTime()) / 1000);
+	const diffInSeconds = Math.max(0, Math.floor((now.getTime() - time.getTime()) / 1000));
 
 	if (diffInSeconds < 60) {
 		return `${diffInSeconds} seconds ago`;
@@ -78,6 +78,15 @@ export function getLast7Days(formatString: string="yyyy-MM-dd") {
   const last7DaysEnd = format(endOfDay(subDays(new Date(), 1)), formatString);
 
   return { last7DaysStart, last7DaysEnd };
+}
+
+
+
+export function getLast30Days(formatString: string = "yyyy-MM-dd") {
+  const last30DaysStart = format(startOfDay(subDays(new Date(), 30)), formatString);
+  const last30DaysEnd = format(endOfDay(subDays(new Date(), 1)), formatString);
+
+  return { last30DaysStart, last30DaysEnd };
 }
 
 
