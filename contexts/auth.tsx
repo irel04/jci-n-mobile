@@ -100,9 +100,6 @@ export function SessionProvider({ children }: PropsWithChildren) {
     }
   }
 
-  useEffect(() => {
-    console.log("current session", session)
-  }, [session])
 
   return (
     <AuthContext.Provider

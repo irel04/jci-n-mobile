@@ -81,7 +81,6 @@ export default function NotificationTab() {
             if (last7DaysError) throw last7DaysError;
             if(last30DaysNotificationError) throw last30DaysNotificationError
 
-            console.log("Upcoming", upComingNotifications, todayDateStart, todayDateEnd)
             // Update state safely
             setUpComingNotifications(upcomingNotifications || []);
             setYesterdayNotification(yesterdayNotifications || []);

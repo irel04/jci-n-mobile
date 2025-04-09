@@ -10,6 +10,7 @@ import { registerForPushNotificationsAsync, setUpNoticationChannel } from "@/com
 import * as TaskManager from 'expo-task-manager';
 import NotificationIcon from "@/components/notifications/NotificationIcon";
 import { getToday } from "@/utils/helper";
+import { AppState } from 'react-native'
 
 
 const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK'
@@ -33,6 +34,16 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, execu
 	// console.log("BAckground data:", data)
 
 });
+
+// make sure you register this only once!
+AppState.addEventListener('change', (state) => {
+	if (state === 'active') {
+	  supabase.auth.startAutoRefresh()
+	} else {
+	  supabase.auth.stopAutoRefresh()
+	}
+})
+
 
 
 
