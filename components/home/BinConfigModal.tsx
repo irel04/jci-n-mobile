@@ -8,6 +8,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { MaterialIcons } from "@expo/vector-icons";
+import Input from "@/components/ui/Input";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import Button from "@/components/ui/Button";
 
 const BinConfigModal = () => {
 
@@ -15,6 +18,9 @@ const BinConfigModal = () => {
 
 	const [sets, setSets] = useState<TSetTable[]>(null)
 	const [selectedSet, setSelectedSet] = useState<string>(null)
+
+	const [showTimeOnPicker, setShowTimeOnPicker] = useState<boolean>(false)
+	const [showTimeOffPicker, setShowTimeOffPicker] = useState<boolean>(false)
 
 	const [isSetLocked, setIsSetLocked] = useState<boolean>(false)
 
@@ -96,7 +102,38 @@ const BinConfigModal = () => {
 						<Text className="font-bold text-h5 text-neutral-500">Bin Config</Text>
 						<Ionicons name="settings-outline" size={24} color="#737373" />
 					</View>
+
 					<View className="relative border-neutrals-200 border-b-[1px] pb-4 mt-5">
+						<View className="flex-row gap-2 items-center mt-5 ">
+						<FontAwesome6 name="calendar" size={16} color="#737373" />
+							<Text className="text-xl font-bold text-neutral-500">Schedule </Text>
+						</View>
+						<Text className="text-sm mb-2 text-neutral-400">
+							Set a schedule for the bin to automatically sleep and power back on.
+						</Text>
+						{sets && sets.length > 0 && <View className="my-5">
+							<RNPickerSelect items={sets.map((item) => {
+								return {
+									label: item.name,
+									value: item.id
+								}
+							})} onValueChange={(value) => console.log(value)} style={{
+								inputAndroid: {
+									borderWidth: 1,
+									borderColor: 'lightgray',
+									color: '#737373',
+									backgroundColor: '#E3E3E3',
+								}
+							}} />
+						</View>}
+						{/* Time picker */}
+						<Button label="01:00" icon="clock-check-outline" iconFamily="MaterialCommunityIcons"/>
+						
+						
+
+					</View>
+
+					<View className="relative mt-5">
 						<View className="flex-row gap-2 items-center mt-5 ">
 							<Feather name="lock" size={16} color="#737373" />
 							<Text className="text-xl font-bold text-neutral-500">Control </Text>
@@ -129,30 +166,7 @@ const BinConfigModal = () => {
 							</CustomButton>
 						</View>
 					</View>
-					<View className="relative border-neutrals-200 border-b-[1px] pb-4 mt-5">
-						<View className="flex-row gap-2 items-center mt-5 ">
-						<FontAwesome6 name="calendar" size={16} color="#737373" />
-							<Text className="text-xl font-bold text-neutral-500">Schedule </Text>
-						</View>
-						<Text className="text-sm mb-2 text-neutral-400">
-							Set a schedule for the bin to automatically sleep and power back on.
-						</Text>
-						{sets && sets.length > 0 && <View className="my-5">
-							<RNPickerSelect items={sets.map((item) => {
-								return {
-									label: item.name,
-									value: item.id
-								}
-							})} onValueChange={(value) => console.log(value)} style={{
-								inputAndroid: {
-									borderWidth: 1,
-									borderColor: 'lightgray',
-									color: '#737373',
-									backgroundColor: '#E3E3E3',
-								}
-							}} />
-						</View>}
-					</View>
+					
 				</View>
 			</Modal>
 		</>

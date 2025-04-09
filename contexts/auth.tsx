@@ -50,6 +50,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
         setSession(JSON.stringify({ access_token, refresh_token, user_id: oldSession.user_id }))
         
       }
+
+      console.info("old session: ", session)
     })
 
     return () => {
