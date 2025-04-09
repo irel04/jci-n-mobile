@@ -25,9 +25,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Download APK from EAS build
-        run: |
-          BUILD_URL=$(eas build:list --limit 1 --status finished --platform android --non-interactive --json | jq -r '.[0].artifacts.buildUrl')
-          curl -o app.apk "$BUILD_URL"
+        run: eas build:list --limit 1 --status finished --platform android --non-interactive --json
         
       - name: Upload Release to Github
         uses: softprops/action-gh-release@v1
