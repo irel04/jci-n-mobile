@@ -73,9 +73,6 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
     return markerCoordinates.filter(bin => bin.setId === selectedSetId)[0] || null
   }, [selectedSetId, markerCoordinates])
 
-  useEffect(() => {
-    console.log(targetSet)
-  }, [targetSet])
 
   return (
     <MapView

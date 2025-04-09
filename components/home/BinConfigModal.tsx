@@ -1,5 +1,5 @@
 import CustomButton, { StyleType } from "@/components/ui/CustomButton"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Alert, Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import RNPickerSelect from 'react-native-picker-select';
 import { TSetTable } from "@/components/types";
@@ -13,14 +13,16 @@ import Button from "@/components/ui/Button";
 import * as yup from "yup"
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 
 const validationSchema = yup.object({
-	set: yup.string().required(),
-	time_on: yup.string().required(),
-	time_off: yup.string().required()
-})
+	set: yup.string().required().min(1),
+	time_on: yup.string().required("Time on is required"),
+	time_off: yup
+	  .string()
+	  .required("Time off is required")
+  });
 
 
 type TSchedule = {
@@ -33,13 +35,13 @@ const BinConfigModal = () => {
 
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-	const { control, handleSubmit, formState: { isValid }, reset } = useForm({
+	const { control, handleSubmit, formState: { isValid }, reset, setValue, watch } = useForm({
 		resolver: yupResolver(validationSchema),
 		mode: "onChange",
 		defaultValues: {
 			time_on: "00:00",
-			set: "",
-			time_off: "00:00"
+			time_off: "00:00",
+			set: ""
 		}
 	})
 
@@ -78,10 +80,11 @@ const BinConfigModal = () => {
 
 
 
+
+
 			const { data, error } = await supabase.from("bins").select("is_locked").eq("set", binSets[0].id)
 
 			if (error) throw error
-
 
 			setIsSetLocked(data[0].is_locked)
 
@@ -114,10 +117,46 @@ const BinConfigModal = () => {
 		}
 	}, [])   
 
+	const selectedSetForSchedule = watch("set")
 
-	const handleSave = (value: TSchedule) => {
-		alert(JSON.stringify(value))
-		reset()
+	// Fetch bin time on/off
+	useEffect(() => {
+		const fetchBinSchedule = async () => {
+			try {
+				const { data, error } = await supabase.from("bins").select("time_on, time_off").eq("set", selectedSetForSchedule)
+
+				if(error) throw error
+
+				if(data[0].time_on && data[0].time_off){
+					setValue("time_on", data[0].time_on.slice(0, 5))
+					setValue("time_off", data[0].time_off.slice(0, 5))
+				}
+				
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		if(selectedSetForSchedule !== "" && selectedSetForSchedule !== undefined &&selectedSetForSchedule !== null){
+			fetchBinSchedule()
+		}
+	}, [selectedSetForSchedule])
+
+	const handleSave = async  (value: TSchedule) => {
+
+		const { set, ...payload } = value
+		try {
+			const { error } = await supabase.from("bins").update(payload).eq("set", set)
+
+			if(error) throw error
+
+			Alert.alert("Schedule Updated", "You successfully updated bin on/off schedule")
+
+			reset()
+		} catch (error) {
+			console.error(error);
+		}
+
 	}
 
 
@@ -177,7 +216,8 @@ const BinConfigModal = () => {
 									const formatDate = format(date, "HH:mm")
 									onChange(formatDate)
 									setShowTimeOnPicker(false)
-								}}/>
+								}}
+								/>
 							</View>
 							)}/>
 
