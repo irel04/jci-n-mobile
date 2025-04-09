@@ -18,33 +18,16 @@ jobs:
         with: 
           node-version: 18
       
-      - name: Install Expo CLI & EAS CLI
-        run: npm install -g expo-cli eas-cli@latest
-
-      - name: Authenticate Expo
-        run: eas whoami
-        env: 
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Install jq
-        run: sudo apt-get install jq
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Download APK from EAS build
         run: |
-          RESPONSE=$(eas build:list --limit 1 --status finished --platform android --non-interactive --json)
-          echo "Response: $RESPONSE"
-          
-          BUILD_URL=$(echo "$RESPONSE" | jq -r '.[0].artifacts.buildUrl')
-          
-          if [ -z "$BUILD_URL" ]; then
-            echo "Error: No build URL found or build is not finished."
-            exit 1
-          fi
-      
-          echo "Downloading APK from: $BUILD_URL"
+          BUILD_URL=$(eas build:list --limit 1 --status finished --platform android --non-interactive --json | jq -r '.[0].artifacts.buildUrl')
           curl -o app.apk "$BUILD_URL"
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         
       - name: Upload Release to Github
         uses: softprops/action-gh-release@v1
