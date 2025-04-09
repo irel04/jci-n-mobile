@@ -28,14 +28,21 @@ jobs:
       
       - name: Download APK from EAS build
         run: |
-          BUILD_URL=$(eas build:list --limit 1 --status finished --platform android --non-interactive --json | jq -r '.[0].artifacts.buildUrl')
+          RESPONSE=$(eas build:list --limit 1 --status finished --platform android --non-interactive --json)
+          echo "Response: $RESPONSE"
+          
+          BUILD_URL=$(echo "$RESPONSE" | jq -r '.[0].artifacts.buildUrl')
+          
           if [ -z "$BUILD_URL" ]; then
             echo "Error: No build URL found or build is not finished"
             exit 1
           fi
+      
+          echo "Downloading APK from: $BUILD_URL"
           curl -o app.apk "$BUILD_URL"
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        
           
       - name: Upload Release to Github
         uses: softprops/action-gh-release@v1
