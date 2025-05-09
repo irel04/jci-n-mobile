@@ -37,7 +37,7 @@ export default function NotificationCard({ notifications, label }: Props) {
 
     const displayedNotifications = showAllToday ? notifications : notifications.slice(0, 10)
 
-    if(displayedNotifications.length === 0){
+    if (displayedNotifications.length === 0) {
         return null
     }
 
@@ -54,12 +54,24 @@ export default function NotificationCard({ notifications, label }: Props) {
                         className="w-14 h-14 rounded-full mr-4"
                     />
                     <View className="flex-1">
-                        <Text className="text-[14px]">
-                            <Text className="font-bold">{notification.bins.set.name}</Text>
-                            <Text className="font-bold"> {notification.bins.color}</Text>
-                            <Text> is</Text>
-                            <Text className="font-bold"> {notification.notification_type}</Text>
-                        </Text>
+                        {notification.notification_type !== "all full" ? <>
+                            <Text className="text-[14px]">
+                                <Text className="font-bold">{notification.bins.set.name}</Text>
+                                <Text className="font-bold"> {notification.bins.color}</Text>
+                                <Text> is</Text>
+                                <Text className="font-bold"> {notification.notification_type}</Text>
+                            </Text>
+                        </>
+                        :
+                        <>
+                            <Text>
+                                    <Text className="font-bold">{notification.bins.set.name} Bins</Text>
+                                    <Text> are</Text>
+                                    <Text className="font-bold"> {notification.notification_type}</Text>
+                                    <Text>. Please unlock and collect the bins</Text>
+                            </Text>
+                        
+                        </>}
                         <Text className="text-caption text-gray-500">{timeAgo(notification.created_at)}</Text>
                     </View>
                     {!notification.is_read && <View className="w-3 h-3 bg-blue-500 rounded-full ml-2" />}
