@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import Overflow from '@/components/statistics/Overflow';
 import BinUsage from '@/components/statistics/BinUsage';
@@ -12,6 +12,10 @@ import LoaderKit from "react-native-loader-kit";
 import { supabase } from "@/utils/supabase";
 import { generateWeekLabels, startEndOfWeek } from "@/utils/helper";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
+import Button from "@/components/ui/Button";
+import * as webBrowser from "expo-web-browser"
+import { TUserSession } from "@/components/types";
+import { useSession } from "@/contexts/auth";
 
 const getPickup = async (date: Date) => {
 
@@ -43,6 +47,10 @@ const Statistics = () => {
   const color = ["rgba(133, 176, 245, 1)", "rgba(72, 136, 239, 1)", "rgba(19, 98, 255, 1)"]
 
   const generatedWeeks = generateWeekLabels(selectedYear)
+
+  const { session } = useSession()
+
+  const userSession = useMemo(() => JSON.parse(session) as TUserSession, [session]);
 
   const fetchData = async () => {
     try {
@@ -151,6 +159,20 @@ const Statistics = () => {
       .subscribe()
   }, [])
 
+  const handlePressViewSummary = async () => {
+    const todayDate = new Date();
+
+    const { formattedEndOfWeek, formattedStartOfWeek } = startEndOfWeek(todayDate);
+
+    
+    try {
+      await webBrowser.openBrowserAsync(`https://jci-n-web.vercel.app/summary?token=${userSession.access_token}&start=${formattedStartOfWeek}&end=${formattedEndOfWeek}`)
+    } catch (error) {
+      console.error("SOmething went wrong", error);
+    }
+
+  }
+
 
   return (
     <View className="flex-1 bg-gray-100 p-4">
@@ -158,9 +180,10 @@ const Statistics = () => {
         {/* Header */}
         <View className="flex-row items-center my-2 px-2">
           <Text className="text-h5 font-sans font-bold ml-2">Reports</Text>
-          <View className="pl-2">
+          <View className="pl-2 flex-1">
             <MaterialIcons name="query-stats" size={28} color="black" />
           </View>
+          <Button label="View Summary" variant="neutral" onPress={handlePressViewSummary}/>
         </View>
 
         {/* <View className="flex-row my-4">
