@@ -122,7 +122,7 @@ const Main = () => {
 			supabase.removeChannel(channels);
 		};
 
-	}, [])
+	}, []);
 	
 
 	return (
