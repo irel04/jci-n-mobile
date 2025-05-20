@@ -121,7 +121,7 @@ const Step1 = () => {
 			{/* Form */}
 			<View className="mt-4 gap-2">
 				<Text className="text-h5 font-semibold text-brand-700">Create Account</Text>
-				<Text className="text-neutral-500">To get startted, create an account. This help us keep your personal information safe and secured</Text>
+				<Text className="text-neutral-500">To get started, create an account. This help us keep your personal information safe and secured</Text>
 				<View className="flex gap-2 mt-4">
 					<Controller control={control} name="email" render={({ field: { onChange, value } }) =>
 						<Input onChangeText={onChange} value={value} placeholder="Email" id="email" error={errors.email}>
