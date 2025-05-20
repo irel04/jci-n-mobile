@@ -8,9 +8,11 @@ import { View, Text, Dimensions } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 
 
+type TBarData = {
+  date?: Date;
+}
 
-
-const PickupFrequency = () => {
+const PickupFrequency = ({ date= new Date() }: TBarData) => {
   // Define bar data
   const [barData, setBarData] = useState([
     { value: 0, label: "Sun", frontColor: "#4888EF" },
@@ -34,8 +36,7 @@ const PickupFrequency = () => {
     const fetchUserPickupFrequency = async (userId: string) => {
 
       // Get start (Sunday) and end (Saturday) of the current week
-      const now = new Date();
-     const {formattedStartOfWeek, formattedEndOfWeek} = startEndOfWeek(now)
+     const {formattedStartOfWeek, formattedEndOfWeek} = startEndOfWeek(date)
     
       const { data, error } = await supabase
         .from("pickups")
@@ -63,7 +64,7 @@ const PickupFrequency = () => {
     };
 
     fetchUserPickupFrequency(user.user_id)
-  }, [])
+  }, [date, user.user_id]);
   
   
 

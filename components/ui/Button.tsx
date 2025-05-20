@@ -1,9 +1,9 @@
 import { View, Text, Pressable, PressableProps, StyleSheet } from 'react-native'
 import React from "react"
-import { Ionicons, Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, Entypo, MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 
 
-type TIconFamilies = "Entypo" | "Ionicons" | "MaterialCommunityIcons"
+type TIconFamilies = "Entypo" | "Ionicons" | "MaterialCommunityIcons" | "AntDesign"
 
 type TVariants = "default" | "secondary" | "neutral" | "destructive" | "ghost"
 
@@ -12,7 +12,7 @@ type TButton = PressableProps & {
 	icon?: string,
 	iconFamily?: TIconFamilies,
 	iconSize?: number,
-	label: string
+	label?: string
 }
 
 
@@ -22,7 +22,8 @@ const Button = ({ icon, iconFamily = "Entypo", iconSize = 18, label, variant="de
 	const iconMap: Record<TIconFamilies, React.ComponentType<any>> = {
 		Entypo,
 		Ionicons,
-		MaterialCommunityIcons
+		MaterialCommunityIcons,
+		AntDesign
 	}
 
 	const IconComponent = iconMap[iconFamily]
@@ -37,7 +38,7 @@ const Button = ({ icon, iconFamily = "Entypo", iconSize = 18, label, variant="de
 				color: textVariant[variant].color
 			})}
 
-			<Text style={textVariant[variant]}>{label}</Text>
+			{label && <Text style={textVariant[variant]}>{label}</Text>}
 		</Pressable>
 	)
 }
