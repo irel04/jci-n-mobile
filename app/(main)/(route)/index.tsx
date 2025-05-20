@@ -13,7 +13,8 @@ import SelectBinToRouteModal from "@/components/route/SelectBinToRouteModal";
 import { TSetTable, TUserSession } from "@/components/types";
 
 interface RouteComponent {
-	showButton?: boolean
+	showButton?: boolean,
+	bins?: MarkerCoordinate[],
 }
 
 interface UpdateLocation {
@@ -21,7 +22,7 @@ interface UpdateLocation {
 	longitude: number,
 }
 
-const Routes = ({ showButton = true }: RouteComponent) => {
+const Routes = ({ showButton = true, bins }: RouteComponent) => {
 
 	const [positions, setPositions] = useState([])
 	const [userPos, setUserPos] = useState(null)
@@ -203,6 +204,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 	useEffect(()=> {
 		const channels = supabase.channel('custom-bin-channel').on("postgres_changes", { event: '*', schema: 'public', table: 'bins' }, () => {
 			fetchBinLocation();
+			console.info("Occured")
 		}).on("postgres_changes", { event: '*', schema: 'public', table: 'location' }, () => {
 			fetchBinLocation()
 			console.info("Changes occured")
@@ -266,7 +268,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 					<Text className="text-white-500 text-sm">{showRoute ? "Hide Route" : "Show Route"}</Text>
 				</CustomButton>
 			</View>}
-			{userPos &&<GoogleMaps markerCoordinates={positions} movingMarkerCoords={userPos} showRoute={showRoute} selectedSetId={selectedSetId}/>}
+			{userPos &&<GoogleMaps markerCoordinates={bins || positions} movingMarkerCoords={userPos} showRoute={showRoute} selectedSetId={selectedSetId}/>}
 			{/* Modal */}
 			<CustomModal isVisible={showChoseModal}>
 				<View className="bg-white-500 p-5 rounded-lg shadow-lg flex justify-center items-center w-3/4 gap-10">
