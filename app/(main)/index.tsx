@@ -11,6 +11,7 @@ import { DailySummarySchema, UserSchema } from "@/utils/schemas";
 import { startEndOfWeek } from "@/utils/helper";
 import { TUserSession } from "@/components/types";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
+import { MarkerCoordinate } from "@/components/google-maps/GoogleMaps";
 
 
 
@@ -122,11 +123,66 @@ const Main = () => {
 			supabase.removeChannel(channels);
 		};
 
-	}, [])
+	}, []);
+
+
+	const [binPos, setBinPos] = useState<MarkerCoordinate[]>([])
+
+	const fetchBinLocation = async () => {
+			try {
 	
+	
+				if (!parseSession) return
+	
+				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat), color, id, is_full`)
+	
+	
+				if (error) {
+					throw error
+				}
+	
+				const flattenData: MarkerCoordinate[] = data.map(bin => {
+					return {
+						id: bin.id,
+						title: bin.is_full ? "Full" : "Available",
+						longitude: bin.location[0]?.lng,
+						latitude: bin.location[0]?.lat,
+						type: "bin",
+						setId: bin.set
+					}
+				})
+
+
+				setBinPos(flattenData)
+
+
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+	useEffect(() => {
+		fetchBinLocation()
+	}, [])
+
+	useEffect(() => {
+		const channels = supabase.channel('custom-home-bins-channel').on("postgres_changes", { event: '*', schema: 'public', table: 'bins' }, () => {
+			fetchBinLocation();
+		}).on("postgres_changes", { event: '*', schema: 'public', table: 'location' }, () => {
+			fetchBinLocation()
+		})
+
+		channels.subscribe();
+
+
+		return () => {
+			channels.unsubscribe();
+		}
+	}, [])
+
 
 	return (
-		<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }} >
+		<ScrollView  contentContainerStyle={{ padding: 16 }} >
 				{loading ? (
 					<LoadingAnimation/>
 				) : (
@@ -148,7 +204,7 @@ const Main = () => {
 						</View>
 
 						<View className="flex h-52 mt-5 border-brand-700 border-2 rounded-xl p-1">
-							<Route showButton={false}/>
+							<Route showButton={false} bins={binPos}/>
 						</View>
 					</>
 				)}
