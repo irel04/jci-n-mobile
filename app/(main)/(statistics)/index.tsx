@@ -186,6 +186,7 @@ const Statistics = () => {
         UTI: "public.plain-text"
       });
 
+      Alert.alert("Success", "CSV file imported successfully");
 
     } catch (error) {
       console.error("Error downloading csv");
