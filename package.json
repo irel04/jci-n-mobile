@@ -28,6 +28,7 @@
     "date-fns": "^4.1.0",
     "expo": "~52.0.38",
     "expo-blur": "~14.0.3",
+    "expo-checkbox": "~4.0.1",
     "expo-constants": "~17.0.8",
     "expo-dev-client": "~5.0.14",
     "expo-device": "~7.0.2",
@@ -48,6 +49,7 @@
     "expo-web-browser": "~14.0.2",
     "native": "^0.3.3",
     "nativewind": "^4.1.23",
+    "papaparse": "^5.5.3",
     "progress": "^2.0.3",
     "react": "^18.3.1",
     "react-dom": "18.3.1",
@@ -71,7 +73,8 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "yup": "^1.6.1",
-    "expo-checkbox": "~4.0.1"
+    "expo-file-system": "~18.0.12",
+    "expo-sharing": "~13.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
