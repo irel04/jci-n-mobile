@@ -58,9 +58,9 @@ const Signin = () => {
 							<Feather size={13} name={isPasswordHidden ? 'eye-off' : 'eye'} color="#757576" />
 						</TouchableOpacity>
 					</Input>
-					<Pressable className="self-end" onPress={() => console.log("hello")}>
+					{/* <Pressable className="self-end" onPress={() => console.log("hello")}>
 						<Text className="underline text-xs text-neutral-500">Forgot Password</Text>
-					</Pressable>
+					</Pressable> */}
 				</View>
 			</KeyboardAvoidingView>
 			{/* Button */}

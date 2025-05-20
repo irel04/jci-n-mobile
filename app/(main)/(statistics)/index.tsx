@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import Overflow from '@/components/statistics/Overflow';
 import BinUsage from '@/components/statistics/BinUsage';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import PickupFrequency from '@/components/statistics/PickupFrequency';
 import CollectionFrequency from '@/components/statistics/CollectionFrequency';
-import RNPickerSelect from 'react-native-picker-select';
-import { format, startOfWeek, endOfWeek, addDays } from 'date-fns';
+import { subWeeks, addWeeks, startOfDay, isEqual } from 'date-fns';
 import { getWeeklySummary } from "@/app/(main)";
-import LoaderKit from "react-native-loader-kit";
 import { supabase } from "@/utils/supabase";
-import { generateWeekLabels, startEndOfWeek } from "@/utils/helper";
+import { startEndOfWeek } from "@/utils/helper";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
+import Button from "@/components/ui/Button";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import Papa from 'papaparse';
 
 const getPickup = async (date: Date) => {
 
@@ -27,13 +29,10 @@ const getPickup = async (date: Date) => {
 }
 
 const Statistics = () => {
-  const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-  const [selectedBatch, setSelectedBatch] = useState<string>('Batch 1');
 
   const [isLoading, setIsloading] = useState(true)
-  const currentDate = new Date()
-  
+  const [currentDate, setCurrentDate] = useState(new Date())
+
   // Datasets
   const [trashBinUsageData, setTrashbinUsageData] = useState([])
   const [fullnessFrequencyData, setFullFrequencyData] = useState([])
@@ -42,7 +41,6 @@ const Statistics = () => {
   // Color label
   const color = ["rgba(133, 176, 245, 1)", "rgba(72, 136, 239, 1)", "rgba(19, 98, 255, 1)"]
 
-  const generatedWeeks = generateWeekLabels(selectedYear)
 
   const fetchData = async () => {
     try {
@@ -135,7 +133,7 @@ const Statistics = () => {
     
     fetchData()
 
-  }, [])
+  }, [currentDate])
 
   useEffect(() => {
 
@@ -145,6 +143,7 @@ const Statistics = () => {
         { event: '*', schema: 'public', table: 'daily_summary' },
         (payload) => {
           console.log("Changes received on statistics")
+          setCurrentDate(new Date())
           fetchData()
         }
       )
@@ -152,94 +151,84 @@ const Statistics = () => {
   }, [])
 
 
+  const { formattedStartOfWeekHeader, formattedEndOfWeekHeader, formattedStartOfWeek, formattedEndOfWeek } = useMemo(() => startEndOfWeek(currentDate), [currentDate])
+
+  const isDayEqualorToday = useMemo(() => isEqual(startOfDay(currentDate), startOfDay(new Date())), [currentDate])
+
+  const handleGoPreviousWeek = () => {
+    setCurrentDate(prev => subWeeks(prev, 1))
+  }
+
+  const handleGoNextWeek = () => {
+    setCurrentDate(prev => addWeeks(prev, 1))
+  }
+
+  const handleDownloadCsv = async () => {
+    setIsloading(true)
+    try {
+      const { data, error } = await supabase.from("daily_summary").select("total_pickups, usage, fullness_100_count, date").gte("date", formattedStartOfWeek).lte("date", formattedEndOfWeek).order("date", { ascending: false });
+
+      if(error) throw error
+      
+      const csv = Papa.unparse(data);
+      const fileUri = FileSystem.documentDirectory + "weekly_summary.csv";
+
+      await FileSystem.writeAsStringAsync(fileUri, csv, { encoding: FileSystem.EncodingType.UTF8 });
+
+      if(!(await Sharing.isAvailableAsync())) {
+        Alert.alert("Error", "Sharing is not available on this device");
+        return;
+      }
+
+      await Sharing.shareAsync(fileUri, {
+        dialogTitle: "Download weekly summary",
+        mimeType: "text/csv",
+        UTI: "public.plain-text"
+      });
+
+      Alert.alert("Success", "CSV file imported successfully");
+
+    } catch (error) {
+      console.error("Error downloading csv");
+      Alert.alert("Error", "Failed to download csv file");
+    } finally{
+      setIsloading(false)
+    }
+  }
+
+
   return (
     <View className="flex-1 bg-gray-100 p-4">
       {isLoading ? <LoadingAnimation/> : <>
         {/* Header */}
-        <View className="flex-row items-center my-2 px-2">
-          <Text className="text-h5 font-sans font-bold ml-2">Reports</Text>
-          <View className="pl-2">
-            <MaterialIcons name="query-stats" size={28} color="black" />
+        <View className="my-2 flex-row flex items-center justify-between">
+          <View className="flex-row items-center px-2">
+            <Text className="text-h5 font-sans font-bold ml-2">Reports</Text>
+            <View className="pl-2">
+              <MaterialIcons name="query-stats" size={28} color="black" />
+            </View>
           </View>
+
+          <Button label="Import csv" variant="neutral" iconFamily="Fontisto" icon="import" iconSize={16} onPress={handleDownloadCsv}/>
         </View>
-
-        {/* <View className="flex-row my-4">
-          <View className="flex-initial w-64 mx-2">
-            <RNPickerSelect
-              onValueChange={(value) => setSelectedWeek(value)}
-              items={generatedWeeks}
-              style={{
-                inputIOS: {
-                  borderWidth: 1,
-                  borderColor: 'lightgray',
-                  color: 'black',
-                  backgroundColor: '#E3E3E3',
-                },
-                inputAndroid: {
-                  borderWidth: 1,
-                  borderColor: 'lightgray',
-                  color: 'black',
-                  backgroundColor: '#E3E3E3',
-                },
-                placeholder: {
-                  color: 'gray',
-                  fontSize: 8,
-                },
-              }}
-              placeholder={{
-                label: 'Select Week',
-                value: null,
-                color: 'gray',
-              }}
-            />
-          </View>
-
-          <View className="flex-initial w-32 mx-2">
-            <RNPickerSelect
-              onValueChange={(value) => setSelectedBatch(value)}
-              items={[
-                { label: 'Batch 1', value: 'Batch 1' },
-                { label: 'Batch 2', value: 'Batch 2' },
-              ]}
-              style={{
-                inputIOS: {
-                  borderWidth: 1,
-                  borderColor: 'lightgray',
-                  color: 'black',
-                  backgroundColor: '#E3E3E3',
-                },
-                inputAndroid: {
-                  borderWidth: 1,
-                  borderColor: 'lightgray',
-                  color: 'black',
-                  backgroundColor: '#E3E3E3',
-                },
-                placeholder: {
-                  color: 'gray',
-                  fontSize: 8,
-                },
-              }}
-              placeholder={{
-                label: 'Select Batch',
-                value: 'Batch 1',
-                color: 'gray',
-              }}
-            />
-          </View>
-        </View> */}
 
 
         {/* Components */}
         <ScrollView showsVerticalScrollIndicator={false}>
           <View className="flex-col justify-start items-center my-4 px-2">
-            <View>
+            <View className="w-full border-brand-700 border-[1px] rounded-lg p-4 justify-between flex-row items-center">
+              <Button variant="neutral" iconFamily="AntDesign" icon="arrowleft" iconSize={14} onPress={handleGoPreviousWeek}/>
+              <Text className="text-lg text-neutral-500">{formattedStartOfWeekHeader} - {formattedEndOfWeekHeader}</Text>
+              <Button variant={isDayEqualorToday ? "ghost" : "neutral"} iconFamily="AntDesign" icon="arrowright" iconSize={14} onPress={handleGoNextWeek} />
+            </View>
+            <View className="mt-5">
               <BinUsage datasets={trashBinUsageData} />
             </View>
             <View className="mt-5">
               <Overflow datasets={fullnessFrequencyData} />
             </View>
             <View className="mt-5">
-              <PickupFrequency />
+              <PickupFrequency date={currentDate}/>
             </View>
             <View className="my-5">
               <CollectionFrequency datasets={collectionFrequencyData} />

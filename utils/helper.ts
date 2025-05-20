@@ -40,18 +40,22 @@ export function timeAgo(timestamp: string) {
 
 export function startEndOfWeek(date: Date){
 	// Calculate the start and end of the week based on the provided date
-		const startOfWeekDate = startOfWeek(date,{ weekStartsOn: 0} );
-		const endOfWeekDate = endOfWeek(date, { weekStartsOn: 0 });
-	  
-		// Format dates to match the format in the database (if needed)
-		const formattedStartOfWeek = format(startOfWeekDate, 'yyyy-MM-dd');
-		const formattedEndOfWeek = format(endOfWeekDate, 'yyyy-MM-dd');
+	const startOfWeekDate = startOfWeek(date, { weekStartsOn: 0 });
+	const endOfWeekDate = endOfWeek(date, { weekStartsOn: 0 });
+
+	// Format dates to match the format in the database (if needed)
+	const formattedStartOfWeek = format(startOfWeekDate, 'yyyy-MM-dd');
+	const formattedEndOfWeek = format(endOfWeekDate, 'yyyy-MM-dd');
+
+	// Header dates in word format
+	const formattedStartOfWeekHeader = format(startOfWeekDate, 'MMMM d, yyyy');
+	const formattedEndOfWeekHeader = format(endOfWeekDate, 'MMMM d, yyyy');
 
 	// Format dates as ISO strings
 	const formattedStartOfWeekISO = format(startOfWeekDate, "yyyy-MM-dd'T'00:00:00XXX");
 	const formattedEndOfWeekISO = format(endOfWeekDate, "yyyy-MM-dd'T'23:59:59XXX");
 
-	return { formattedEndOfWeek, formattedStartOfWeek, formattedStartOfWeekISO, formattedEndOfWeekISO }
+	return { formattedEndOfWeek, formattedStartOfWeek, formattedStartOfWeekISO, formattedEndOfWeekISO, formattedStartOfWeekHeader, formattedEndOfWeekHeader };
 } 
 
 // Calculate the date yesterday

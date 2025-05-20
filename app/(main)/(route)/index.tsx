@@ -204,10 +204,8 @@ const Routes = ({ showButton = true, bins }: RouteComponent) => {
 	useEffect(()=> {
 		const channels = supabase.channel('custom-bin-channel').on("postgres_changes", { event: '*', schema: 'public', table: 'bins' }, () => {
 			fetchBinLocation();
-			console.info("Occured")
 		}).on("postgres_changes", { event: '*', schema: 'public', table: 'location' }, () => {
 			fetchBinLocation()
-			console.info("Changes occured")
 		})
 
 		channels.subscribe();
