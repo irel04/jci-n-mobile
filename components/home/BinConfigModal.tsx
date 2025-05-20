@@ -70,6 +70,15 @@ const BinConfigModal = () => {
 		setIsLoading(true)
 		try {
 			// Request permissions
+
+			// Check if location services are enabled
+			const isLocationEnabled = await Location.hasServicesEnabledAsync();
+			if (!isLocationEnabled) {
+				Alert.alert("Location Off", "Please enable location services to continue.");
+				return;
+			}
+
+
 			let { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
 
 			if (foregroundStatus !== 'granted') {
@@ -97,7 +106,7 @@ const BinConfigModal = () => {
 
 			if(error) throw error
 
-			Alert.alert("Bin Location Updated", "Bin location has been updated successfully")
+			Alert.alert("Location Updated", "Bin location has been updated successfully")
 		} catch (error) {
 			console.error(error);
 		} finally {
@@ -235,7 +244,7 @@ const BinConfigModal = () => {
 				<Image source={require('@/assets/images/trashbin.png')} className='w-[67.93px] h-[100px] items-center mb-5' />
 			</TouchableOpacity>
 			<Modal visible={modalVisible} animationType="slide" onRequestClose={handleCloseModal} >
-				{isLoading ? <LoadingAnimation displayMessage="Fetching current location"/> : (
+				{isLoading ? <LoadingAnimation displayMessage="Fetching and saving current location"/> : (
 					<ScrollView style={styles.container} contentContainerStyle={{ padding: 20 }}>
 						<Pressable style={styles.closeButton} onPress={handleCloseModal}>
 							<MaterialIcons name="close" size={18} color="black" />
@@ -378,7 +387,7 @@ const BinConfigModal = () => {
 								)} />
 							</View>}
 							<View className="flex flex-row gap-2 justify-end w-full mt-5">
-								<Button label="Save Coordinates"
+								<Button label="Fetch and Save Coordinates"
 									icon="save" variant={isBinLocationValid ? "default" : "ghost"} iconFamily="Entypo"
 									onPress={handleBinLocationSubmitControl(handleSubmitBinLocation)} />
 							</View>
