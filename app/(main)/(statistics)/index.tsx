@@ -181,7 +181,7 @@ const Statistics = () => {
       }
 
       await Sharing.shareAsync(fileUri, {
-        dialogTitle: "Download weekly summary",
+        dialogTitle: "Export weekly summary",
         mimeType: "text/csv",
         UTI: "public.plain-text"
       });
@@ -209,7 +209,7 @@ const Statistics = () => {
             </View>
           </View>
 
-          <Button label="Import csv" variant="neutral" iconFamily="Fontisto" icon="import" iconSize={16} onPress={handleDownloadCsv}/>
+          <Button label="Export csv" variant="neutral" iconFamily="Fontisto" icon="export" iconSize={16} onPress={handleDownloadCsv}/>
         </View>
 
 
