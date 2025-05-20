@@ -126,7 +126,7 @@ const Main = () => {
 	
 
 	return (
-		<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }} >
+		<ScrollView  contentContainerStyle={{ padding: 16 }} >
 				{loading ? (
 					<LoadingAnimation/>
 				) : (
