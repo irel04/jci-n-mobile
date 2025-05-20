@@ -139,7 +139,7 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 
 			if (!userAuth) return
 
-			const { data, error } = await supabase.from("bins").select(`set(), location(lng, lat), color, id, is_full`)
+			const { data, error } = await supabase.from("bins").select(`set, location(lng, lat), color, id, is_full`)
 
 
 			if (error) {
