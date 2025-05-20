@@ -1,18 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import Overflow from '@/components/statistics/Overflow';
 import BinUsage from '@/components/statistics/BinUsage';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import PickupFrequency from '@/components/statistics/PickupFrequency';
 import CollectionFrequency from '@/components/statistics/CollectionFrequency';
-import RNPickerSelect from 'react-native-picker-select';
-import { format, startOfWeek, endOfWeek, addDays, subWeeks, addWeeks, isAfter, startOfDay, isEqual } from 'date-fns';
+import { subWeeks, addWeeks, startOfDay, isEqual } from 'date-fns';
 import { getWeeklySummary } from "@/app/(main)";
-import LoaderKit from "react-native-loader-kit";
 import { supabase } from "@/utils/supabase";
-import { generateWeekLabels, startEndOfWeek } from "@/utils/helper";
+import { startEndOfWeek } from "@/utils/helper";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
 import Button from "@/components/ui/Button";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import Papa from 'papaparse';
 
 const getPickup = async (date: Date) => {
 
@@ -150,7 +151,7 @@ const Statistics = () => {
   }, [])
 
 
-  const { formattedStartOfWeekHeader, formattedEndOfWeekHeader } = useMemo(() => startEndOfWeek(currentDate), [currentDate])
+  const { formattedStartOfWeekHeader, formattedEndOfWeekHeader, formattedStartOfWeek, formattedEndOfWeek } = useMemo(() => startEndOfWeek(currentDate), [currentDate])
 
   const isDayEqualorToday = useMemo(() => isEqual(startOfDay(currentDate), startOfDay(new Date())), [currentDate])
 
@@ -162,16 +163,53 @@ const Statistics = () => {
     setCurrentDate(prev => addWeeks(prev, 1))
   }
 
+  const handleDownloadCsv = async () => {
+    setIsloading(true)
+    try {
+      const { data, error } = await supabase.from("daily_summary").select("total_pickups, usage, fullness_100_count, date").gte("date", formattedStartOfWeek).lte("date", formattedEndOfWeek).order("date", { ascending: false });
+
+      if(error) throw error
+      
+      const csv = Papa.unparse(data);
+      const fileUri = FileSystem.documentDirectory + "weekly_summary.csv";
+
+      await FileSystem.writeAsStringAsync(fileUri, csv, { encoding: FileSystem.EncodingType.UTF8 });
+
+      if(!(await Sharing.isAvailableAsync())) {
+        Alert.alert("Error", "Sharing is not available on this device");
+        return;
+      }
+
+      await Sharing.shareAsync(fileUri, {
+        dialogTitle: "Download weekly summary",
+        mimeType: "text/csv",
+        UTI: "public.plain-text"
+      });
+
+      Alert.alert("Success", "CSV file imported successfully");
+
+    } catch (error) {
+      console.error("Error downloading csv");
+      Alert.alert("Error", "Failed to download csv file");
+    } finally{
+      setIsloading(false)
+    }
+  }
+
 
   return (
     <View className="flex-1 bg-gray-100 p-4">
       {isLoading ? <LoadingAnimation/> : <>
         {/* Header */}
-        <View className="flex-row items-center my-2 px-2">
-          <Text className="text-h5 font-sans font-bold ml-2">Reports</Text>
-          <View className="pl-2">
-            <MaterialIcons name="query-stats" size={28} color="black" />
+        <View className="my-2 flex-row flex items-center justify-between">
+          <View className="flex-row items-center px-2">
+            <Text className="text-h5 font-sans font-bold ml-2">Reports</Text>
+            <View className="pl-2">
+              <MaterialIcons name="query-stats" size={28} color="black" />
+            </View>
           </View>
+
+          <Button label="Import csv" variant="neutral" iconFamily="Fontisto" icon="import" iconSize={16} onPress={handleDownloadCsv}/>
         </View>
 
 
