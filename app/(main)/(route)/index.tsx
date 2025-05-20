@@ -132,41 +132,43 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 	}, []); 
 	
 
+	// This fetches the bin location
+	const fetchBinLocation = async () => {
+		try {
+
+
+			if (!userAuth) return
+
+			const { data, error } = await supabase.from("bins").select(`set(), location(lng, lat), color, id, is_full`)
+
+
+			if (error) {
+				throw error
+			}
+
+			const flattenData: MarkerCoordinate[] = data.map(bin => {
+				return {
+					id: bin.id,
+					title: bin.is_full ? "Full" : "Available",
+					longitude: bin.location[0]?.lng,
+					latitude: bin.location[0]?.lat,
+					type: "bin",
+					setId: bin.set
+				}
+			})
+
+
+			setPositions(flattenData)
+
+
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
 	// Trigger fetch user location
 	useEffect(() => {
-		// This fetches the bin location
-		const fetchBinLocation = async () => {
-			try {
-
-
-				if(!userAuth) return
-
-				const { data, error } = await supabase.from("bins").select(`set, location(lng, lat), color, id`)
-
-
-				if (error) {
-					throw error
-				}
-
-				const flattenData: MarkerCoordinate[] = data.map(bin => {
-					return {
-						id: bin.id,
-						title: bin.set,
-						longitude: bin.location[0]?.lng,
-						latitude: bin.location[0]?.lat,
-						type: "bin",
-						setId: bin.set
-					}
-				})
-
-
-				setPositions(flattenData)
-
-
-			} catch (error) {
-				console.error(error);
-			}
-		}
+		
 
 		const fetchUserLocation = async () => {
 			try {
@@ -196,6 +198,19 @@ const Routes = ({ showButton = true }: RouteComponent) => {
 
 		fetchUserLocation()
 		fetchBinLocation()
+	}, [])
+
+	useEffect(()=> {
+		const channels = supabase.channel('custom-bin-channel').on("postgres_changes", { event: '*', schema: 'public', table: 'bins' }, () => {
+			fetchBinLocation();
+		})
+
+		channels.subscribe();
+
+
+		return () => {
+			channels.unsubscribe();
+		}
 	}, [])
 
 	// Fetch sets

@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Image, Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import mapStyleSheet from './Style';
-import MapView, { AnimatedRegion, Marker, MarkerAnimated, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Callout, MapMarker, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { supabase } from "@/utils/supabase";
 import MapViewDirections from "react-native-maps-directions"
-import { router, useFocusEffect, useGlobalSearchParams, useLocalSearchParams, useRouter } from "expo-router";
+import Entypo from '@expo/vector-icons/Entypo';
 
 const INITIAL_REGION = {
   latitude: 14.598820,
@@ -74,6 +74,8 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
   }, [selectedSetId, markerCoordinates])
 
 
+
+
   return (
     <MapView
       ref={mapRef}
@@ -102,7 +104,17 @@ const GoogleMaps = ({ markerCoordinates, movingMarkerCoords, showRoute, selected
 
       {markerCoordinates.map((coord, index) => {
         const { type, title, ...position } = coord;
-        return <Marker coordinate={position} key={index} title={title} titleVisibility="visible" />
+        return <Marker coordinate={position} key={index} title={title}>
+          {/* Custom icon */}
+          <View style={{ alignItems: "center", position: "relative"}}>
+            <Entypo
+              name="trash"
+              size={36}
+              color={title === "Full" ? "#7B0F0F" : "#082B63"}
+            />
+            
+          </View>
+        </Marker>
       })}
 
       <Marker coordinate={userCoords} ref={markerRef} title={userCoords.title}>
